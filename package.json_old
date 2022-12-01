@@ -1,0 +1,31 @@
+{
+  "name": "kracceis2.0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./build/index.js",
+  "scripts": {
+    "start": "node .",
+    "clean": "rimraf build",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint-fix": "npm run lint -- --fix",
+    "compile": "tsc -v && tsc --pretty",
+    "compile-watch": "tsc --pretty -w",
+    "clean-compile": "npm run clean && npm run compile"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eslint": "^8.28.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsdoc": "^39.6.4",
+    "eslint-plugin-n": "^15.5.1",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "^6.1.1",
+    "typescript": "^4.9.3"
+  },
+  "devDependencies": {
+    "@types/typescript": "^2.0.0"
+  }
+}

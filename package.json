@@ -1,0 +1,34 @@
+{
+  "name": "kracceis",
+  "version": "1.0.0",
+  "description": "Kracceis is a simple webui for Hashcat made by Acceis and completely in typescript",
+  "main": "./build/index.js",
+  "dependencies": {
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^14.11.2",
+    "@types/winston": "^2.4.4",
+    "gts": "^3.1.1",
+    "typescript": "^4.9.3",
+    "@types/typescript": "^2.0.0"
+  },
+  "scripts": {
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc -v && tsc --pretty",
+    "compile-watch": "tsc --pretty -w",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint",
+    "lint-fix": "eslint 'src/**/*.ts' --fix"
+  },
+  "keywords": [
+    "hashcat",
+    "cybersecurity",
+    "acceis"
+  ],
+  "author": "Tristan d'Audibert",
+  "license": "MIT"
+}
