@@ -1,4 +1,4 @@
-import {logger} from './Utils/Logger';
+import { logger } from './Utils/Logger';
 
 function main(): void {
     logger.error('aaaaaa');

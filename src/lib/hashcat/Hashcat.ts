@@ -1,5 +1,5 @@
-import {IHashcat} from '../types/THashcat';
-import {HashcatOptions} from './HashcatOptions';
+import { IHashcat } from '../types/THashcat';
+import { HashcatOptions } from './HashcatOptions';
 
 export class Hashcat implements IHashcat {
     private options: HashcatOptions;
