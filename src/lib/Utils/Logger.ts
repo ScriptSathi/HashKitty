@@ -1,4 +1,5 @@
 import * as winston from 'winston';
+import { Constants } from '../Constants';
 
 const { combine, timestamp, printf } = winston.format;
 
@@ -22,7 +23,7 @@ const customFormat = printf(({ level, message, timestamp }) => {
 });
 
 export const logger = winston.createLogger({
-    level: 'info',
+    level: Constants.debugMode ? 'debug' : 'info',
     format: combine(
         timestamp({
             format: new Date()

@@ -1,6 +1,6 @@
-import { THashcatCmds } from '../types/THashcat';
+import { ThashcatParams } from '../types/THashcat';
 
-export const hashcatCmds: THashcatCmds = {
+export const hashcatParams: ThashcatParams = {
     hashType: 'hash-type',
     attackMode: 'attack-mode',
     session: 'session',

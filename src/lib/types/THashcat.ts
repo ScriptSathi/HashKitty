@@ -1,13 +1,24 @@
-export type THashcatOption = {
-    name: string;
-    arg: string | number;
-};
+export type ThashcatAllowedFlags =
+    | 'hashType'
+    | 'attackMode'
+    | 'restore'
+    | 'runtime'
+    | 'session'
+    | 'outputFile'
+    | 'outputFormat'
+    | 'show'
+    | 'left'
+    | 'potfilePath'
+    | 'speedOnly'
+    | 'progressOnly'
+    | 'kernelOptimisation'
+    | 'workloadProfile'
+    | 'kernelAccel'
+    | 'kernelLoops'
+    | 'kernelThreads'
+    | 'temperatureAbort'
+    | 'rulesFiles';
 
-export interface IHashcat {
-    generateCmd(): string;
-    generateBenchmarkCmd(): string;
-}
-
-export type THashcatCmds = {
-    [key: string]: string;
+export type ThashcatParams = {
+    [key in ThashcatAllowedFlags]: string;
 };

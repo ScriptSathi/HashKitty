@@ -4,9 +4,11 @@
   "description": "Kracceis is a simple webui for Hashcat made by Acceis and completely in typescript",
   "main": "./build/index.js",
   "dependencies": {
+    "fs-extra": "^11.1.0",
     "winston": "^3.8.2"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
     "@types/node": "^14.11.2",
     "@types/typescript": "^2.0.0",
     "@types/winston": "^2.4.4",
@@ -20,8 +22,6 @@
     "compile-watch": "tsc --pretty -w",
     "fix": "gts fix",
     "prepare": "npm run compile",
-    "pretest": "npm run compile",
-    "posttest": "npm run lint",
     "lint-fix": "eslint 'src/**/*.ts' --fix"
   },
   "keywords": [
