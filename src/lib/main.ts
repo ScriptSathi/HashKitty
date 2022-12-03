@@ -1,47 +1,45 @@
+import { resolve } from 'node:path';
 import { Hashcat } from './hashcat/Hashcat';
-import { TStandardEndpoint } from './types/TApi';
+import { TExecEndpoint } from './types/TApi';
 import { logger } from './utils/Logger';
-import { Worker, isMainThread, parentPort } from 'node:worker_threads';
 
 async function main(): Promise<void> {
-    const options: TStandardEndpoint = {
-        wordlist: '/opt/wordlists/maWordList.txt',
+    const execOptions: TExecEndpoint = {
         flags: [
             {
                 name: 'hashType',
                 arg: '1000',
             },
             {
+                name: 'session',
+                arg: 'session1',
+            },
+            {
                 name: 'attackMode',
                 arg: '0',
             },
-            {
-                name: 'potfilePath',
-                arg: '/opt/potfiles/toto.txt',
-            },
+            // {
+            //     name: 'potfilePath',
+            //     arg: '/opt/potfiles/toto.txt',
+            // },
         ],
+        wordlist: '/opt/kracceis/wordlists/rockyou.txt',
         hashList: {
-            name: 'toto',
-            hashs: ['test1', 'test2', 'test3'],
+            name: 'test2',
+            hashs: [
+                '90B0563973F20A99F6CC4AA9790E5111',
+                '9869A2E7E99474B763301F00409058DB',
+            ],
         },
     };
-    const worker = new Worker('./build/src/lib/utils/CommandUtils.js');
-    // const worker = new Worker(__filename); // Soit initialiser Hashcat ici et le stop avec le 1er postMessage
-    // If API call to run hashcat
-
-    worker.postMessage('bash -c "while true; do echo 1234; sleep 2; done"'); // Soit trouver un moyen de le démarrer une 1ere fois et de l'arreter ensuite
-    worker.on('message', hashcatStatus => {
-        logger.debug('From Worker: ' + hashcatStatus);
-    });
-
-    setTimeout(() => {
-        worker.postMessage('exit');
-    }, 10000);
-
-    // const hashcat = new Hashcat(options);
-    // logger.debug('aaa');
-    // logger.info('aaa');
-    // logger.info(hashcat.generateCmd());
+    const hashcat = new Hashcat({ exec: execOptions });
+    hashcat.exec();
+    // setTimeout(() => {
+    //     hashcat.stop();
+    // }, 100000);
+    // setTimeout(
+    //     () => { hashcat.stop(); }, 
+    //     1000);
 }
 
 (() => {

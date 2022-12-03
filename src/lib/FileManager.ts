@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+
 import { logger } from './utils/Logger';
 
 export class FileManager {
