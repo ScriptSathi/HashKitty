@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { logger } from './Utils/Logger';
+import { logger } from './utils/Logger';
 
 export class FileManager {
     public directoryWhereToSavedFile: string;

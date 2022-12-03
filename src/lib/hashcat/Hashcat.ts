@@ -4,7 +4,7 @@ import { TStandardEndpoint } from '../types/TApi';
 import { hashcatParams } from './hashcatParams';
 
 interface IHashcat {
-    generateCmd(): string;
+    exec(): void;
 }
 
 export class Hashcat implements IHashcat {
@@ -18,7 +18,13 @@ export class Hashcat implements IHashcat {
         this.standardEndpoint = standard;
     }
 
-    public generateCmd(): string {
+    public exec(): void {
+        if (this.standardEndpoint) {
+            throw new Error('Method not implemented.');
+        }
+    }
+
+    private generateCmd(): string {
         let cmd = `${this.bin} `;
         this.prepareCmd();
         if (this.standardEndpoint) {
