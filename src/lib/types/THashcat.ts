@@ -26,7 +26,7 @@ export type ThashcatParams = {
     [key in ThashcatAllowedFlags]: string;
 };
 
-export type THashcatStatus = {
+export type THashcatPartialStatus = {
     session: string;
     guess: {
         [key: string]: string | number | null | boolean;
