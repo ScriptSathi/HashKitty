@@ -26,7 +26,7 @@ export class Processus {
 
         proc.stderr &&
             proc.stderr.on('data', (data: Buffer) => {
-                logger.error(`ERROR: ${data.toString()}`);
+                logger.error(Processus.checkStderr(data.toString().trim()));
             });
 
         proc.stdout &&
@@ -70,7 +70,7 @@ export class Processus {
         } else {
             return new HashcatError(
                 HashcatError.CODES.UNKNOW_ERROR,
-                'An unexpected error occurred\n' + stderr
+                'An unexpected error occurred: ' + stderr
             );
         }
     }
