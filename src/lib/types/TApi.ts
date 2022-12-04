@@ -2,8 +2,8 @@ import { ThashcatAllowedFlags } from './THashcat';
 
 export type TEndpoint = 'exec' | 'restore';
 
-export type TflagOption<T> = {
-    name: ThashcatAllowedFlags;
+export type TflagOption<T = string | number, S = ThashcatAllowedFlags> = {
+    name: S;
     arg?: T;
 };
 
@@ -15,7 +15,7 @@ export type ThashList = {
 export type TExecEndpoint = {
     wordlist: string;
     hashList: ThashList;
-    flags: TflagOption<string | number>[];
+    flags: TflagOption[];
 };
 
-export type TRestoreEndpoint = TflagOption<string>;
+export type TRestoreEndpoint = TflagOption<string, 'session'>;

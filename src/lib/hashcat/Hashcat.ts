@@ -35,6 +35,7 @@ export class Hashcat {
         this.bin = Constants.defaultBin;
         this.hashFileManager = new FileManager(Constants.hashlistsPath);
         this.execEndpoint = props?.exec;
+        this.restoreEndpoint = props?.restore;
     }
 
     public exec(): void {
@@ -53,6 +54,7 @@ export class Hashcat {
             logger.debug(
                 `Restoring Hashcat session ${this.restoreEndpoint.arg}`
             );
+            logger.info(this.generateRestoreCmd())
             this.hashcatProcess.postMessage(this.generateRestoreCmd());
             this.listenStdoutAndSetStatus();
         }
@@ -82,7 +84,7 @@ export class Hashcat {
         if (this.restoreEndpoint) {
             cmd =
                 `${this.bin} ${this.buildFlag(this.restoreEndpoint)} ` +
-                `${this.buildFlag({ name: 'restore', arg: '' })} `;
+                `${this.buildFlag({ name: 'restore' })} `;
             this.defaultFlags.map(param => {
                 cmd += this.buildFlag(param);
             });
@@ -90,7 +92,7 @@ export class Hashcat {
         return cmd;
     }
 
-    private buildFlag(flag: TflagOption<string | number>): string {
+    private buildFlag(flag: TflagOption): string {
         return flag.arg
             ? `--${hashcatParams[flag.name]}=${flag.arg} `
             : `--${hashcatParams[flag.name]} `;

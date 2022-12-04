@@ -21,9 +21,6 @@ export class Processus {
             parentPort.once('message', message => {
                 if (message === 'exit') {
                     proc.kill();
-                    logger.info(
-                        `A request has been sent to stop the process: ${cmd[0]}`
-                    );
                 }
             });
 
