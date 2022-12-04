@@ -17,8 +17,35 @@ export type ThashcatAllowedFlags =
     | 'kernelLoops'
     | 'kernelThreads'
     | 'temperatureAbort'
-    | 'rulesFiles';
+    | 'rulesFiles'
+    | 'statusJson'
+    | 'quiet'
+    | 'restoreDisable';
 
 export type ThashcatParams = {
     [key in ThashcatAllowedFlags]: string;
+};
+
+export type THashcatStatus = {
+    session: string;
+    guess: {
+        [key: string]: string | number | null | boolean;
+    };
+    status: number;
+    target: string;
+    progress: number[];
+    restore_point: number;
+    recovered_hashes: number[];
+    recovered_salts: number[];
+    rejected: number;
+    devices: {
+        device_id: number;
+        device_name: string;
+        device_type: string;
+        speed: number;
+        temp: number;
+        util: number;
+    }[];
+    time_start: number;
+    estimated_stop: number;
 };

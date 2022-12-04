@@ -20,4 +20,7 @@ export const hashcatParams: ThashcatParams = {
     kernelThreads: 'kernel-threads',
     temperatureAbort: 'hwmon-temp-abort',
     rulesFiles: 'rules-file',
+    statusJson: 'status-json',
+    quiet: 'quiet',
+    restoreDisable: 'restore-disable',
 };

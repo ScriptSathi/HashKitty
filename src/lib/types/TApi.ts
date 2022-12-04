@@ -4,7 +4,7 @@ export type TEndpoint = 'exec' | 'restore';
 
 export type TflagOption<T> = {
     name: ThashcatAllowedFlags;
-    arg: T;
+    arg?: T;
 };
 
 export type ThashList = {

@@ -1,4 +1,3 @@
-import { resolve } from 'node:path';
 import { Hashcat } from './hashcat/Hashcat';
 import { TExecEndpoint } from './types/TApi';
 import { logger } from './utils/Logger';
@@ -19,6 +18,9 @@ async function main(): Promise<void> {
                 arg: '0',
             },
             // {
+            //     name: 'restoreDisable',
+            // },
+            // {
             //     name: 'potfilePath',
             //     arg: '/opt/potfiles/toto.txt',
             // },
@@ -27,19 +29,33 @@ async function main(): Promise<void> {
         hashList: {
             name: 'test2',
             hashs: [
-                '90B0563973F20A99F6CC4AA9790E5111',
+                '90B0563973F20399F6CC4AA9790E5111',
+                '9869A2E7E99474C763301F00409058DB',
+                '9869A2E7E99474B743301F00409058DB',
+                '9869A2E7E99478B763301F00409058DB',
+                '9869A2E7E99474B763101F00409058DB',
+                '9869A2E7E99874B763301F00809058DB',
                 '9869A2E7E99474B763301F00409058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B963301F00009058DB',
+                '9869A2E7EB9474B763301F00009058DB',
+                '9869A2E7EB9474B767301F00009058DB',
+                '9869A2E7EB9474B763001F00009058DB',
+                '1869A2E7EB9474B7637301F0009058DB',
+                '9869A2E7EB9474B7633A0F00009058DB',
             ],
         },
     };
     const hashcat = new Hashcat({ exec: execOptions });
     hashcat.exec();
-    // setTimeout(() => {
-    //     hashcat.stop();
-    // }, 100000);
-    // setTimeout(
-    //     () => { hashcat.stop(); }, 
-    //     1000);
 }
 
 (() => {
