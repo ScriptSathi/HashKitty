@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { THttpServerConfig } from './types/TApi';
 
 export class Constants {
     public static readonly wordlistPath = path.join('/opt/kracceis/wordlists');
@@ -7,4 +8,5 @@ export class Constants {
     public static readonly rulesPath = path.join('/opt/kracceis/rules');
     public static readonly defaultBin = 'hashcat';
     public static readonly debugMode = true;
+    public static readonly defaultApiConfig: THttpServerConfig = { port: 1337 };
 }
