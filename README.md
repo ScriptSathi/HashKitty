@@ -67,12 +67,16 @@ const execOptions: TExecEndpoint = {
     {"name":"session","arg":"session1"}
     
 ```
+```
+#privileged containers
+# https://stackoverflow.com/questions/32163955/how-to-run-shell-script-on-host-from-docker-container
 
+docker run --privileged --pid=host -it alpine:3.8 \
+nsenter -t 1 -m -u -n -i sh
 
 BDD:  
 
 
-// Sauvegarder les Préconfigured tasks
 // Sauvegarder les données lié aux tasks (tout en bdd)
 // sauvegarder la donnée lié aux hash lists (type de hash et si elle est lié à une tâche)
 // sauvegarder les templates de taches
