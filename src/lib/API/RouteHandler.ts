@@ -59,59 +59,59 @@ export class RouteHandler {
     };
 
     public deleteTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public addTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public updateTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public addFile = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public deleteFile = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public updateFile = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public addTemplateTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public deleteTemplateTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public updateTemplateTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public getTemplateTasks = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public getTemplateTaskById = (req: Request, res: Response): void => {
         const id = req?.params.id;
         // check if id exist in DB and return value
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public getTasks = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
     public getTaskById = (req: Request, res: Response): void => {
         const id = req?.params.id;
         // check if id exist in DB and return value
-        throw new Error('PAS ENCORE FAIT');
+        throw new Error('PAS ENCORE FAIT');//TODO
     };
 
 

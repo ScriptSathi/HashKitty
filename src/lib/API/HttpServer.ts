@@ -18,6 +18,7 @@ export class HttpServer implements IHttpServer {
 
         this.enableCORS();
         this.registerRoutes(new ApiRouter().router);
+        //TODO Add MiddleWare to prevent remote user communicate with the API
     }
 
     public listen(): Promise<void> {
