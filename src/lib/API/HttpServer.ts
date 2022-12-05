@@ -9,9 +9,9 @@ import { IHttpServer, THttpServerConfig } from '../types/TApi';
 import { ApiRouter } from './ApiRoutes';
 
 export class HttpServer implements IHttpServer {
-    protected app: express.Application = express();
-    protected config: THttpServerConfig;
-    protected server!: http.Server | https.Server;
+    private app: express.Application = express();
+    private config: THttpServerConfig;
+    private server!: http.Server | https.Server;
 
     constructor(config: THttpServerConfig) {
         this.config = config;
@@ -62,7 +62,7 @@ export class HttpServer implements IHttpServer {
         });
     }
 
-    protected createHttpServer(): http.Server | https.Server {
+    private createHttpServer(): http.Server | https.Server {
         const ssl = this.config.ssl || { use: false };
         if (ssl.use) {
             try {
