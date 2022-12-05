@@ -1,16 +1,8 @@
-import { logger } from './utils/Logger';
 import { HttpServer } from './API/HttpServer';
 import { Constants } from './Constants';
 
-async function main(): Promise<void> {
-    const httpServer = new HttpServer(Constants.defaultApiConfig);
-    httpServer.listen();
+function main(): void {
+    new HttpServer(Constants.defaultApiConfig).listen();
 }
 
-(() => {
-    try {
-        main();
-    } catch (e) {
-        logger.error(e);
-    }
-})();
+main();

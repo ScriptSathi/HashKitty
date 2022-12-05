@@ -11,6 +11,20 @@ export type TProcessStdout = {
 };
 
 export class Processus {
+    private static checkStderr(stderr: string): HashcatError {
+        if (stderr.match(/No hashes loaded/)) {
+            return new HashcatError(
+                HashcatError.CODES.INVALID_COMMAND,
+                'No hashes loaded'
+            );
+        } else {
+            return new HashcatError(
+                HashcatError.CODES.UNKNOW_ERROR,
+                'An unexpected error occurred: ' + stderr
+            );
+        }
+    }
+
     private cmd!: string[];
     private proc!: ChildProcessWithoutNullStreams;
 
@@ -32,6 +46,7 @@ export class Processus {
             this.proc.kill();
         }
     };
+
     private onStderr = (data: Buffer): void => {
         logger.error(Processus.checkStderr(data.toString().trim()));
     };
@@ -65,20 +80,6 @@ export class Processus {
             logger.info(`Process: ${this.cmd[0]} ended correctly`);
         }
     };
-
-    private static checkStderr(stderr: string): HashcatError {
-        if (stderr.match(/No hashes loaded/)) {
-            return new HashcatError(
-                HashcatError.CODES.INVALID_COMMAND,
-                'No hashes loaded'
-            );
-        } else {
-            return new HashcatError(
-                HashcatError.CODES.UNKNOW_ERROR,
-                'An unexpected error occurred: ' + stderr
-            );
-        }
-    }
 }
 
 (() => {
