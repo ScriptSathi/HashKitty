@@ -27,32 +27,21 @@ services:
     ports:
       - 8080:80
   
-  # hashkitty-server: 
-  # # TODO The image doesn not include nvidia drivers neither than hashcat binary. Need to find a solution ...
-  # # check this https://github.com/dizcza/docker-hashcat/blob/master/Dockerfile
-  # # install node over this maybe ?
-  #   container_name: hashkitty-server
-  #   restart: always
-  #   build:
-  #     context: ../SERVER
-  #     dockerfile: ../SERVER/Dockerfile.dev
-  #   env_file: .env
-  #   volumes:
-  #     - ../SERVER/:/app/
-  #     - ${HASHKITTY_WORDLIST_DIR}/hashkitty:/opt/hashkitty
-  #   environment:
-  #     PORT: ${PORT}
-  #   ports:
-  #     - 8081:${PORT}
-  #   depends_on:
-  #     - mysql
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+  hashkitty-server:
+    container_name: hashkitty-server
+    build:
+      context: ../SERVER
+      dockerfile: ../SERVER/Dockerfile.dev
+    env_file: .env
+    volumes:
+      - ../SERVER/:/app/
+      - ${HASHKITTY_WORDLIST_DIR}/hashkitty:/opt/hashkitty
+    environment:
+      PORT: ${PORT}
+    ports:
+      - 8081:${PORT}
+    depends_on:
+      - mysql
 
 volumes:
   hashkitty-storage:
