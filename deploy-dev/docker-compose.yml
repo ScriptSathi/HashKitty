@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+
+  mysql:
+    image: "mysql:8.0.30"
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "hashkitty"
+      MYSQL_PASSWORD: "hashkitty"
+      MYSQL_DATABASE: "hashkitty"
+    volumes:
+      - hashkitty-storage:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.0-apache
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8080:80
+  
+  hashkitty-server:
+    container_name: hashkitty-server
+    build:
+      context: ../SERVER
+      dockerfile: ../SERVER/Dockerfile.dev
+    env_file: .env
+    volumes:
+      - ../SERVER/:/app/
+      - ${HASHKITTY_WORDLIST_DIR}/hashkitty:/opt/hashkitty
+    environment:
+      PORT: ${PORT}
+    ports:
+      - 8081:${PORT}
+    depends_on:
+      - mysql
+
+volumes:
+  hashkitty-storage:
