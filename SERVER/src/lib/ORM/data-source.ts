@@ -1,18 +1,33 @@
-import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { User } from './entity/User';
+import { HashType } from './entity/HashType';
+import { Constants } from '../Constants';
+import { AttackMode } from './entity/AttackMode';
+import { Hashlist } from './entity/Hashlist';
+import { Options } from './entity/Options';
+import { Task } from './entity/Task';
+import { TemplateTask } from './entity/TemplateTask';
+import { Wordlist } from './entity/Wordlist';
+import { WorkloadProfile } from './entity/WorkloadProfile';
 
 export const AppDataSource = new DataSource({
-    //TODO
     type: 'mysql',
     host: 'localhost',
     port: 3306,
-    username: 'test',
-    password: 'test',
-    database: 'test',
-    synchronize: true,
+    username: 'hashkitty',
+    password: 'hashkitty',
+    database: 'hashkitty',
+    synchronize: Constants.isProduction,
     logging: false,
-    entities: [User],
+    entities: [
+        HashType,
+        AttackMode,
+        Hashlist,
+        Options,
+        Task,
+        TemplateTask,
+        Wordlist,
+        WorkloadProfile,
+    ],
     migrations: [],
     subscribers: [],
 });
