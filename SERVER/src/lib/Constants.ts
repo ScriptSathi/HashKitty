@@ -22,4 +22,6 @@ export class Constants {
     public static readonly defaultApiConfig: THttpServerConfig = {
         port: process.env?.PORT || 1337,
     };
+    public static readonly isProduction =
+        (process.env?.PRODUCTION as unknown as boolean) || false;
 }
