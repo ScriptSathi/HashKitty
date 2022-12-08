@@ -10,6 +10,7 @@ export class RouteHandler {
 
     public execHashcat = (req: Request, res: Response): void => {
         try {
+            // TODO IMPORTANT Check req and see if errors can occured with the command
             this.hashcat.exec(req.body);
             res.status(200).json({
                 status: 'Hashcat has start',

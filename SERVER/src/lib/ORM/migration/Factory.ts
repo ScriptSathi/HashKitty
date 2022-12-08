@@ -1,26 +1,26 @@
 import path = require('path');
-import { DataSource, EntityTarget, ObjectLiteral } from 'typeorm';
+import { DataSource } from 'typeorm';
 
+import { attackModes } from '../data/attackModes';
+import { hashTypes } from '../data/hashtypes';
 import { Hashlist } from '../entity/Hashlist';
 import { Options } from '../entity/Options';
 import { Task } from '../entity/Task';
+import { workloadProfile } from '../data/workloadProfiles';
 import { TemplateTask } from '../entity/TemplateTask';
 import { Wordlist } from '../entity/Wordlist';
 import { AttackMode } from '../entity/AttackMode';
-import { WorkloadProfile } from '../entity/WorkloadProfile';
-import { Migration } from './Migration';
-import { HashType } from '../entity/HashType';
 
 export class Factory {
     private appDataSource: DataSource;
-    private migration: Migration;
 
     constructor(appDataSource: DataSource) {
         this.appDataSource = appDataSource;
-        this.migration = new Migration(appDataSource);
     }
 
     public async fakeAll(numberOfFakes: number): Promise<void> {
+        this.fakeHashLists(numberOfFakes);
+        this.fakeWordLists(numberOfFakes);
         await this.fakeTasks(numberOfFakes);
         await this.fakeTemplateTasks(numberOfFakes % 2);
     }
