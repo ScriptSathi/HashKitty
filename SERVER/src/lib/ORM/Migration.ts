@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
-import { attackModes } from '../data/attackModes';
-import { hashTypes } from '../data/hashtypes';
-import { AttackMode } from '../entity/AttackMode';
-import { HashType } from '../entity/HashType';
+import { attackModes } from './migration/attackModes';
+import { hashTypes } from './migration/hashtypes';
+import { AttackMode } from './entity/AttackMode';
+import { HashType } from './entity/HashType';
 
 export class Migration {
     private appDataSource: DataSource;
