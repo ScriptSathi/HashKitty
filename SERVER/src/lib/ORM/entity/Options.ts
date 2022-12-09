@@ -16,17 +16,17 @@ export class Options {
     id!: number;
 
     @Column('varchar', { name: 'rule_name', nullable: true })
-    ruleName!: string;
+    ruleName?: string;
 
-    @Column('varchar', { nullable: true })
-    maskQuery!: string;
+    @Column('varchar', { nullable: true, name: 'mask_query' })
+    maskQuery?: string;
 
-    @Column('varchar', { nullable: true })
-    maskFilename!: string;
+    @Column('varchar', { nullable: true, name: 'mask_filename' })
+    maskFilename?: string;
 
     @ManyToOne(() => AttackMode, (attackMode: AttackMode) => attackMode.id)
     @JoinColumn({ name: 'attack_mode_id', referencedColumnName: 'id' })
-    attackModeId!: string;
+    attackModeId!: number;
 
     @Column('int', { default: 90, name: 'breakpoint_gpu_temperature' })
     breakpointGPUTemperature!: number;

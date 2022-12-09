@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()

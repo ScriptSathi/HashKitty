@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
@@ -10,7 +10,7 @@ export class Hashlist {
     name!: string;
 
     @Column('varchar', { nullable: true })
-    description!: string;
+    description?: string;
 
     @Column('varchar')
     path!: string;
@@ -22,5 +22,5 @@ export class Hashlist {
     lastestModification!: Date;
 
     @Column('int', { nullable: true, name: 'number_of_cracked_passwords' })
-    numberOfCrackedPasswords!: number;
+    numberOfCrackedPasswords?: number;
 }

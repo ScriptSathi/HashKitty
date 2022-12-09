@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
@@ -6,9 +6,9 @@ export class AttackMode {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column('varchar')
+    @Column('varchar', { nullable: false })
     name!: string;
 
-    @Column('varchar')
-    type!: string;
+    @Column('tinyint', { nullable: false })
+    type!: number;
 }
