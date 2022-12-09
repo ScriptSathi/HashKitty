@@ -17,7 +17,7 @@ export class TemplateTask {
     name!: string;
 
     @Column('varchar', { nullable: true })
-    description!: string;
+    description?: string;
 
     @OneToOne(() => Options)
     @JoinColumn({ name: 'options_id', referencedColumnName: 'id' })
