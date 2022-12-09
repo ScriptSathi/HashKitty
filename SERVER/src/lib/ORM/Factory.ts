@@ -1,15 +1,15 @@
 import path = require('path');
 import { DataSource } from 'typeorm';
 
-import { attackModes } from '../data/attackModes';
-import { hashTypes } from '../data/hashtypes';
-import { Hashlist } from '../entity/Hashlist';
-import { Options } from '../entity/Options';
-import { Task } from '../entity/Task';
-import { workloadProfile } from '../data/workloadProfiles';
-import { TemplateTask } from '../entity/TemplateTask';
-import { Wordlist } from '../entity/Wordlist';
-import { AttackMode } from '../entity/AttackMode';
+import { Hashlist } from './entity/Hashlist';
+import { Options } from './entity/Options';
+import { Task } from './entity/Task';
+import { TemplateTask } from './entity/TemplateTask';
+import { Wordlist } from './entity/Wordlist';
+import { AttackMode } from './entity/AttackMode';
+import { WorkloadProfile } from './entity/WorkloadProfile';
+import { Migration } from './Migration';
+import { HashType } from './entity/HashType';
 
 export class Factory {
     private appDataSource: DataSource;
@@ -175,17 +175,6 @@ export class Factory {
     private getRandomValueInRange(range: number): number {
         return Math.floor(Math.random() * range);
     }
-
-    // private fakeAttackMode = async (
-    //     numberOfFakeToCreate: number
-    // ): Promise<void> => {
-    //     for (let i = 0; i < numberOfFakeToCreate; i++) {
-    //         const attackModes = new AttackMode();
-    //         attackModes.type = this.getRandomValueInRange(9);
-    //         attackModes.name = `${this.makeFakeString(5)}`;
-    //         await this.appDataSource.manager.save(attackModes);
-    //     }
-    // };
 
     private fakeWordLists = async (
         numberOfFakeToCreate: number
