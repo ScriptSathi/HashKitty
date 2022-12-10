@@ -3,20 +3,17 @@ import { DataSource, QueryFailedError } from 'typeorm';
 import { IDaoSub } from './IDaoSub';
 import { Task } from '../../ORM/entity/Task';
 import { TDaoTaskCreate } from '../../types/TDAOs';
-import { DaoUtils } from './DaoUtils';
 import { Options } from '../../ORM/entity/Options';
 import { TemplateTask } from '../../ORM/entity/TemplateTask';
 import { logger } from '../../utils/Logger';
-import { DAOError } from './DaoError';
 
 export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
     private db: DataSource;
-    private daoUtils: DaoUtils;
 
-    constructor(db: DataSource, daoUtils: DaoUtils) {
+    constructor(db: DataSource) {
         this.db = db;
-        this.daoUtils = daoUtils;
     }
+
     public getAll(): Promise<Task[]> {
         throw new Error('Method not implemented.');
     }
@@ -36,11 +33,7 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
     }
 
     public deleteById(id: number): void {
-        this.db
-            .getRepository(Task)
-            .createQueryBuilder()
-            .softDelete()
-            .where({ id: id });
+        this.db.getRepository(Task).delete(id);
         logger.debug('Delete Task with id: ' + id);
     }
 

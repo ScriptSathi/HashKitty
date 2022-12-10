@@ -8,16 +8,20 @@ import { DataSource } from 'typeorm';
 import { Task } from '../ORM/entity/Task';
 import { ResponseHandler } from './ResponseHandler';
 import { THashcatStatus } from '../types/THashcat';
+import { Dao } from './DAOs/Dao';
+import { TDaoTaskCreate, TDaoTaskDelete } from '../types/TDAOs';
 
 export class RouteHandler {
     public hashcat: Hashcat = new Hashcat();
     private respHandler: ResponseHandler = new ResponseHandler();
-    // private dao: DAOApi;
+    private dao: Dao;
 
-    constructor(db: DataSource) {}
+    constructor(db: DataSource) {
+        this.dao = new Dao(db);
+    }
 
     public execHashcat = (req: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<void>(
+        this.respHandler.tryAndResponse<void, string>(
             'exec',
             res,
             !this.hashcat.status.isRunning,
@@ -28,7 +32,7 @@ export class RouteHandler {
     };
 
     public restoreHashcat = (req: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<void>(
+        this.respHandler.tryAndResponse<void, string>(
             'stop',
             res,
             !this.hashcat.status.isRunning,
@@ -39,7 +43,7 @@ export class RouteHandler {
     };
 
     public getHashcatStatus = (_: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<THashcatStatus>(
+        this.respHandler.tryAndResponse<THashcatStatus, THashcatStatus>(
             'status',
             res,
             this.hashcat.status.isRunning,
@@ -50,7 +54,7 @@ export class RouteHandler {
     };
 
     public getStopHashcat = (_: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<void>(
+        this.respHandler.tryAndResponse<void, string>(
             'stop',
             res,
             this.hashcat.status.isRunning,
@@ -60,12 +64,28 @@ export class RouteHandler {
         );
     };
 
-    public deleteTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT'); //TODO
+    public deleteTask = async (req: Request, res: Response): Promise<void> => {
+        const id = (req.body as TDaoTaskDelete).id;
+        this.respHandler.tryAndResponse<number, string>(
+            'delete',
+            res,
+            await this.dao.taskExistById(id),
+            () => {
+                this.dao.task.deleteById(id);
+                return id;
+            }
+        );
     };
 
-    public addTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT'); //TODO
+    public createTask = (req: Request, res: Response): void => {
+        this.respHandler.tryAndResponse<void, string>(
+            'create',
+            res,
+            true,
+            () => {
+                this.dao.task.create(req.body as TDaoTaskCreate);
+            }
+        );
     };
 
     public updateTask = (_: Request, res: Response): void => {
