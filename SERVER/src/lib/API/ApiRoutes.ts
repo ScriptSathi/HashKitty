@@ -1,4 +1,5 @@
 import { Router, json } from 'express';
+import { DataSource } from 'typeorm';
 
 import { RouteHandler } from './RouteHandler';
 
@@ -6,11 +7,11 @@ export class ApiRouter {
     public readonly router: Router;
     private readonly routeHandler: RouteHandler;
 
-    constructor() {
+    constructor(db: DataSource) {
         this.router = Router();
         this.router.use(json());
 
-        this.routeHandler = new RouteHandler();
+        this.routeHandler = new RouteHandler(db);
         this.registerRoutes();
     }
 
