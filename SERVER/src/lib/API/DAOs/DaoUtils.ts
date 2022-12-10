@@ -1,4 +1,4 @@
-import { DataSource, EntityTarget, ObjectLiteral } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Task } from '../../ORM/entity/Task';
 
 export class DaoUtils {

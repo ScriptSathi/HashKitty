@@ -11,3 +11,7 @@ export type TDaoTaskCreate = TDaoCreate & {
     options?: Options;
     templateTaskId?: number;
 };
+
+export type TDaoTaskDelete = { id: number };
+
+export type TDaoTaskUpdate = TDaoTaskCreate & TDaoTaskDelete;

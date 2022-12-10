@@ -1,14 +1,18 @@
-import {
-    TresponseErrorMessages,
-    TresponseMessages,
-    TresponseMessageWithData,
-} from '../types/TApi';
+import { TresponseErrorMessages, TresponseMessages } from '../types/TApi';
 
-const hashcatIsNotRunning: TresponseMessageWithData<void> = {
+const hashcatIsNotRunning = {
     httpCode: 200,
     message: () => {
         return {
             fail: 'Hashcat is not running',
+        };
+    },
+};
+const noElementWithId = {
+    httpCode: 200,
+    message: () => {
+        return {
+            fail: 'There is no element with the sended id currently registered',
         };
     },
 };
@@ -46,6 +50,39 @@ export const responseMessagesWithData: TresponseMessages = {
             },
         },
         fail: hashcatIsNotRunning,
+    },
+    create: {
+        success: {
+            httpCode: 200,
+            message: () => {
+                return {
+                    success: 'Eleme',
+                };
+            },
+        },
+        fail: hashcatIsNotRunning,
+    },
+    delete: {
+        success: {
+            httpCode: 200,
+            message: id => {
+                return {
+                    success: `Deleted the element with id ${id}`,
+                };
+            },
+        },
+        fail: noElementWithId,
+    },
+    update: {
+        success: {
+            httpCode: 200,
+            message: id => {
+                return {
+                    success: `Updated the element with id ${id}`,
+                };
+            },
+        },
+        fail: noElementWithId,
     },
 };
 
