@@ -4,66 +4,60 @@ import { Request, Response } from 'express';
 import { Hashcat } from '../hashcat/Hashcat';
 import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
+import { DataSource } from 'typeorm';
+import { Task } from '../ORM/entity/Task';
+import { ResponseHandler } from './ResponseHandler';
+import { THashcatStatus } from '../types/THashcat';
 
 export class RouteHandler {
     public hashcat: Hashcat = new Hashcat();
+    private respHandler: ResponseHandler = new ResponseHandler();
+    // private dao: DAOApi;
+
+    constructor(db: DataSource) {}
 
     public execHashcat = (req: Request, res: Response): void => {
-        try {
-            // TODO IMPORTANT Check req and see if errors can occured with the command
-            this.hashcat.exec(req.body);
-            res.status(200).json({
-                status: 'Hashcat has start',
-            });
-        } catch (err) {
-            logger.error(
-                `An error occured during the startup of hashcat ERROR - ${err}`
-            );
-            res.status(200).json({
-                status: 'An error occurred during the execution of hashcat',
-            });
-        }
+        this.respHandler.tryAndResponse<void>(
+            'exec',
+            res,
+            !this.hashcat.status.isRunning,
+            () => {
+                this.hashcat.exec(req.body);
+            }
+        );
     };
 
     public restoreHashcat = (req: Request, res: Response): void => {
-        try {
-            this.hashcat.restore(req.body);
-            res.status(200).json({
-                status: 'Hashcat has been restored',
-            });
-        } catch (err) {
-            logger.error(
-                `An error occured during the startup of hashcat: ERROR - ${err}`
-            );
-            res.status(200).json({
-                status: 'An error occurred during the execution of hashcat',
-            });
-        }
+        this.respHandler.tryAndResponse<void>(
+            'stop',
+            res,
+            !this.hashcat.status.isRunning,
+            () => {
+                this.hashcat.restore(req.body);
+            }
+        );
     };
 
     public getHashcatStatus = (_: Request, res: Response): void => {
-        if (this.hashcat.status && this.hashcat.status.isRunning) {
-            res.status(200).send({
-                status: this.hashcat.status,
-            });
-        } else {
-            res.status(200).json({
-                status: 'Hashcat is not running',
-            });
-        }
+        this.respHandler.tryAndResponse<THashcatStatus>(
+            'status',
+            res,
+            this.hashcat.status.isRunning,
+            () => {
+                return this.hashcat.status;
+            }
+        );
     };
 
     public getStopHashcat = (_: Request, res: Response): void => {
-        if (this.hashcat.status && this.hashcat.status.isRunning) {
-            this.hashcat.stop();
-            res.status(200).json({
-                status: 'Hashcat has been stopped',
-            });
-        } else {
-            res.status(200).json({
-                status: 'Hashcat is not running',
-            });
-        }
+        this.respHandler.tryAndResponse<void>(
+            'stop',
+            res,
+            this.hashcat.status.isRunning,
+            () => {
+                this.hashcat.stop();
+            }
+        );
     };
 
     public deleteTask = (_: Request, res: Response): void => {
@@ -112,7 +106,7 @@ export class RouteHandler {
         throw new Error('PAS ENCORE FAIT'); //TODO
     };
 
-    public getTasks = (_: Request, res: Response): void => {
+    public getTasks = async (_: Request, res: Response): Promise<void> => {
         throw new Error('PAS ENCORE FAIT'); //TODO
     };
 

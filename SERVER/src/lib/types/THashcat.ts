@@ -49,3 +49,7 @@ export type THashcatPartialStatus = {
     time_start: number;
     estimated_stop: number;
 };
+
+export type THashcatStatus = {
+    isRunning: boolean;
+} & Partial<THashcatPartialStatus>;

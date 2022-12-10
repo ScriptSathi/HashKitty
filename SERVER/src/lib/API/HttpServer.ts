@@ -7,21 +7,22 @@ import * as express from 'express';
 import { logger } from '../utils/Logger';
 import { IHttpServer, THttpServerConfig } from '../types/TApi';
 import { ApiRouter } from './ApiRoutes';
+import { DataSource } from 'typeorm';
 
 export class HttpServer implements IHttpServer {
     private app: express.Application = express();
     private config: THttpServerConfig;
     private server!: http.Server | https.Server;
 
-    constructor(config: THttpServerConfig) {
+    constructor(config: THttpServerConfig, db: DataSource) {
         this.config = config;
 
         this.enableCORS();
-        this.registerRoutes(new ApiRouter().router);
+        this.registerRoutes(new ApiRouter(db).router);
         //TODO Add MiddleWare to prevent remote user communicate with the API
     }
 
-    public listen(): Promise<void> {
+    public async listen(): Promise<void> {
         this.server = this.createHttpServer();
 
         this.server.keepAliveTimeout = 61 * 1000;
