@@ -4,14 +4,12 @@ import { Worker } from 'node:worker_threads';
 import { Constants } from '../Constants';
 import { FileManager } from '../FileManager';
 import { TExecEndpoint, TflagOption, TRestoreEndpoint } from '../types/TApi';
-import { THashcatPartialStatus } from '../types/THashcat';
+import { THashcatStatus } from '../types/THashcat';
 import { logger } from '../utils/Logger';
 import { hashcatParams } from './hashcatParams';
 
-type THashcatStatus = { isRunning: boolean } & THashcatPartialStatus;
-
 export class Hashcat {
-    public status!: THashcatStatus;
+    public status: THashcatStatus = { isRunning: false };
     private execEndpoint: TExecEndpoint | undefined;
     private restoreEndpoint: TRestoreEndpoint | undefined;
     private bin: string;
