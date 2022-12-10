@@ -39,30 +39,24 @@ export interface IHttpServer {
     checkHealth(): void;
 }
 
-export type TresponseData =
-    | string
-    | number
-    | boolean
-    | Object
-    | Object[]
-    | number[]
-    | boolean[]
-    | string[];
-
-type TMessage = Partial<
-    Record<TresponsesMessagesObjectKeys | 'error', TresponseData>
+type TMessage<ResponseFormat extends AllowedResponseFormat> = Partial<
+    Record<TresponsesMessagesObjectKeys | 'error', ResponseFormat>
 >;
 
-export type TresponseMessage = {
+type TresponsesErrorMessageObjects = {
     httpCode: number;
-    message: TMessage;
+    message: TMessage<string>;
 };
 
-export type TresponseMessageWithData<
-    T extends TresponseMessagesTypesAgregator
-> = {
+export type TresponseMessage<ResponseFormat extends AllowedResponseFormat> = {
     httpCode: number;
-    message: (data: T | TresponseMessagesTypesAgregator) => TMessage;
+    message: TMessage<ResponseFormat>;
+};
+
+type TresponseMessageObject<ResponseFormat extends AllowedResponseFormat> = {
+    httpCode: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    message: (data: any) => TMessage<ResponseFormat>;
 };
 
 export type TresponsesErrorMessagesNames =
@@ -72,28 +66,30 @@ export type TresponsesErrorMessagesNames =
 export type TresponsesMessagesObjectKeys = 'success' | 'fail';
 
 export type TresponseErrorMessages = {
-    [key in TresponsesErrorMessagesNames]: TresponseMessage;
+    [key in TresponsesErrorMessagesNames]: TresponsesErrorMessageObjects;
 };
 
-type TresponsesMessagesObject<
-    key,
-    T extends TresponseMessagesTypesAgregator
-> = key extends 'fail'
-    ? TresponseMessageWithData<void>
-    : TresponseMessageWithData<T>;
-
-export type TresponsesNamesWithDataOMessagesObjectKeys<
-    T extends TresponseMessagesTypesAgregator
+export type TresponsesNamesMessagesObjectKeys<
+    ResponseFormat extends AllowedResponseFormat
 > = {
-    [key in TresponsesMessagesObjectKeys]: TresponsesMessagesObject<key, T>;
+    success: TresponseMessageObject<ResponseFormat>;
+    fail: TresponseMessageObject<string>;
 };
 
 export type TresponsesNamesWitMessagesObjectKeys = keyof TresponseMessages;
 
 export type TresponseMessages = {
-    status: TresponsesNamesWithDataOMessagesObjectKeys<THashcatStatus>;
-    exec: TresponsesNamesWithDataOMessagesObjectKeys<void>;
-    stop: TresponsesNamesWithDataOMessagesObjectKeys<void>;
+    status: TresponsesNamesMessagesObjectKeys<THashcatStatus>;
+    exec: TresponsesNamesMessagesObjectKeys<string>;
+    stop: TresponsesNamesMessagesObjectKeys<string>;
+    create: TresponsesNamesMessagesObjectKeys<string>;
+    delete: TresponsesNamesMessagesObjectKeys<string>;
+    update: TresponsesNamesMessagesObjectKeys<string>;
 };
 
-export type TresponseMessagesTypesAgregator = void | THashcatStatus;
+export type AllowedResponseFormat = string | THashcatStatus;
+
+export type TresponseMessagesTypesAgregator =
+    | AllowedResponseFormat
+    | number
+    | void;

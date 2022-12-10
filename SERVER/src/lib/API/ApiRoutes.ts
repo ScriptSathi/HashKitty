@@ -28,16 +28,16 @@ export class ApiRouter {
         // Bellow are not implem yet
         this.router.post('/templateTasks', this.routeHandler.addTemplateTask);
         this.router.post(
-            '/templateTasks/:id',
+            '/templateTasks/delete',
             this.routeHandler.deleteTemplateTask
         );
         this.router.post(
-            '/templateTasks/update/:id',
+            '/templateTasks/update',
             this.routeHandler.updateTemplateTask
         );
-        this.router.post('/tasks', this.routeHandler.addTask);
-        this.router.post('/tasks/update/:id', this.routeHandler.updateTask);
-        this.router.post('/tasks/:id', this.routeHandler.deleteTask);
+        this.router.post('/tasks', this.routeHandler.createTask);
+        this.router.post('/tasks/update', this.routeHandler.updateTask);
+        this.router.post('/tasks/delete', this.routeHandler.deleteTask);
         this.router.get(
             '/templateTasks/:id',
             this.routeHandler.getTemplateTaskById

@@ -3,8 +3,9 @@ import { FindRelationsNotFoundError } from 'typeorm';
 import {
     TresponseMessagesTypesAgregator,
     TresponsesNamesWitMessagesObjectKeys,
-    TresponsesMessagesObjectKeys,
     TresponsesErrorMessagesNames,
+    TresponsesNamesMessagesObjectKeys,
+    AllowedResponseFormat,
 } from '../types/TApi';
 import {
     responseErrorMessages,
@@ -12,22 +13,25 @@ import {
 } from './responseMessages';
 
 export class ResponseHandler {
-    public tryAndResponse<T extends TresponseMessagesTypesAgregator>(
+    public tryAndResponse<
+        Props extends TresponseMessagesTypesAgregator,
+        ResponseFormat extends AllowedResponseFormat
+    >(
         responseCode: TresponsesNamesWitMessagesObjectKeys,
         response: Response,
         condition: boolean,
-        callbackToTry: () => T
+        callbackToTry: () => Props
     ): void {
         try {
             if (condition) {
-                this.response<T>(
+                this.response<Props, ResponseFormat>(
                     responseCode,
                     'success',
                     response,
                     callbackToTry()
                 );
             } else {
-                this.response<void>(
+                this.response<void, string>(
                     responseCode,
                     'fail',
                     response,
@@ -39,11 +43,14 @@ export class ResponseHandler {
         }
     }
 
-    private response<T extends TresponseMessagesTypesAgregator>(
+    private response<
+        Props extends TresponseMessagesTypesAgregator,
+        ResponseFormat extends AllowedResponseFormat
+    >(
         responseCode: TresponsesNamesWitMessagesObjectKeys,
-        statusCode: TresponsesMessagesObjectKeys,
+        statusCode: keyof TresponsesNamesMessagesObjectKeys<ResponseFormat>,
         response: Response,
-        data: T
+        data: Props
     ): void {
         response
             .status(responseMessagesWithData[responseCode][statusCode].httpCode)
