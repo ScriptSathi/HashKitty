@@ -1,21 +1,26 @@
-import { DataSource, QueryFailedError } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 import { IDaoSub } from './IDaoSub';
 import { Task } from '../../ORM/entity/Task';
-import { TDaoTaskCreate } from '../../types/TDAOs';
+import { TDaoTaskCreate, TDaoTaskUpdate } from '../../types/TDAOs';
 import { Options } from '../../ORM/entity/Options';
 import { TemplateTask } from '../../ORM/entity/TemplateTask';
 import { logger } from '../../utils/Logger';
+import { Dao } from './Dao';
 
 export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
     private db: DataSource;
+    private parentDao: Dao;
 
-    constructor(db: DataSource) {
+    constructor(db: DataSource, parentDao: Dao) {
         this.db = db;
+        this.parentDao = parentDao;
     }
 
     public getAll(): Promise<Task[]> {
-        throw new Error('Method not implemented.');
+        return this.db.getRepository(Task).find({
+            relations: ['options', 'templateTaskId'],
+        });
     }
 
     public async create(taskData: TDaoTaskCreate): Promise<Task> {
@@ -25,6 +30,8 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
         task.hashTypeId = taskData.hashTypeId;
         task.hashlistId = taskData.hashlistId;
         task.templateTaskId = taskData.templateTaskId;
+        task.createdAt = new Date();
+        task.lastestModification = new Date();
         task.options = await this.getOptionsOrCreate(
             taskData.options,
             taskData.templateTaskId
@@ -34,15 +41,44 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
 
     public deleteById(id: number): void {
         this.db.getRepository(Task).delete(id);
-        logger.debug('Delete Task with id: ' + id);
     }
 
-    public getById(id: number): Promise<Task> {
-        throw new Error('Method not implemented.');
+    public async getById(id: number): Promise<Task> {
+        const task = await this.db.getRepository(Task).findOne({
+            where: {
+                id: id,
+            },
+            relations: ['options', 'templateTaskId'],
+        });
+        return task === null ? new Task() : task;
     }
 
-    public update(reqBody: Partial<Task>): Promise<void> {
-        throw new Error('Method not implemented.');
+    public async update(taskData: TDaoTaskUpdate): Promise<void> {
+        const task = await this.db.getRepository(Task).findOne({
+            where: {
+                id: taskData.id,
+            },
+            relations: ['options', 'templateTaskId'],
+        });
+        if (task) {
+            task.name = taskData.name;
+            task.description = taskData.description;
+            task.hashTypeId = taskData.hashTypeId;
+            task.hashlistId = taskData.hashlistId;
+            task.templateTaskId = taskData.templateTaskId;
+            task.lastestModification = new Date();
+            await this.db.getRepository(Task).save(task);
+            if (taskData.options) {
+                await this.db.getRepository(Options).save({
+                    ...this.parentDao.sanitizeOptionsData(
+                        task.options,
+                        taskData.options
+                    ),
+                    ...{ id: task.options.id },
+                });
+            }
+        }
+        logger.debug('Update Task with id:' + taskData.id);
     }
 
     private async getOptionsOrCreate(
@@ -52,16 +88,29 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
         if (!options && !templateTaskId) {
             throw new Error('No options or templateTaskId were provided.');
         } else if (options && !templateTaskId) {
-            // const dbOptions = new Options();
-            // dbOptions.CPUOnly = options.CPUOnly;
-            // dbOptions.attackModeId = options.attackModeId;
-            // dbOptions.breakpointGPUTemperature = options.breakpointGPUTemperature;
-            // dbOptions.wordlistId = options.wordlistId;
-            // dbOptions.workloadProfileId = options.workloadProfileId;
-            // dbOptions.kernelOpti = options.kernelOpti;
-            // dbOptions.ruleName = options.ruleName;
-            // dbOptions.maskQuery = options.maskQuery;
-            return await this.db.getRepository(Options).save(options);
+            const dbOptions = new Options();
+            dbOptions.CPUOnly = options.CPUOnly;
+            dbOptions.attackModeId = options.attackModeId;
+            dbOptions.breakpointGPUTemperature =
+                this.parentDao.sanitizeTemperature(
+                    options.breakpointGPUTemperature
+                );
+            dbOptions.wordlistId = options.wordlistId;
+            dbOptions.workloadProfileId = options.workloadProfileId;
+            dbOptions.kernelOpti = options.kernelOpti;
+            dbOptions.ruleName = this.parentDao.sanitizeLength(
+                100,
+                options.ruleName || ''
+            );
+            dbOptions.maskQuery = this.parentDao.sanitizeLength(
+                100,
+                options.maskQuery || ''
+            );
+            dbOptions.maskFilename = this.parentDao.sanitizeLength(
+                100,
+                options.maskFilename || ''
+            );
+            return await this.db.getRepository(Options).save(dbOptions);
         } else {
             return (
                 (await this.db.getRepository(TemplateTask).findOne({
@@ -71,7 +120,7 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
                     relations: {
                         options: true,
                     },
-                })) as TemplateTask
+                })) || new TemplateTask()
             ).options;
         }
     }
