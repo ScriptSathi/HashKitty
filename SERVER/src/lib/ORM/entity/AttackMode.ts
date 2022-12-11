@@ -10,5 +10,5 @@ export class AttackMode {
     name!: string;
 
     @Column('tinyint', { nullable: false })
-    type!: number;
+    mode!: number;
 }

@@ -17,7 +17,7 @@ export const AppDataSource = new DataSource({
     password: 'hashkitty',
     database: 'hashkitty',
     synchronize: Constants.isProduction,
-    logging: true,
+    logging: false,
     entities: [
         HashType,
         AttackMode,

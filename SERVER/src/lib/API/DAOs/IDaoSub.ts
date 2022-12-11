@@ -1,9 +1,9 @@
 import { TDaoCreate } from '../../types/TDAOs';
 
-export interface IDaoSub<T, Y extends TDaoCreate> {
-    getAll(): Promise<T[]>;
-    create(reqBody: Y): Promise<T>;
+export interface IDaoSub<Entity, CreateData extends TDaoCreate> {
+    getAll(): Promise<Entity[]>;
+    create(reqBody: CreateData): Promise<Entity>;
     deleteById(id: number): void;
-    getById(id: number): Promise<T>;
-    update(reqBody: Partial<T>): Promise<void>;
+    getById(id: number): Promise<Entity>;
+    update(reqBody: Partial<Entity>): Promise<void>;
 }
