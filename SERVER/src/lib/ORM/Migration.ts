@@ -31,7 +31,7 @@ export class Migration {
     public migrateAttackModes = async (_ = 0): Promise<void> => {
         for (const attackMode of attackModes) {
             const dbAttackMode = new AttackMode();
-            dbAttackMode.type = parseInt(attackMode.type);
+            dbAttackMode.mode = parseInt(attackMode.type);
             dbAttackMode.name = attackMode.name;
             await this.appDataSource.manager.save(dbAttackMode);
         }

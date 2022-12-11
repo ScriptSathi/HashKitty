@@ -9,7 +9,7 @@ import { Task } from '../ORM/entity/Task';
 import { ResponseHandler } from './ResponseHandler';
 import { THashcatStatus } from '../types/THashcat';
 import { Dao } from './DAOs/Dao';
-import { TDaoTaskCreate, TDaoTaskDelete } from '../types/TDAOs';
+import { TDaoTaskCreate, TDaoTaskDelete, TDaoTaskUpdate } from '../types/TDAOs';
 
 export class RouteHandler {
     public hashcat: Hashcat = new Hashcat();
@@ -65,31 +65,78 @@ export class RouteHandler {
     };
 
     public deleteTask = async (req: Request, res: Response): Promise<void> => {
-        const id = (req.body as TDaoTaskDelete).id;
-        this.respHandler.tryAndResponse<number, string>(
-            'delete',
-            res,
-            await this.dao.taskExistById(id),
-            () => {
-                this.dao.task.deleteById(id);
-                return id;
+        if (await this.dao.taskExistById((req.body as TDaoTaskDelete).id)) {
+            try {
+                res.status(200).json({
+                    sucess: this.dao.task.deleteById(
+                        (req.body as TDaoTaskDelete).id
+                    ),
+                });
+                logger.info(
+                    `Task deleted with id ${
+                        (req.body as TDaoTaskDelete).id
+                    } deleted successfully`
+                );
+            } catch (err) {
+                logger.error(err);
+                res.status(200).json({
+                    error: Dao.UnexpectedError,
+                });
             }
-        );
+        } else {
+            this.responseFail(
+                res,
+                `There is no tasks with id ${(req.body as TDaoTaskDelete).id}`,
+                'delete'
+            );
+        }
     };
 
-    public createTask = (req: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<void, string>(
-            'create',
-            res,
-            true,
-            () => {
-                this.dao.task.create(req.body as TDaoTaskCreate);
-            }
+    public createTask = async (req: Request, res: Response): Promise<void> => {
+        const { hasSucceded, message } = await this.dao.sanityCheckTask(
+            req.body as TDaoTaskCreate,
+            'create'
         );
+        if (hasSucceded) {
+            try {
+                res.status(200).json({
+                    sucess: await this.dao.task.create(
+                        req.body as TDaoTaskCreate
+                    ),
+                });
+                logger.info('New task created successfully');
+            } catch (err) {
+                logger.error(err);
+                res.status(200).json({
+                    error: Dao.UnexpectedError,
+                });
+            }
+        } else {
+            this.responseFail(res, message, 'create');
+        }
     };
 
-    public updateTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT'); //TODO
+    public updateTask = async (req: Request, res: Response): Promise<void> => {
+        const { hasSucceded, message } = await this.dao.sanityCheckTask(
+            req.body as TDaoTaskUpdate
+        );
+        if (hasSucceded) {
+            try {
+                res.status(200).json({
+                    sucess: this.dao.task.update(req.body as TDaoTaskUpdate),
+                });
+                logger.info(
+                    `Task ${req.body.id} "${req.body.name}" updated successfully`
+                );
+            } catch (err) {
+                logger.error(err);
+                res.status(200).json({
+                    error: Dao.UnexpectedError,
+                });
+            }
+        } else {
+            this.responseFail(res, message, 'update');
+        }
     };
 
     public addFile = (_: Request, res: Response): void => {
@@ -127,7 +174,16 @@ export class RouteHandler {
     };
 
     public getTasks = async (_: Request, res: Response): Promise<void> => {
-        throw new Error('PAS ENCORE FAIT'); //TODO
+        try {
+            res.status(200).json({
+                sucess: await this.dao.task.getAll(),
+            });
+        } catch (err) {
+            logger.error(err);
+            res.status(200).json({
+                error: Dao.UnexpectedError,
+            });
+        }
     };
 
     public getTaskById = (req: Request, res: Response): void => {
@@ -169,5 +225,12 @@ export class RouteHandler {
                 },
             });
         }
+    }
+
+    private responseFail(res: Response, message: string, job: string) {
+        res.status(200).json({
+            fail: message,
+        });
+        logger.debug(`Fail to ${job} task`);
     }
 }

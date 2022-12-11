@@ -29,7 +29,6 @@ export class Factory {
         for (const i in [...Array(numberOfFakeTasks).keys()]) {
             const task = new Task();
             if (Math.random() < 0) {
-                task.templateTaskId = null;
                 const options = await this.createFakeOption();
                 this.appDataSource.manager.save(options);
                 task.options = options;
@@ -67,7 +66,7 @@ export class Factory {
             );
             task.hashTypeId =
                 hashTypes[this.getRandomValueInRange(hashTypes.length)].id;
-            task.isfinished = Math.random() < 0.5;
+            task.isfinished = Math.random() < 0.5 ? 0 : 1;
             task.lastestModification = this.randomDate();
             task.createdAt = this.randomDate();
             if (Math.random() < 0.5) task.endeddAt = this.randomDate(2022);

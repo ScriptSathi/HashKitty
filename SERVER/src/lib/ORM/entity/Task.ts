@@ -14,16 +14,19 @@ import {
 
 @Entity()
 export class Task {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({
+        type: 'integer',
+        name: 'id',
+    })
     id!: number;
 
-    @Column('varchar', { nullable: false })
+    @Column('varchar')
     name!: string;
 
     @Column('varchar', { nullable: true })
     description?: string;
 
-    @OneToOne(() => Options, { nullable: false })
+    @OneToOne(() => Options)
     @JoinColumn({ name: 'options_id', referencedColumnName: 'id' })
     options!: Options;
 
@@ -32,7 +35,7 @@ export class Task {
         (templateTask: TemplateTask) => templateTask.id
     )
     @JoinColumn({ name: 'template_task_id', referencedColumnName: 'id' })
-    templateTaskId?: number | null;
+    templateTaskId?: number;
 
     @ManyToOne(() => HashType, (hashType: HashType) => hashType.id)
     @JoinColumn({ name: 'hashtype_id', referencedColumnName: 'id' })
@@ -42,15 +45,19 @@ export class Task {
     @JoinColumn({ name: 'hashlist_id', referencedColumnName: 'id' })
     hashlistId!: number;
 
-    @Column('date', { default: new Date(), name: 'created_at' })
+    @Column('date', { nullable: true, default: new Date(), name: 'created_at' })
     createdAt!: Date;
 
-    @Column('date', { default: new Date(), name: 'lastest_modification' })
+    @Column('date', {
+        nullable: true,
+        default: new Date(),
+        name: 'lastest_modification',
+    })
     lastestModification!: Date;
 
     @Column('date', { nullable: true, name: 'ended_at' })
     endeddAt?: Date;
 
-    @Column('bool', { nullable: true, name: 'is_finished' })
-    isfinished?: Boolean;
+    @Column('tinyint', { nullable: true, default: false, name: 'is_finished' })
+    isfinished?: number;
 }
