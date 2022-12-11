@@ -40,6 +40,14 @@ export class Dao {
         });
     }
 
+    public async templateTaskExistById(id: number): Promise<boolean> {
+        return await this.db.getRepository(TemplateTask).exist({
+            where: {
+                id: id,
+            },
+        });
+    }
+
     public async sanityCheckTask(
         reqTask: TDaoTaskCreate | TDaoTaskUpdate,
         job = 'update'
@@ -126,7 +134,7 @@ export class Dao {
         return EntityOption;
     }
 
-    private async sanitizeOptions(
+    public async sanitizeOptions(
         options: Options
     ): Promise<TsanitizeCheckById> {
         let sanitizeCheck = {
@@ -243,14 +251,6 @@ export class Dao {
 
     private responsesForDoesNotExistId(failName: string): string {
         return `The parameter ${failName} does not exist, please set it`;
-    }
-
-    private async templateTaskExistById(id: number): Promise<boolean> {
-        return await this.db.getRepository(TemplateTask).exist({
-            where: {
-                id: id,
-            },
-        });
     }
 
     private async hashListExistById(id: number): Promise<boolean> {
