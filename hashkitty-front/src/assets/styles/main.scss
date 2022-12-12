@@ -1,0 +1,18 @@
+@import './variables.scss';
+
+@mixin theme($dark_theme: false){
+    @if $dark_theme {
+        background-color: darken($primary-color, 100%);
+        color: lighten($text-color, 100%)
+    } @else {
+        background-color: $primary-color;
+        color: $text-color;
+    }
+}
+
+@font-face {
+    font-family: "InterBold";
+    src: local("InterBold"),
+        url("../fonts/Inter-Bold.ttf") format("truetype");
+    font-weight: 700;
+}
