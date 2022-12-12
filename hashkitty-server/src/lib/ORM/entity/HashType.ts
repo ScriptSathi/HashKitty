@@ -12,6 +12,6 @@ export class HashType {
     @Column('varchar')
     name!: string;
 
-    @Column('varchar', { nullable: true })
+    @Column('varchar', { default: '' })
     description?: string;
 }

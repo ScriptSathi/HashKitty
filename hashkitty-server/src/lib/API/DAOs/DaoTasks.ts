@@ -19,7 +19,15 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
 
     public getAll(): Promise<Task[]> {
         return this.db.getRepository(Task).find({
-            relations: ['options', 'templateTaskId'],
+            relations: [
+                'options',
+                'options.wordlistId',
+                'options.attackModeId',
+                'options.workloadProfileId',
+                'templateTaskId',
+                'hashTypeId',
+                'hashlistId',
+            ],
         });
     }
 
@@ -51,7 +59,15 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
             where: {
                 id: id,
             },
-            relations: ['options', 'templateTaskId'],
+            relations: [
+                'options',
+                'options.wordlistId',
+                'options.attackModeId',
+                'options.workloadProfileId',
+                'templateTaskId',
+                'hashTypeId',
+                'hashlistId',
+            ],
         });
         return task === null ? new Task() : task;
     }
@@ -61,7 +77,15 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
             where: {
                 id: taskData.id,
             },
-            relations: ['options', 'templateTaskId'],
+            relations: [
+                'options',
+                'options.wordlistId',
+                'options.attackModeId',
+                'options.workloadProfileId',
+                'templateTaskId',
+                'hashTypeId',
+                'hashlistId',
+            ],
         });
         if (task) {
             task.name = this.parentDao.sanitizeLength(30, taskData.name);
