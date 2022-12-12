@@ -3,6 +3,7 @@ import * as https from 'https';
 import { AddressInfo } from 'net';
 import * as fs from 'fs';
 import * as express from 'express';
+import * as fileUpload from 'express-fileupload';
 
 import { logger } from '../utils/Logger';
 import { IHttpServer, THttpServerConfig } from '../types/TApi';
@@ -19,7 +20,21 @@ export class HttpServer implements IHttpServer {
 
         this.enableCORS();
         this.registerRoutes(new ApiRouter(db).router);
+        this.enableFileUpload();
         //TODO Add MiddleWare to prevent remote user communicate with the API
+        //TODO Check bellow
+        // const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+        // app.use(session({
+        // name: 'session',
+        // keys: ['key1', 'key2'],
+        // cookie: {
+        //     secure: true,
+        //     httpOnly: true,
+        //     domain: 'example.com',
+        //     path: 'foo/bar',
+        //     expires: expiryDate
+        // }
+        // }))
     }
 
     public async listen(): Promise<void> {
@@ -91,11 +106,11 @@ export class HttpServer implements IHttpServer {
         return http.createServer(this.app);
     }
 
-    private registerRoutes(apiRouter: express.Router) {
+    private registerRoutes(apiRouter: express.Router): void {
         this.app.use('/api', apiRouter);
     }
 
-    private enableCORS() {
+    private enableCORS(): void {
         this.app.use((_, res, next) => {
             res.header('Access-Control-Allow-Origin', '*');
             res.header(
@@ -108,5 +123,13 @@ export class HttpServer implements IHttpServer {
             );
             next();
         });
+    }
+
+    private enableFileUpload(): void {
+        this.app.use(
+            fileUpload({
+                limits: { fileSize: 50 * 1024 * 1024 },
+            })
+        );
     }
 }
