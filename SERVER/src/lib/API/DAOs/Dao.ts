@@ -11,9 +11,10 @@ import { WorkloadProfile } from '../../ORM/entity/WorkloadProfile';
 import {
     TDaoTaskCreate,
     TDaoTaskUpdate,
+    TDaoTemplateTaskCreate,
+    TDaoTemplateTaskUpdate,
     TsanitizeCheckById,
 } from '../../types/TDAOs';
-import { logger } from '../../utils/Logger';
 import { DaoTasks } from './DaoTasks';
 import { DaoTemplateTasks } from './DaoTemplateTasks';
 
@@ -24,6 +25,10 @@ export class Dao {
 
     public static get UnexpectedError(): string {
         return 'An unexpected error occurred';
+    }
+
+    public static get NoIdProvided(): string {
+        return 'You need to provide an id';
     }
 
     constructor(db: DataSource) {
@@ -56,6 +61,12 @@ export class Dao {
             hasSucceded: false,
             message: '',
         };
+        if (job === 'update' && !(reqTask as TDaoTaskUpdate).id) {
+            return {
+                hasSucceded: false,
+                message: Dao.NoIdProvided,
+            };
+        }
         for (const key in reqTask) {
             if (job === 'update ' && key === 'id') {
                 sanityCheck = await this.sanityTaskExists(
@@ -67,6 +78,45 @@ export class Dao {
                 key === 'templateTaskId'
             ) {
                 sanityCheck = await this.sanitizeById(key, reqTask[key]);
+            } else if (key === 'name' || key === 'description') {
+                sanityCheck = this.isExpectedType(
+                    { expectedType: 'string', obj: reqTask },
+                    'name',
+                    'description'
+                );
+            } else if (reqTask.options && key === 'options') {
+                const { hasSucceded, message } = await this.sanitizeOptions(
+                    reqTask.options
+                );
+                sanityCheck.hasSucceded = hasSucceded;
+                sanityCheck.message = message;
+            }
+            if (!sanityCheck.hasSucceded) {
+                break;
+            }
+        }
+        return sanityCheck;
+    }
+
+    public async sanityCheckTemplateTask(
+        reqTask: TDaoTemplateTaskCreate | TDaoTemplateTaskUpdate,
+        job = 'update'
+    ) {
+        let sanityCheck = {
+            hasSucceded: false,
+            message: '',
+        };
+        if (job === 'update' && !(reqTask as TDaoTemplateTaskUpdate).id) {
+            return {
+                hasSucceded: false,
+                message: Dao.NoIdProvided,
+            };
+        }
+        for (const key in reqTask) {
+            if (job === 'update ' && key === 'id') {
+                sanityCheck = await this.sanityTaskExists(
+                    (reqTask as TDaoTemplateTaskUpdate).id
+                );
             } else if (key === 'name' || key === 'description') {
                 sanityCheck = this.isExpectedType(
                     { expectedType: 'string', obj: reqTask },
@@ -99,6 +149,21 @@ export class Dao {
         return sanityCheck;
     }
 
+    public async sanityTemplateTaskExists(
+        id: number
+    ): Promise<TsanitizeCheckById> {
+        const sanityCheck = {
+            hasSucceded: false,
+            message: '',
+        };
+        if (await this.templateTaskExistById(id))
+            sanityCheck.hasSucceded = true;
+        else {
+            sanityCheck.message = this.responsesForFailId('template task', id);
+        }
+        return sanityCheck;
+    }
+
     public sanitizeLength(length: number, str: string): string {
         return str.length > length ? `${str.substring(0, length - 3)}...` : str;
     }
@@ -122,6 +187,10 @@ export class Dao {
         EntityOption.ruleName = this.sanitizeLength(
             100,
             optionsData.ruleName || ''
+        );
+        EntityOption.potfileName = this.sanitizeLength(
+            100,
+            optionsData.potfileName || ''
         );
         EntityOption.maskQuery = this.sanitizeLength(
             100,
@@ -163,6 +232,7 @@ export class Dao {
                     sanitizeCheck = this.isExpectedType(
                         { expectedType: 'string', obj: options },
                         'ruleName',
+                        'potfileName',
                         'maskQuery',
                         'maskFilename'
                     );

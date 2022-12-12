@@ -26,13 +26,16 @@ export class ApiRouter {
         this.router.get('/rules', this.routeHandler.getFilesInRulesDir);
 
         // Bellow are not implem yet
-        this.router.post('/templateTasks', this.routeHandler.addTemplateTask);
         this.router.post(
-            '/templateTasks/delete',
+            '/templatetasks',
+            this.routeHandler.createTemplateTask
+        );
+        this.router.post(
+            '/templatetasks/delete',
             this.routeHandler.deleteTemplateTask
         );
         this.router.post(
-            '/templateTasks/update',
+            '/templatetasks/update',
             this.routeHandler.updateTemplateTask
         );
         this.router.post('/tasks', this.routeHandler.createTask);
@@ -42,7 +45,7 @@ export class ApiRouter {
             '/templateTasks/:id',
             this.routeHandler.getTemplateTaskById
         );
-        this.router.get('/templateTasks', this.routeHandler.getTemplateTasks);
+        this.router.get('/templatetasks', this.routeHandler.getTemplateTasks);
         this.router.get('/tasks', this.routeHandler.getTasks);
         this.router.get('/tasks/:id', this.routeHandler.getTaskById);
         this.router.post('/files', this.routeHandler.addFile);
