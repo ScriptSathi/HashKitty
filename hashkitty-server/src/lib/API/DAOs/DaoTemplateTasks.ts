@@ -30,8 +30,14 @@ export class DaoTemplateTasks
         templateTaskData: TDaoTemplateTaskCreate
     ): Promise<TemplateTask> {
         const templateTask = new TemplateTask();
-        templateTask.name = templateTaskData.name;
-        templateTask.description = templateTaskData.description;
+        templateTask.name = this.parentDao.sanitizeLength(
+            30,
+            templateTaskData.name
+        );
+        templateTask.description = this.parentDao.sanitizeLength(
+            100,
+            templateTaskData.description
+        );
         templateTask.createdAt = new Date();
         templateTask.lastestModification = new Date();
         templateTask.options = await this.db.getRepository(Options).save({
