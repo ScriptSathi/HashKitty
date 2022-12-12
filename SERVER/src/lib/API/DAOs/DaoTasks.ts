@@ -61,8 +61,11 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
             relations: ['options', 'templateTaskId'],
         });
         if (task) {
-            task.name = taskData.name;
-            task.description = taskData.description;
+            task.name = this.parentDao.sanitizeLength(30, taskData.name);
+            task.description = this.parentDao.sanitizeLength(
+                100,
+                taskData.description
+            );
             task.hashTypeId = taskData.hashTypeId;
             task.hashlistId = taskData.hashlistId;
             task.templateTaskId = taskData.templateTaskId;

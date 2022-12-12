@@ -42,6 +42,9 @@ export class Options {
     @Column('varchar', { name: 'rule_name', nullable: true })
     ruleName?: string;
 
+    @Column('varchar', { name: 'potfile_name', nullable: true })
+    potfileName?: string;
+
     @Column('varchar', { nullable: true, name: 'mask_query' })
     maskQuery?: string;
 

@@ -25,12 +25,29 @@ export class DaoTemplateTasks
             relations: ['options'],
         });
     }
-    public create(reqBody: TDaoTemplateTaskCreate): Promise<TemplateTask> {
-        throw new Error('Method not implemented.');
+
+    public async create(
+        templateTaskData: TDaoTemplateTaskCreate
+    ): Promise<TemplateTask> {
+        const templateTask = new TemplateTask();
+        templateTask.name = templateTaskData.name;
+        templateTask.description = templateTaskData.description;
+        templateTask.createdAt = new Date();
+        templateTask.lastestModification = new Date();
+        templateTask.options = await this.db.getRepository(Options).save({
+            ...this.parentDao.sanitizeOptionsData(
+                new Options(),
+                templateTaskData.options
+            ),
+        });
+
+        return await this.db.getRepository(TemplateTask).save(templateTask);
     }
+
     public deleteById(id: number): void {
-        throw new Error('Method not implemented.');
+        this.db.getRepository(TemplateTask).delete(id);
     }
+
     public async getById(id: number): Promise<TemplateTask> {
         const templateTask = await this.db.getRepository(TemplateTask).findOne({
             where: {
@@ -51,8 +68,15 @@ export class DaoTemplateTasks
             relations: ['options'],
         });
         if (templateTask) {
-            templateTask.name = templateTaskData.name;
-            templateTask.description = templateTaskData.description;
+            templateTask.lastestModification = new Date();
+            templateTask.name = this.parentDao.sanitizeLength(
+                30,
+                templateTaskData.name
+            );
+            templateTask.description = this.parentDao.sanitizeLength(
+                100,
+                templateTaskData.description
+            );
             await this.db.getRepository(TemplateTask).save(templateTask);
             await this.db.getRepository(Options).save({
                 ...this.parentDao.sanitizeOptionsData(
