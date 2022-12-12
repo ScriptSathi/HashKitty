@@ -23,7 +23,7 @@ export class Task {
     @Column('varchar')
     name!: string;
 
-    @Column('varchar', { nullable: true })
+    @Column('varchar', { default: '' })
     description?: string;
 
     @OneToOne(() => Options)

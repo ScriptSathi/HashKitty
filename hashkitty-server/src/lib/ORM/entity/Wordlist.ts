@@ -9,7 +9,7 @@ export class Wordlist {
     @Column('varchar', { nullable: false })
     name!: string;
 
-    @Column('varchar', { nullable: true })
+    @Column('varchar', { default: '' })
     description?: string;
 
     @Column('varchar', { nullable: false })

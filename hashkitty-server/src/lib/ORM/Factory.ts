@@ -129,6 +129,10 @@ export class Factory {
         options.CPUOnly = Math.random() < 0.3;
         options.breakpointGPUTemperature = Math.floor(Math.random() * 50 + 40);
         options.kernelOpti = Math.random() < 0.3;
+        options.ruleName = this.makeFakeString(20);
+        options.potfileName = this.makeFakeString(20);
+        options.maskQuery = this.makeFakeString(20);
+        options.maskFilename = this.makeFakeString(20);
         options.workloadProfileId =
             workloadProfile[
                 this.getRandomValueInRange(workloadProfile.length)

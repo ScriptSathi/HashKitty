@@ -22,7 +22,12 @@ export class DaoTemplateTasks
 
     public getAll(): Promise<TemplateTask[]> {
         return this.db.getRepository(TemplateTask).find({
-            relations: ['options'],
+            relations: [
+                'options',
+                'options.wordlistId',
+                'options.attackModeId',
+                'options.workloadProfileId',
+            ],
         });
     }
 
@@ -59,7 +64,12 @@ export class DaoTemplateTasks
             where: {
                 id: id,
             },
-            relations: ['options'],
+            relations: [
+                'options',
+                'options.wordlistId',
+                'options.attackModeId',
+                'options.workloadProfileId',
+            ],
         });
         return templateTask === null ? new TemplateTask() : templateTask;
     }
@@ -71,7 +81,12 @@ export class DaoTemplateTasks
             where: {
                 id: templateTaskData.id,
             },
-            relations: ['options'],
+            relations: [
+                'options',
+                'options.wordlistId',
+                'options.attackModeId',
+                'options.workloadProfileId',
+            ],
         });
         if (templateTask) {
             templateTask.lastestModification = new Date();

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import logo from '../assets/images/Logo.png';
+import { Link } from 'react-router-dom';
+
+import logo from '../assets/images/logo.svg';
 import '../assets/fonts/Inter-Bold.ttf';
 import '../assets/styles/Navbar.scss';
 
@@ -37,18 +39,26 @@ class Navbar extends Component {
     };
     render() {
         return (
-            <header className="NavbarLogo" style={this.styles}>
-                <div style={this.leftBlock}>
+            <header className="Navbar" style={this.styles}>
+                <Link to="/home" className="links" style={this.leftBlock}>
                     <img style={this.leftBlock.logo} src={logo} alt="Logo" />
                     <div style={this.leftBlock.hashKitty}>
                         <p style={this.leftBlock.hashKitty.text}>HashKitty</p>
                     </div>
-                </div>
+                </Link>
                 <div style={this.rightBlock}>
-                    <a className="NavbarLinks">Home</a>
-                    <a className="NavbarLinks">Tasks</a>
-                    <a className="NavbarLinks">Lists</a>
-                    <a className="NavbarLinks">Server infos</a>
+                    <Link to="/home" className="links pages">
+                        Home
+                    </Link>
+                    <Link to="/template-tasks" className="links pages">
+                        Template tasks
+                    </Link>
+                    <Link to="/lists" className="links pages">
+                        Lists
+                    </Link>
+                    <Link to="/server-infos" className="links pages">
+                        Server infos
+                    </Link>
                 </div>
             </header>
         );
