@@ -156,8 +156,8 @@ export class RouteHandler {
         }
     };
 
-    public addFile = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT'); //TODO
+    public addFile = (req: Request, res: Response): void => {
+        console.dir(req.files); //TODO
     };
 
     public deleteFile = (_: Request, res: Response): void => {
@@ -165,7 +165,7 @@ export class RouteHandler {
     };
 
     public updateFile = async (req: Request, res: Response): Promise<void> => {
-        throw new Error('PAS ENCORE FAIT'); //TODO
+        console.dir(req.files); //TODO
     };
 
     public deleteTemplateTask = async (
