@@ -9,7 +9,7 @@ export class Hashlist {
     @Column('varchar')
     name!: string;
 
-    @Column('varchar', { nullable: true })
+    @Column('varchar', { default: '' })
     description?: string;
 
     @Column('varchar')
@@ -21,6 +21,6 @@ export class Hashlist {
     @Column('date', { default: new Date(), name: 'lastest_modification' })
     lastestModification!: Date;
 
-    @Column('int', { nullable: true, name: 'number_of_cracked_passwords' })
+    @Column('int', { default: -1, name: 'number_of_cracked_passwords' })
     numberOfCrackedPasswords?: number;
 }

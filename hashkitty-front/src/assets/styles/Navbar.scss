@@ -1,9 +1,16 @@
 @import './main.scss';
+@import './variables.scss';
 
-.NavbarLogo {
+.Navbar {
     font-family: 'InterBold';
 }
 
-.NavbarLinks:hover{
-    color: #FC6F6F;
+.pages:hover{
+    color: $hover-color;
+}
+
+
+.links{
+    color: $text-color;
+    text-decoration: none;
 }

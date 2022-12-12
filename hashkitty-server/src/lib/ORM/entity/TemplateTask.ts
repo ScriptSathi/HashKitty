@@ -16,7 +16,7 @@ export class TemplateTask {
     @Column('varchar', { nullable: false })
     name!: string;
 
-    @Column('varchar', { nullable: true })
+    @Column('varchar', { default: '' })
     description?: string;
 
     @OneToOne(() => Options)

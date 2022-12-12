@@ -39,15 +39,15 @@ export class Options {
     @Column('bool', { default: false, name: 'cpu_only' })
     CPUOnly!: Boolean;
 
-    @Column('varchar', { name: 'rule_name', nullable: true })
+    @Column('varchar', { name: 'rule_name', default: '' })
     ruleName?: string;
 
-    @Column('varchar', { name: 'potfile_name', nullable: true })
+    @Column('varchar', { name: 'potfile_name', default: '' })
     potfileName?: string;
 
-    @Column('varchar', { nullable: true, name: 'mask_query' })
+    @Column('varchar', { default: '', name: 'mask_query' })
     maskQuery?: string;
 
-    @Column('varchar', { nullable: true, name: 'mask_filename' })
+    @Column('varchar', { default: '', name: 'mask_filename' })
     maskFilename?: string;
 }
