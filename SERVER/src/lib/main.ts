@@ -8,36 +8,24 @@ import { Wordlist } from './ORM/entity/Wordlist';
 async function main(): Promise<void> {
     // console.log(
     //     JSON.stringify({
-    //         id: 3,
-    //         name: 'thisIsGzzzzztataea',
-    //         description: 'testa',
-    //         options: {
-    //           breakpointGPUTemperature: 81,
-    //           kernelOpti: true,
-    //           CPUOnly: false,
-    //           ruleName: null,
-    //           maskQuery: null,
-    //           maskFilename: null
-    //         },
-    //         templateTaskId: 1,
-    //         hashTypeId: 1,
-    //         hashlistId: 10
+    //         "id": 1,
+    //         "name": "nb59 s",
+    //         "description": "V Xe G0B 7yJICr10kSwm z2Yz s98N w3j j a31G83h8Kqf 1c9gGW8O C",
+    //         "createdAt": "2022-10-07",
+    //         "lastestModification": "2022-04-13",
+    //         "options": {
+    //           "id": 68,
+    //           "breakpointGPUTemperature": 90,
+    //           "kernelOpti": true,
+    //           "CPUOnly": false,
+    //           "ruleName": "",
+    //           "maskQuery": "",
+    //           "maskFilename": ""
+    //         }
     //       }
     //       )
     // );
 
-    // await AppDataSource.createQueryBuilder()
-    //     .update(Task)
-    //     .set({
-    //         name: 'bonjiyr',
-    //         description: 'aa',
-    //         // lastestModification: new Date(),
-    //         // hashTypeId: taskData.hashTypeId,
-    //         // hashlistId: taskData.hashlistId,
-    //         // templateTaskId: taskData.templateTaskId,
-    //     })
-    //     .where('id = :id', { id: 3 })
-    //     .execute();
     new HttpServer(
         Constants.defaultApiConfig,
         await AppDataSource.initialize()

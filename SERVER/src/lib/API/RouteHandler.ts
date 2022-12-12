@@ -5,7 +5,6 @@ import { Hashcat } from '../hashcat/Hashcat';
 import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
-import { Task } from '../ORM/entity/Task';
 import { ResponseHandler } from './ResponseHandler';
 import { THashcatStatus } from '../types/THashcat';
 import { Dao } from './DAOs/Dao';
@@ -14,6 +13,8 @@ import {
     TDaoTaskCreate,
     TDaoTaskDelete,
     TDaoTaskUpdate,
+    TDaoTemplateTaskCreate,
+    TDaoTemplateTaskDelete,
     TDaoTemplateTaskUpdate,
 } from '../types/TDAOs';
 
@@ -84,9 +85,12 @@ export class RouteHandler {
                     } deleted successfully`
                 );
             } catch (err) {
-                logger.error(err);
+                logger.error(
+                    `An error occured while trying to delete task: ${err}`
+                );
                 res.status(200).json({
-                    error: Dao.UnexpectedError,
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
                 });
             }
         } else {
@@ -112,9 +116,12 @@ export class RouteHandler {
                 });
                 logger.info('New task created successfully');
             } catch (err) {
-                logger.error(err);
+                logger.error(
+                    `An error occured while trying to create task: ${err}`
+                );
                 res.status(200).json({
-                    error: Dao.UnexpectedError,
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
                 });
             }
         } else {
@@ -123,21 +130,25 @@ export class RouteHandler {
     };
 
     public updateTask = async (req: Request, res: Response): Promise<void> => {
+        const taskData = req.body as TDaoTaskUpdate;
         const { hasSucceded, message } = await this.dao.sanityCheckTask(
-            req.body as TDaoTaskUpdate
+            taskData
         );
-        if (hasSucceded) {
+        if (taskData.id && hasSucceded) {
             try {
                 res.status(200).json({
-                    sucess: this.dao.task.update(req.body as TDaoTaskUpdate),
+                    sucess: this.dao.task.update(taskData),
                 });
                 logger.info(
-                    `Task ${req.body.id} "${req.body.name}" updated successfully`
+                    `Task ${taskData.id} "${taskData.name}" updated successfully`
                 );
             } catch (err) {
-                logger.error(err);
+                logger.error(
+                    `An error occured while trying to update task: ${err}`
+                );
                 res.status(200).json({
-                    error: Dao.UnexpectedError,
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
                 });
             }
         } else {
@@ -157,35 +168,84 @@ export class RouteHandler {
         throw new Error('PAS ENCORE FAIT'); //TODO
     };
 
-    public addTemplateTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT'); //TODO
-    };
-
-    public deleteTemplateTask = (_: Request, res: Response): void => {
-        throw new Error('PAS ENCORE FAIT'); //TODO
-    };
-
-    public updateTemplateTask = async ( // TODO TEST THIS !!!!!!!!!!!
+    public deleteTemplateTask = async (
         req: Request,
         res: Response
     ): Promise<void> => {
-        const { hasSucceded, message } = await this.dao.sanitizeOptions(
-            (req.body as TDaoTemplateTaskUpdate).options
+        const id = (req.body as TDaoTemplateTaskDelete).id;
+        if (await this.dao.taskExistById(id)) {
+            try {
+                res.status(200).json({
+                    sucess: this.dao.templateTask.deleteById(id),
+                });
+                logger.info(`Task deleted with id ${id} deleted successfully`);
+            } catch (err) {
+                logger.error(
+                    `An error occured while trying to delete template task: ${err}`
+                );
+                res.status(200).json({
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
+                });
+            }
+        } else {
+            this.responseFail(res, `There is no tasks with id ${id}`, 'delete');
+        }
+    };
+
+    public createTemplateTask = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
+        const { hasSucceded, message } = await this.dao.sanityCheckTemplateTask(
+            req.body as TDaoTemplateTaskCreate,
+            'create'
         );
         if (hasSucceded) {
             try {
                 res.status(200).json({
-                    sucess: this.dao.templateTask.update(
-                        req.body as TDaoTemplateTaskUpdate
+                    sucess: await this.dao.templateTask.create(
+                        req.body as TDaoTemplateTaskCreate
                     ),
                 });
+                logger.info('New task created successfully');
+            } catch (err) {
+                logger.error(
+                    `An error occured while trying to create template task: ${err}`
+                );
+                res.status(200).json({
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
+                });
+            }
+        } else {
+            this.responseFail(res, message, 'create');
+        }
+    };
+
+    public updateTemplateTask = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
+        const templateTaskData = req.body as TDaoTemplateTaskUpdate;
+        const { hasSucceded, message } = await this.dao.sanityCheckTemplateTask(
+            templateTaskData
+        );
+        if (hasSucceded) {
+            try {
+                res.status(200).json({
+                    sucess: this.dao.templateTask.update(templateTaskData),
+                });
                 logger.info(
-                    `Template task ${req.body.id} "${req.body.name}" updated successfully`
+                    `Template task ${templateTaskData.id} "${req.body.name}" updated successfully`
                 );
             } catch (err) {
-                logger.error(err);
+                logger.error(
+                    `An error occured while trying to update template task: ${err}`
+                );
                 res.status(200).json({
-                    error: Dao.UnexpectedError,
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
                 });
             }
         } else {
@@ -204,7 +264,8 @@ export class RouteHandler {
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                error: Dao.UnexpectedError,
+                fail: Dao.UnexpectedError,
+                error: `[ERROR]: ${err}`,
             });
         }
     };
@@ -213,23 +274,23 @@ export class RouteHandler {
         req: Request,
         res: Response
     ): Promise<void> => {
-        if (await this.dao.templateTaskExistById((req.body as TDaoById).id)) {
+        const id = parseInt(req.params.id) as TDaoById['id'];
+        if (id && (await this.dao.templateTaskExistById(id))) {
             try {
                 res.status(200).json({
-                    sucess: this.dao.templateTask.getById(
-                        (req.body as TDaoById).id
-                    ),
+                    sucess: await this.dao.templateTask.getById(id),
                 });
             } catch (err) {
                 logger.error(err);
                 res.status(200).json({
-                    error: Dao.UnexpectedError,
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
                 });
             }
         } else {
             this.responseFail(
                 res,
-                `There is no temlate task with id ${(req.body as TDaoById).id}`,
+                `There is no template task with id ${id}`,
                 'get',
                 'template task'
             );
@@ -244,29 +305,28 @@ export class RouteHandler {
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                error: Dao.UnexpectedError,
+                fail: Dao.UnexpectedError,
+                error: `[ERROR]: ${err}`,
             });
         }
     };
 
     public getTaskById = async (req: Request, res: Response): Promise<void> => {
-        if (await this.dao.taskExistById((req.body as TDaoById).id)) {
+        const id = parseInt(req.params.id) as TDaoById['id'];
+        if (id && (await this.dao.taskExistById(id))) {
             try {
                 res.status(200).json({
-                    sucess: this.dao.task.getById((req.body as TDaoById).id),
+                    sucess: await this.dao.task.getById(id),
                 });
             } catch (err) {
                 logger.error(err);
                 res.status(200).json({
-                    error: Dao.UnexpectedError,
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
                 });
             }
         } else {
-            this.responseFail(
-                res,
-                `There is no tasks with id ${(req.body as TDaoTaskDelete).id}`,
-                'delete'
-            );
+            this.responseFail(res, `There is no tasks with id ${id}`, 'delete');
         }
     };
 
