@@ -28,14 +28,32 @@ export class RouteHandler {
     }
 
     public execHashcat = (req: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<void, string>(
-            'exec',
-            res,
-            !this.hashcat.status.isRunning,
-            () => {
+        if (this.hashcat.status.isRunning) {
+            try {
                 this.hashcat.exec(req.body);
+                res.status(200).json({
+                    success: 'Hashcat has started successfully',
+                });
+            } catch (err) {
+                logger.error(
+                    `An error occured while trying to delete task: ${err}`
+                );
+                res.status(200).json({
+                    fail: Dao.UnexpectedError,
+                    error: `[ERROR]: ${err}`,
+                });
             }
-        );
+        } else {
+            this.responseFail(res, 'Hashcat is already running', 'start');
+        }
+        // this.respHandler.tryAndResponse<void, string>(
+        //     'exec',
+        //     res,
+        //     !this.hashcat.status.isRunning,
+        //     () => {
+        //         this.hashcat.exec(req.body);
+        //     }
+        // );
     };
 
     public restoreHashcat = (req: Request, res: Response): void => {
@@ -50,14 +68,16 @@ export class RouteHandler {
     };
 
     public getHashcatStatus = (_: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<THashcatStatus, THashcatStatus>(
-            'status',
-            res,
-            this.hashcat.status.isRunning,
-            () => {
-                return this.hashcat.status;
-            }
-        );
+        if (this.hashcat.status.isRunning) {
+            res.status(200).json({
+                status: this.hashcat.status.isRunning,
+            });
+        } else {
+            res.status(200).json({
+                status: {},
+                fail: 'Hashcat is not running',
+            });
+        }
     };
 
     public getStopHashcat = (_: Request, res: Response): void => {
@@ -75,7 +95,7 @@ export class RouteHandler {
         if (await this.dao.taskExistById((req.body as TDaoTaskDelete).id)) {
             try {
                 res.status(200).json({
-                    sucess: this.dao.task.deleteById(
+                    success: this.dao.task.deleteById(
                         (req.body as TDaoTaskDelete).id
                     ),
                 });
@@ -110,7 +130,7 @@ export class RouteHandler {
         if (hasSucceded) {
             try {
                 res.status(200).json({
-                    sucess: await this.dao.task.create(
+                    success: await this.dao.task.create(
                         req.body as TDaoTaskCreate
                     ),
                 });
@@ -137,7 +157,7 @@ export class RouteHandler {
         if (taskData.id && hasSucceded) {
             try {
                 res.status(200).json({
-                    sucess: this.dao.task.update(taskData),
+                    success: this.dao.task.update(taskData),
                 });
                 logger.info(
                     `Task ${taskData.id} "${taskData.name}" updated successfully`
@@ -176,7 +196,7 @@ export class RouteHandler {
         if (await this.dao.taskExistById(id)) {
             try {
                 res.status(200).json({
-                    sucess: this.dao.templateTask.deleteById(id),
+                    success: this.dao.templateTask.deleteById(id),
                 });
                 logger.info(`Task deleted with id ${id} deleted successfully`);
             } catch (err) {
@@ -204,7 +224,7 @@ export class RouteHandler {
         if (hasSucceded) {
             try {
                 res.status(200).json({
-                    sucess: await this.dao.templateTask.create(
+                    success: await this.dao.templateTask.create(
                         req.body as TDaoTemplateTaskCreate
                     ),
                 });
@@ -234,7 +254,7 @@ export class RouteHandler {
         if (hasSucceded) {
             try {
                 res.status(200).json({
-                    sucess: this.dao.templateTask.update(templateTaskData),
+                    success: this.dao.templateTask.update(templateTaskData),
                 });
                 logger.info(
                     `Template task ${templateTaskData.id} "${req.body.name}" updated successfully`
@@ -259,7 +279,7 @@ export class RouteHandler {
     ): Promise<void> => {
         try {
             res.status(200).json({
-                sucess: await this.dao.templateTask.getAll(),
+                success: await this.dao.templateTask.getAll(),
             });
         } catch (err) {
             logger.error(err);
@@ -278,7 +298,7 @@ export class RouteHandler {
         if (id && (await this.dao.templateTaskExistById(id))) {
             try {
                 res.status(200).json({
-                    sucess: await this.dao.templateTask.getById(id),
+                    success: await this.dao.templateTask.getById(id),
                 });
             } catch (err) {
                 logger.error(err);
@@ -300,7 +320,7 @@ export class RouteHandler {
     public getTasks = async (_: Request, res: Response): Promise<void> => {
         try {
             res.status(200).json({
-                sucess: await this.dao.task.getAll(),
+                success: await this.dao.task.getAll(),
             });
         } catch (err) {
             logger.error(err);
@@ -316,7 +336,7 @@ export class RouteHandler {
         if (id && (await this.dao.taskExistById(id))) {
             try {
                 res.status(200).json({
-                    sucess: await this.dao.task.getById(id),
+                    success: await this.dao.task.getById(id),
                 });
             } catch (err) {
                 logger.error(err);
