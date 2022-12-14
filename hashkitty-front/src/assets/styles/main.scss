@@ -16,3 +16,29 @@
         url("../fonts/Inter-Bold.ttf") format("truetype");
     font-weight: 700;
 }
+
+@font-face {
+    font-family: "InterMedium";
+    src: local("InterMedium"),
+        url("../fonts/Inter-Medium.ttf") format("truetype");
+    font-weight: 500;
+}
+
+.mainHover:hover{
+    color: $hover-color;
+}
+
+.moreDetails {
+    color: $hover-color;
+}
+
+.cardHover:hover {
+    box-shadow: '0px 15px 5px 0px #FC6F6F';
+    color: $hover-color
+}
+
+// .cardHover {
+//     box-shadow: '0px 15px 5px 0px ' + $hover-color!important;
+//     color: $hover-color;
+//     background-color: $hover-color!important;
+// }
