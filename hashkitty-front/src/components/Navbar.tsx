@@ -2,50 +2,27 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import logo from '../assets/images/logo.svg';
+import {
+    hashKitty,
+    hashKittyText,
+    leftBlock,
+    rightBlock,
+    mainStyle,
+    logoStyle,
+} from '../styles/Navbar';
 import '../assets/styles/Navbar.scss';
 
-class Navbar extends Component {
-    styles = {
-        height: 60,
-        padding: 5,
-        fontSize: 24,
-        display: 'grid',
-        gridTemplateColumns: 'minmax(auto, 55%) auto',
-    };
-    leftBlock = {
-        display: 'grid',
-        gap: 0,
-        gridTemplateColumns: 'minmax(auto, 7%) 10%',
-        gridAutoFlow: 'column',
-        logo: {
-            width: 50,
-        },
-        hashKitty: {
-            height: 50,
-            display: 'inline-block',
-            text: {
-                paddingTop: 17,
-                margin: 0,
-            },
-        },
-    };
-    rightBlock = {
-        display: 'grid',
-        gridAutoFlow: 'column',
-        margin: 0,
-        paddingTop: 17,
-        gap: 20,
-    };
+export default class Navbar extends Component {
     render() {
         return (
-            <header className="Navbar" style={this.styles}>
-                <Link to="/home" className="links" style={this.leftBlock}>
-                    <img style={this.leftBlock.logo} src={logo} alt="Logo" />
-                    <div style={this.leftBlock.hashKitty}>
-                        <p style={this.leftBlock.hashKitty.text}>HashKitty</p>
+            <header className="Navbar" style={mainStyle}>
+                <Link to="/home" className="links" style={leftBlock}>
+                    <img style={logoStyle} src={logo} alt="Logo" />
+                    <div style={hashKitty}>
+                        <p style={hashKittyText}>HashKitty</p>
                     </div>
                 </Link>
-                <div style={this.rightBlock}>
+                <div style={rightBlock}>
                     <Link to="/home" className="links pages">
                         Home
                     </Link>
@@ -63,5 +40,3 @@ class Navbar extends Component {
         );
     }
 }
-
-export default Navbar;
