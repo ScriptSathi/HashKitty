@@ -6,8 +6,15 @@ import '../assets/fonts/Inter-Bold.ttf';
 import '../assets/styles/main.scss';
 import '../assets/styles/HomePage.scss';
 import NewTask from '../components/NewTask';
-import CardTask from '../components/CardTask';
 import { TTask } from '../types/TypesORM';
+import RunningTasksBody from '../components/RunningTasksBody';
+import {
+    mainBox,
+    LeftBox,
+    runningTasksTitle,
+    cardBody,
+} from '../styles/HomePage';
+import { Link } from 'react-router-dom';
 
 const toto: TTask[] = [
     {
@@ -604,6 +611,7 @@ const toto: TTask[] = [
         },
     },
 ];
+
 class HomePage extends Component {
     public state = {
         seen: false,
@@ -615,63 +623,20 @@ class HomePage extends Component {
         });
     };
 
-    private renderCardTasks: () => CardTask[] = () => {
-        return toto.map(task => {
-            return (
-                <CardTask
-                    key={task.id}
-                    id={task.id}
-                    name={task.name}
-                    options={task.options}
-                    hashTypeId={task.hashTypeId}
-                    hashlistId={task.hashlistId}
-                    createdAt={task.createdAt}
-                    lastestModification={task.lastestModification}
-                    description={task.description || ''}
-                    templateTaskId={task.templateTaskId}
-                    endeddAt={task.endeddAt}
-                    isfinished={task.isfinished}
-                />
-            );
-        });
-    };
-
     render() {
         return (
             <div className="App">
                 <Navbar />
-                <div style={this.styles.mainBox}>
-                    <div style={this.styles.LeftBox}>
-                        <div style={this.styles.runningTasksTitle}>
+                <div style={mainBox}>
+                    <div style={LeftBox}>
+                        <div style={runningTasksTitle}>
                             <p>Running tasks</p>
                         </div>
-                        <div style={this.styles.cardBody}>
-                            <div style={this.styles.rowCards}>
-                                {toto.map(task => {
-                                    return (
-                                        <CardTask
-                                            key={task.id}
-                                            id={task.id}
-                                            name={task.name}
-                                            options={task.options}
-                                            hashTypeId={task.hashTypeId}
-                                            hashlistId={task.hashlistId}
-                                            createdAt={task.createdAt}
-                                            lastestModification={
-                                                task.lastestModification
-                                            }
-                                            description={task.description || ''}
-                                            templateTaskId={task.templateTaskId}
-                                            endeddAt={task.endeddAt}
-                                            isfinished={task.isfinished}
-                                        />
-                                    );
-                                })}
-                            </div>
+                        <div style={cardBody}>
+                            <RunningTasksBody tasks={toto} />
                             <div>
                                 <img
                                     className="newTask"
-                                    style={this.styles.newTask}
                                     src={newTask}
                                     alt="create a new task"
                                     onClick={this.toggleNewTask}
@@ -688,70 +653,6 @@ class HomePage extends Component {
             </div>
         );
     }
-
-    private styles: { [key: string]: CSSProperties } = {
-        mainBox: {
-            display: 'grid',
-            gridTemplateColumns: 'minmax(auto, 69%) auto',
-            marginTop: 100,
-            paddingLeft: 60,
-        },
-        LeftBox: {
-            border: '1px solid',
-            borderLeftStyle: 'none',
-            borderTopStyle: 'none',
-            borderBottomStyle: 'none',
-        },
-        RightBox: {
-            display: 'grid',
-        },
-        runningTasksTitle: {
-            display: 'block',
-            fontFamily: 'InterBold',
-            fontSize: 24,
-            paddingLeft: 50,
-            height: 50,
-            width: '100%',
-        },
-        cardBody: {
-            display: 'grid',
-            gap: 20,
-            gridTemplateColumns: 'minmax(auto, 73%) auto',
-        },
-        rowCards: {
-            display: 'grid',
-            gap: 20,
-            // gridRow: 1,
-            // gridAutoRows: '445px',
-            gridTemplateColumns: 'minmax(auto, 36%) auto',
-            backgroundColor: 'black',
-        },
-        fakeCard: {
-            display: 'grid',
-            height: 309,
-            width: 445,
-            backgroundColor: 'blue',
-            border: '1px solid',
-        },
-        fakeCard1: {
-            display: 'grid',
-            height: 309,
-            width: 445,
-            backgroundColor: 'yellow',
-            border: '1px solid',
-        },
-        fakeCard2: {
-            display: 'grid',
-            height: 309,
-            width: 445,
-            backgroundColor: 'white',
-            border: '1px solid',
-        },
-        newTask: {
-            height: 310,
-            width: 285,
-        },
-    };
 }
 
 export default HomePage;
