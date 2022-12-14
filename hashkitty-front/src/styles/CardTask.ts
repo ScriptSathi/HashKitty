@@ -10,7 +10,6 @@ export const cardBodyGeneric: CSSProperties = {
 export const topPart: CSSProperties = {
     display: 'grid',
     gridTemplateColumns: '2.5fr 1fr',
-    // gridTemplateRows: 'repeat(5, 1fr)',
     gridColumnGap: '0px',
     gridRowGap: '0px',
     gridArea: '1 / 1 / 2 / 6',

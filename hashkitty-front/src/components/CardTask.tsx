@@ -18,37 +18,62 @@ import stopTask from '../assets/images/stopTask.svg';
 import stopTaskHover from '../assets/images/stopTaskHover.svg';
 import playTaskHover from '../assets/images/playTaskHover.svg';
 import playTask from '../assets/images/playTask.svg';
-import CSSProperties from 'react';
+import { THashcatStatus } from '../types/TServer';
+import { Constants } from '../Constants';
 
 export default class CardTask extends Component<
-    TTask,
+    TTask & { status: THashcatStatus | {} },
     {
         mouseIsEnterTaskCard: boolean;
         mouseIsEnterRunTask: boolean;
         clickedRunTask: boolean;
+        status: THashcatStatus | {};
     }
 > {
-    private speed = 0; // TODO
-    private progress = 0; // TODO
-    private estimatedStop = 'Not running'; // TODO
-    private logo = playTask; // TODO if state is running, then stopTask is displayed
-    private logoHover = playTaskHover;
-    private displayedLogo = this.logo;
+    private isRunning =
+        'isRunning' in this.props.status ? this.props.status.isRunning : false;
     public state = {
         mouseIsEnterTaskCard: false,
         mouseIsEnterRunTask: false,
-        clickedRunTask: false,
+        clickedRunTask: this.isRunning,
+        status: this.props.status,
     };
+    private speed = 0; // TODO
+    private progress = 0; // TODO
+    private estimatedStop =
+        this.isRunning && 'estimated_stop' in this.props.status
+            ? this.props.status.estimated_stop
+            : 'Not running';
+    private logo = this.state.clickedRunTask ? stopTask : playTask;
+    private logoHover = this.state.clickedRunTask
+        ? stopTaskHover
+        : playTaskHover;
+    private displayedLogo = this.logo;
     private cardBody = cardBodyGeneric;
+
+    private async fetchStatus(isClicked: boolean): Promise<void> {
+        if (isClicked && !this.isRunning) {
+            // const status = (await (await fetch(Constants.apiGetStatus)).json())
+            //     .status as THashcatStatus;
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.props),
+            };
+            fetch(Constants.apiPOSTStart, requestOptions)
+                .then(response => response.json())
+                .then(data => this.setState({ status: data.id }));
+        }
+    }
 
     private onClickRunTask: () => void = () => {
         this.setState({
             clickedRunTask: !this.state.clickedRunTask,
         });
-        this.logo = this.state.clickedRunTask ? stopTask : playTask;
+        this.logo = this.state.clickedRunTask ? playTask : stopTask;
         this.logoHover = this.state.clickedRunTask
-            ? stopTaskHover
-            : playTaskHover;
+            ? playTaskHover
+            : stopTaskHover;
         this.displayedLogo = this.state.mouseIsEnterRunTask
             ? this.logoHover
             : this.logo;
@@ -60,7 +85,7 @@ export default class CardTask extends Component<
         });
         this.cardBody = {
             ...cardBodyGeneric,
-            boxShadow: '0px 15px 5px 0px #FC6F6F',
+            boxShadow: '0px 12px 5px 0px #FC6F6F',
         };
     };
 
