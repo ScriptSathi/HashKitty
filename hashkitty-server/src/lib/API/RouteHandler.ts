@@ -5,7 +5,6 @@ import { Hashcat } from '../hashcat/Hashcat';
 import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
-import { ResponseHandler } from './ResponseHandler';
 import { Dao } from './DAOs/Dao';
 import {
     TDaoById,
@@ -20,7 +19,6 @@ import { TTask } from '../types/TApi';
 
 export class RouteHandler {
     public hashcat: Hashcat = new Hashcat();
-    private respHandler: ResponseHandler = new ResponseHandler();
     private dao: Dao;
 
     constructor(db: DataSource) {
@@ -107,15 +105,18 @@ export class RouteHandler {
         }
     };
 
-    public getStopHashcat = (_: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<void, string>(
-            'stop',
-            res,
-            this.hashcat.status.isRunning,
-            () => {
-                this.hashcat.stop();
-            }
-        );
+    public stopHashcat = (_: Request, res: Response): void => {
+        if (this.hashcat.status.isRunning) {
+            this.hashcat.stop();
+            res.status(200).json({
+                success: 'Hashcat stopped successfully',
+            });
+        } else {
+            res.status(200).json({
+                status: {},
+                fail: 'Hashcat is not running',
+            });
+        }
     };
 
     public deleteTask = async (req: Request, res: Response): Promise<void> => {
