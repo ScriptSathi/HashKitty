@@ -79,6 +79,7 @@ export class Processus {
         } else if (code === 1) {
             logger.info(`Process: ${this.cmd[0]} ended correctly`);
         }
+        parentPort && parentPort.postMessage('close');
     };
 }
 
