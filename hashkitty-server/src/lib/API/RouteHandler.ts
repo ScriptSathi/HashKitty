@@ -6,7 +6,6 @@ import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { ResponseHandler } from './ResponseHandler';
-import { THashcatStatus } from '../types/THashcat';
 import { Dao } from './DAOs/Dao';
 import {
     TDaoById,
@@ -17,6 +16,7 @@ import {
     TDaoTemplateTaskDelete,
     TDaoTemplateTaskUpdate,
 } from '../types/TDAOs';
+import { TTask } from '../types/TApi';
 
 export class RouteHandler {
     public hashcat: Hashcat = new Hashcat();
@@ -27,44 +27,71 @@ export class RouteHandler {
         this.dao = new Dao(db);
     }
 
-    public execHashcat = (req: Request, res: Response): void => {
-        if (this.hashcat.status.isRunning) {
-            try {
-                this.hashcat.exec(req.body);
-                res.status(200).json({
-                    success: 'Hashcat has started successfully',
-                });
-            } catch (err) {
-                logger.error(
-                    `An error occured while trying to delete task: ${err}`
+    public execHashcat = async (req: Request, res: Response): Promise<void> => {
+        const id = parseInt(req.body.id) as TDaoById['id'];
+        if (!this.hashcat.status.isRunning) {
+            if (id && (await this.dao.taskExistById(id))) {
+                try {
+                    this.hashcat.exec(
+                        (await this.dao.task.getById(id)) as unknown as TTask
+                    );
+                    res.status(200).json({
+                        success: 'Hashcat has started successfully',
+                    });
+                } catch (err) {
+                    logger.error(
+                        `An error occured while trying to start task: ${err}`
+                    );
+                    res.status(200).json({
+                        fail: Dao.UnexpectedError,
+                        error: `[ERROR]: ${err}`,
+                    });
+                }
+            } else {
+                this.responseFail(
+                    res,
+                    `There is not task for id ${id}`,
+                    'start'
                 );
-                res.status(200).json({
-                    fail: Dao.UnexpectedError,
-                    error: `[ERROR]: ${err}`,
-                });
             }
         } else {
             this.responseFail(res, 'Hashcat is already running', 'start');
         }
-        // this.respHandler.tryAndResponse<void, string>(
-        //     'exec',
-        //     res,
-        //     !this.hashcat.status.isRunning,
-        //     () => {
-        //         this.hashcat.exec(req.body);
-        //     }
-        // );
     };
 
-    public restoreHashcat = (req: Request, res: Response): void => {
-        this.respHandler.tryAndResponse<void, string>(
-            'stop',
-            res,
-            !this.hashcat.status.isRunning,
-            () => {
-                this.hashcat.restore(req.body);
+    public restoreHashcat = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
+        const id = parseInt(req.body.id) as TDaoById['id'];
+        if (!this.hashcat.status.isRunning) {
+            if (id && (await this.dao.taskExistById(id))) {
+                try {
+                    this.hashcat.restore(
+                        (await this.dao.task.getById(id)) as unknown as TTask
+                    );
+                    res.status(200).json({
+                        success: 'Hashcat has beed restored successfully',
+                    });
+                } catch (err) {
+                    logger.error(
+                        `An error occured while trying to restore task: ${err}`
+                    );
+                    res.status(200).json({
+                        fail: Dao.UnexpectedError,
+                        error: `[ERROR]: ${err}`,
+                    });
+                }
+            } else {
+                this.responseFail(
+                    res,
+                    `There is not task for id ${id}`,
+                    'restore'
+                );
             }
-        );
+        } else {
+            this.responseFail(res, 'Hashcat is already running', 'start');
+        }
     };
 
     public getHashcatStatus = (_: Request, res: Response): void => {
