@@ -18,36 +18,34 @@ import stopTask from '../assets/images/stopTask.svg';
 import stopTaskHover from '../assets/images/stopTaskHover.svg';
 import playTaskHover from '../assets/images/playTaskHover.svg';
 import playTask from '../assets/images/playTask.svg';
-import { THashcatStatus } from '../types/TServer';
 import { Constants } from '../Constants';
+import { THashcatStatus } from '../types/TServer';
 
 type CardTaskState = {
     mouseIsEnterTaskCard: boolean;
     mouseIsEnterRunTask: boolean;
     clickedRunTask: boolean;
     onErrorStart: string;
-    status: THashcatStatus | { isRunning: boolean };
+    isRunning: boolean;
+    estimatedStop: string;
+    runningProgress: string;
+    speed: string;
 };
 
 export default class CardTask extends Component<
-    TTask & { status: THashcatStatus | { isRunning: boolean } },
+    TTask & { isRunning: boolean },
     CardTaskState
 > {
-    private isRunning =
-        'isRunning' in this.props.status ? this.props.status.isRunning : false;
     public state: CardTaskState = {
         mouseIsEnterTaskCard: false,
         mouseIsEnterRunTask: false,
-        clickedRunTask: this.isRunning,
-        status: this.props.status,
+        clickedRunTask: this.props.isRunning,
+        isRunning: this.props.isRunning,
         onErrorStart: '',
+        estimatedStop: 'Not running',
+        runningProgress: '0',
+        speed: '0',
     };
-    private speed = 0; // TODO
-    private progress = 0; // TODO
-    private estimatedStop =
-        this.isRunning && 'estimated_stop' in this.props.status
-            ? this.props.status.estimated_stop
-            : 'Not running';
     private logo = this.state.clickedRunTask ? stopTask : playTask;
     private logoHover = this.state.clickedRunTask
         ? stopTaskHover
@@ -55,22 +53,42 @@ export default class CardTask extends Component<
     private displayedLogo = this.logo;
     private cardBody = cardBodyGeneric;
 
-    private async fetchStatus(): Promise<void> {
-        if (!this.isRunning) {
-            const req = await (await fetch(Constants.apiGetStatus)).json();
-            if (
-                req.status !== undefined &&
-                Object.keys(req.status).length !== 0
-            ) {
-                const status = req.status as THashcatStatus;
-                this.state.status = { ...this.state.status, ...status };
-            } else {
-                this.state.status.isRunning = false;
-                this.onClickRunTask();
-                this.displayErrorMessageOnHashcatStart();
-            }
+    public componentDidMount(): void {
+        if (this.state.isRunning) {
+            this.refreshStatus();
         }
     }
+
+    private refreshStatus: () => void = () => {
+        if (this.state.isRunning) {
+            fetch(Constants.apiGetStatus)
+                .then(data => data.json())
+                .then(req => {
+                    if (
+                        req.status !== undefined &&
+                        Object.keys(req.status).length !== 0
+                    ) {
+                        const status = req.status as THashcatStatus;
+                        this.setState({
+                            estimatedStop: `${status.estimated_stop}`,
+                            runningProgress: `${status.progress[0]}`, // TODO TEST this
+                            speed: `${status.devices[0].speed}`,
+                        });
+                    } else {
+                        this.state.isRunning = false;
+                        this.updateStartStopButton();
+                        this.displayErrorMessageOnHashcatStart();
+                    }
+                });
+            setTimeout(this.refreshStatus, 5000);
+        } else {
+            this.setState({
+                estimatedStop: 'Not running',
+                runningProgress: '0',
+                speed: '0',
+            });
+        }
+    };
 
     private displayErrorMessageOnHashcatStart(): void {
         this.setState({ onErrorStart: 'An error occured' });
@@ -78,7 +96,7 @@ export default class CardTask extends Component<
     }
 
     private fetchStartHashcat(isClicked: boolean): void {
-        if (isClicked && !this.isRunning) {
+        if (isClicked && !this.state.isRunning) {
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -86,15 +104,22 @@ export default class CardTask extends Component<
             };
             fetch(Constants.apiPOSTStart, requestOptions)
                 .then(response => response.json())
-                .then(() => this.fetchStatus());
+                .then(() => {
+                    this.state.isRunning = !this.state.isRunning;
+                    this.refreshStatus();
+                });
         }
     }
 
     private onClickRunTask: () => void = () => {
+        this.updateStartStopButton();
+        this.fetchStartHashcat(!this.state.clickedRunTask);
+    };
+
+    private updateStartStopButton(): void {
         this.setState({
             clickedRunTask: !this.state.clickedRunTask,
         });
-        this.fetchStartHashcat(!this.state.clickedRunTask);
         this.logo = this.state.clickedRunTask ? playTask : stopTask;
         this.logoHover = this.state.clickedRunTask
             ? playTaskHover
@@ -102,7 +127,7 @@ export default class CardTask extends Component<
         this.displayedLogo = this.state.mouseIsEnterRunTask
             ? this.logoHover
             : this.logo;
-    };
+    }
 
     private onMouseEnterCard: () => void = () => {
         this.setState({
@@ -180,11 +205,11 @@ export default class CardTask extends Component<
                 <div style={bottomBox}>
                     <div>
                         <p style={bottomBoxText}>
-                            Speed: {this.speed} H/s
+                            Speed: {this.state.speed} H/s
                             <br />
-                            Progress: {this.progress}
+                            Progress: {this.state.runningProgress}
                             <br />
-                            Estimated end: {this.estimatedStop}
+                            Estimated end: {this.state.estimatedStop}
                         </p>
                     </div>
                     <div style={runButton}>
