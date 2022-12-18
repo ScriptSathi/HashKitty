@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties } from 'react';
+import React, { Component } from 'react';
 
 import Navbar from '../components/Navbar';
 import newTask from '../assets/images/newTask.svg';
