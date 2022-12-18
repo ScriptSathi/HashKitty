@@ -19,7 +19,6 @@ export const topPart: CSSProperties = {
 };
 
 export const taskName: CSSProperties = {
-    // display: 'grid',
     fontFamily: 'InterBold',
     fontSize: 24,
     marginBottom: 0,
@@ -65,15 +64,10 @@ export const bottomBoxText: CSSProperties = {
     lineHeight: '30px',
 };
 
-export const shadow: CSSProperties = {
-    // marginLeft: '10%',
-    // marginTop: '-3%',
-    // // position: 'relative',
-    // // justifyContent: 'center',
-    // // alignItems: 'center',
-    // // backgroundColor: 'blue',
-    // boxShadow: '0px 18px 0px -5px #000000',
-    // height: '10%',
-    // width: '80%',
-    // borderRadius: '20px',
+export const cardOnStartError: CSSProperties = {
+    marginLeft: '-3%',
+    marginTop: '5%',
+    position: 'absolute',
+    fontSize: '20px',
+    color: 'red',
 };
