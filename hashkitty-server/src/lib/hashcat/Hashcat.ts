@@ -3,26 +3,15 @@ import { Worker } from 'node:worker_threads';
 
 import { Constants } from '../Constants';
 import { FileManager } from '../FileManager';
-import { TflagOption, TTask } from '../types/TApi';
+import { TTask } from '../types/TApi';
 import { THashcatStatus } from '../types/THashcat';
 import { logger } from '../utils/Logger';
-import { hashcatParams } from './hashcatParams';
 
 export class Hashcat {
     public status: THashcatStatus = { isRunning: false };
     private bin: string;
     private hashFileManager: FileManager;
-    private hashcatProcess: Worker = new Worker(
-        path.join(__dirname, '../utils/Processus.js')
-    );
-    private defaultFlags: TflagOption<string>[] = [
-        {
-            name: 'statusJson',
-        },
-        {
-            name: 'quiet',
-        },
-    ];
+    private hashcatWorker: Worker | undefined;
 
     constructor() {
         this.bin = Constants.defaultBin;
@@ -30,22 +19,27 @@ export class Hashcat {
     }
 
     public exec(task: TTask): void {
+        this.hashcatWorker = this.createWorkerThread();
+        const cmd = this.generateCmd(task);
         logger.debug('Starting Hashcat cracking');
-        logger.debug(this.generateCmd(task));
-        this.hashcatProcess.postMessage(this.generateCmd(task));
+        logger.debug(cmd);
+        this.hashcatWorker.postMessage(cmd);
         this.listenStdoutAndSetStatus();
     }
 
     public stop(): void {
-        logger.debug('Stopping the hashcat process');
-        this.hashcatProcess.postMessage('exit');
-        this.status.isRunning = false;
+        if (this.hashcatWorker) {
+            logger.debug('Stopping the hashcat process');
+            this.hashcatWorker.postMessage('exit');
+            this.status.isRunning = false;
+        }
     }
 
     public restore(task: TTask): void {
+        this.hashcatWorker = this.createWorkerThread();
         logger.debug(`Restoring Hashcat session ${task.name}-${task.id}`);
         logger.info(this.generateCmd(task, false));
-        this.hashcatProcess.postMessage(this.generateCmd(task, false));
+        this.hashcatWorker.postMessage(this.generateCmd(task, false));
         this.listenStdoutAndSetStatus();
     }
 
@@ -84,28 +78,33 @@ export class Hashcat {
         return cmd;
     }
 
-    private buildFlag(flag: TflagOption): string {
-        return flag.arg
-            ? `--${hashcatParams[flag.name]}=${flag.arg} `
-            : `--${hashcatParams[flag.name]} `;
-    }
-
     private listenStdoutAndSetStatus(): void {
-        this.hashcatProcess.on('message', hashcatStdout => {
-            if (hashcatStdout.status !== undefined) {
-                this.status = { ...hashcatStdout, isRunning: true };
-            } else {
-                if (hashcatStdout.any !== '') {
+        this.hashcatWorker &&
+            this.hashcatWorker.on('message', hashcatStdout => {
+                if (
+                    hashcatStdout.status !== undefined &&
+                    hashcatStdout.status !== ''
+                ) {
+                    this.status = { ...hashcatStdout, isRunning: true };
+                } else if (
+                    hashcatStdout.any !== undefined &&
+                    hashcatStdout.any !== ''
+                ) {
                     if (hashcatStdout.any.match(/\n/g)) {
                         logger.debug(
-                            '-------------------Hashcat warning-------------------\n' +
+                            '\n-------------------Hashcat warning-------------------\n' +
                                 hashcatStdout.any +
                                 '\n---------------------------------------------------------'
                         );
                     }
                     logger.debug('Message from stdout: ' + hashcatStdout.any);
+                } else {
+                    this.hashcatWorker?.terminate();
                 }
-            }
-        });
+            });
+    }
+
+    private createWorkerThread(): Worker {
+        return new Worker(path.join(__dirname, '../utils/Processus.js'));
     }
 }
