@@ -18,14 +18,12 @@ export class ApiRouter {
     private registerRoutes() {
         this.router.post('/start', this.routeHandler.execHashcat);
         this.router.post('/restore', this.routeHandler.restoreHashcat);
+        this.router.get('/stop', this.routeHandler.stopHashcat);
         this.router.get('/status', this.routeHandler.getHashcatStatus);
-        this.router.get('/stop', this.routeHandler.getStopHashcat);
         this.router.get('/wordlists', this.routeHandler.getFilesInWordlistDir);
         this.router.get('/hashlists', this.routeHandler.getFilesInHashlistDir);
         this.router.get('/potfiles', this.routeHandler.getFilesInPotfileDir);
         this.router.get('/rules', this.routeHandler.getFilesInRulesDir);
-
-        // Bellow are not implem yet
         this.router.post(
             '/templatetasks',
             this.routeHandler.createTemplateTask
