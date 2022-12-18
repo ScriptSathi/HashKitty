@@ -1,4 +1,4 @@
-export type THashcatPartialStatus = {
+export type THashcatStatus = {
     session: string;
     guess: {
         [key: string]: string | number | null | boolean;
@@ -21,7 +21,3 @@ export type THashcatPartialStatus = {
     time_start: number;
     estimated_stop: number;
 };
-
-export type THashcatStatus = {
-    isRunning: boolean;
-} & Partial<THashcatPartialStatus>;
