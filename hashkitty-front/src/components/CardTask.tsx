@@ -5,9 +5,9 @@ import {
     bottomBox,
     bottomBoxText,
     cardBodyGeneric,
+    cardOnStartError,
     moreDetails,
     runButton,
-    shadow,
     taskName,
     taskSoftInfos,
     topLeftPart,
@@ -21,22 +21,26 @@ import playTask from '../assets/images/playTask.svg';
 import { THashcatStatus } from '../types/TServer';
 import { Constants } from '../Constants';
 
+type CardTaskState = {
+    mouseIsEnterTaskCard: boolean;
+    mouseIsEnterRunTask: boolean;
+    clickedRunTask: boolean;
+    onErrorStart: string;
+    status: THashcatStatus | { isRunning: boolean };
+};
+
 export default class CardTask extends Component<
-    TTask & { status: THashcatStatus | {} },
-    {
-        mouseIsEnterTaskCard: boolean;
-        mouseIsEnterRunTask: boolean;
-        clickedRunTask: boolean;
-        status: THashcatStatus | {};
-    }
+    TTask & { status: THashcatStatus | { isRunning: boolean } },
+    CardTaskState
 > {
     private isRunning =
         'isRunning' in this.props.status ? this.props.status.isRunning : false;
-    public state = {
+    public state: CardTaskState = {
         mouseIsEnterTaskCard: false,
         mouseIsEnterRunTask: false,
         clickedRunTask: this.isRunning,
         status: this.props.status,
+        onErrorStart: '',
     };
     private speed = 0; // TODO
     private progress = 0; // TODO
@@ -51,18 +55,38 @@ export default class CardTask extends Component<
     private displayedLogo = this.logo;
     private cardBody = cardBodyGeneric;
 
-    private async fetchStatus(isClicked: boolean): Promise<void> {
+    private async fetchStatus(): Promise<void> {
+        if (!this.isRunning) {
+            const req = await (await fetch(Constants.apiGetStatus)).json();
+            if (
+                req.status !== undefined &&
+                Object.keys(req.status).length !== 0
+            ) {
+                const status = req.status as THashcatStatus;
+                this.state.status = { ...this.state.status, ...status };
+            } else {
+                this.state.status.isRunning = false;
+                this.onClickRunTask();
+                this.displayErrorMessageOnHashcatStart();
+            }
+        }
+    }
+
+    private displayErrorMessageOnHashcatStart(): void {
+        this.setState({ onErrorStart: 'An error occured' });
+        setTimeout(() => this.setState({ onErrorStart: '' }), 5000);
+    }
+
+    private fetchStartHashcat(isClicked: boolean): void {
         if (isClicked && !this.isRunning) {
-            // const status = (await (await fetch(Constants.apiGetStatus)).json())
-            //     .status as THashcatStatus;
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.props),
+                body: JSON.stringify({ id: this.props.id }),
             };
             fetch(Constants.apiPOSTStart, requestOptions)
                 .then(response => response.json())
-                .then(data => this.setState({ status: data.id }));
+                .then(() => this.fetchStatus());
         }
     }
 
@@ -70,6 +94,7 @@ export default class CardTask extends Component<
         this.setState({
             clickedRunTask: !this.state.clickedRunTask,
         });
+        this.fetchStartHashcat(!this.state.clickedRunTask);
         this.logo = this.state.clickedRunTask ? playTask : stopTask;
         this.logoHover = this.state.clickedRunTask
             ? playTaskHover
@@ -147,6 +172,9 @@ export default class CardTask extends Component<
                     </div>
                     <div style={moreDetails}>
                         <p className="moreDetails">More details</p>
+                        <p style={cardOnStartError}>
+                            {this.state.onErrorStart}
+                        </p>
                     </div>
                 </div>
                 <div style={bottomBox}>
@@ -169,7 +197,6 @@ export default class CardTask extends Component<
                         />
                     </div>
                 </div>
-                <div style={shadow}></div>
             </div>
         );
     }
