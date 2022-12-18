@@ -3,11 +3,14 @@ import React, { Component, CSSProperties } from 'react';
 import { TTask } from '../types/TypesORM';
 import { THashcatStatus } from '../types/TServer';
 import CardTask from './CardTask';
+import { Constants } from '../Constants';
 
-export default class RunningTasksBody extends Component<{
+type RunningTasksBodyProps = {
     tasks: TTask[];
-    status: THashcatStatus | {};
-}> {
+};
+
+export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
+    private runningSessionName = '';
     private style: CSSProperties = {
         display: 'grid',
         gridTemplateColumns: 'minmax(auto, 36%) auto',
@@ -19,6 +22,16 @@ export default class RunningTasksBody extends Component<{
         marginTop: '2em',
         marginLeft: '2em',
     };
+
+    public async componentDidMount() {
+        const req = await (await fetch(Constants.apiGetStatus)).json();
+        if (req.status !== undefined && Object.keys(req.status).length !== 0) {
+            const status = req.status as THashcatStatus;
+            this.runningSessionName = status.session || '';
+        } else {
+            this.runningSessionName = '';
+        }
+    }
 
     render() {
         return (
@@ -41,7 +54,10 @@ export default class RunningTasksBody extends Component<{
                                 templateTaskId={task.templateTaskId}
                                 endeddAt={task.endeddAt}
                                 isfinished={task.isfinished}
-                                status={this.props.status}
+                                isRunning={
+                                    this.runningSessionName ===
+                                    `${task.name}-${task.id}`
+                                }
                             />
                         );
                     })

@@ -7,7 +7,6 @@ import '../assets/styles/main.scss';
 import '../assets/styles/HomePage.scss';
 import NewTask from '../components/NewTask';
 import { TTask } from '../types/TypesORM';
-import { THashcatStatus } from '../types/TServer';
 import RunningTasksBody from '../components/RunningTasksBody';
 import {
     mainBox,
@@ -17,34 +16,31 @@ import {
 } from '../styles/HomePage';
 import { Constants } from '../Constants';
 
-class HomePage extends Component<{
+type HomePageState = {
     newTaskToogle: boolean;
     tasks: TTask[];
-    status: THashcatStatus;
-}> {
-    public state = {
+};
+
+class HomePage extends Component<HomePageState> {
+    public state: HomePageState = {
         newTaskToogle: false,
         tasks: [],
-        status: {},
-    };
-
-    private toggleNewTask: () => void = () => {
-        this.setState({
-            newTaskToogle: !this.state.newTaskToogle,
-        });
     };
 
     public async componentDidMount() {
         const tasks =
             ((await (await fetch(Constants.apiGetTasks)).json())
                 .success as TTask[]) || [];
-        const status = (await (await fetch(Constants.apiGetStatus)).json())
-            .status as THashcatStatus;
         this.setState({
             tasks: tasks,
-            status: status,
         });
     }
+
+    private toggleNewTask: () => void = () => {
+        this.setState({
+            newTaskToogle: !this.state.newTaskToogle,
+        });
+    };
 
     render() {
         return (
@@ -56,10 +52,7 @@ class HomePage extends Component<{
                             <p>Running tasks</p>
                         </div>
                         <div style={cardBody}>
-                            <RunningTasksBody
-                                status={this.state.status}
-                                tasks={this.state.tasks}
-                            />
+                            <RunningTasksBody tasks={this.state.tasks} />
                             <div>
                                 <img
                                     className="newTask"
