@@ -3,15 +3,13 @@ import { Worker } from 'node:worker_threads';
 
 import { Constants } from '../Constants';
 import { FileManager } from '../FileManager';
-import { TExecEndpoint, TflagOption, TRestoreEndpoint } from '../types/TApi';
+import { TflagOption, TTask } from '../types/TApi';
 import { THashcatStatus } from '../types/THashcat';
 import { logger } from '../utils/Logger';
 import { hashcatParams } from './hashcatParams';
 
 export class Hashcat {
     public status: THashcatStatus = { isRunning: false };
-    private execEndpoint: TExecEndpoint | undefined;
-    private restoreEndpoint: TRestoreEndpoint | undefined;
     private bin: string;
     private hashFileManager: FileManager;
     private hashcatProcess: Worker = new Worker(
@@ -31,10 +29,10 @@ export class Hashcat {
         this.hashFileManager = new FileManager(Constants.hashlistsPath);
     }
 
-    public exec(execOption: TExecEndpoint): void {
+    public exec(task: TTask): void {
         logger.debug('Starting Hashcat cracking');
-        this.execEndpoint = execOption;
-        this.hashcatProcess.postMessage(this.generateExecCmd());
+        logger.debug(this.generateCmd(task));
+        this.hashcatProcess.postMessage(this.generateCmd(task));
         this.listenStdoutAndSetStatus();
     }
 
@@ -44,42 +42,44 @@ export class Hashcat {
         this.status.isRunning = false;
     }
 
-    public restore(restoreOption: TRestoreEndpoint): void {
-        this.restoreEndpoint = restoreOption;
-        logger.debug(`Restoring Hashcat session ${this.restoreEndpoint.arg}`);
-        logger.info(this.generateRestoreCmd());
-        this.hashcatProcess.postMessage(this.generateRestoreCmd());
+    public restore(task: TTask): void {
+        logger.debug(`Restoring Hashcat session ${task.name}-${task.id}`);
+        logger.info(this.generateCmd(task, false));
+        this.hashcatProcess.postMessage(this.generateCmd(task, false));
         this.listenStdoutAndSetStatus();
     }
 
-    private generateExecCmd(): string {
-        let cmd = '';
-        if (this.execEndpoint) {
-            cmd = `${this.bin}  `;
-            this.hashFileManager.createHashFile(
-                this.execEndpoint.hashList.name,
-                this.execEndpoint.hashList.hashs
+    private generateCmd(task: TTask, isStart = true): string {
+        const restorePath = `--restore-file-path=${path.join(
+            Constants.restorePath,
+            `${task.name}-${task.id}`
+        )}.restore`;
+        let cmd = `${this.bin} --status-json --quiet ${restorePath}`;
+        if (isStart) {
+            const wordlistCmd = path.join(
+                Constants.wordlistPath,
+                task.options.wordlistId.path
             );
-            this.execEndpoint.flags.map(param => {
-                cmd += this.buildFlag(param);
-            });
-            this.defaultFlags.map(param => {
-                cmd += this.buildFlag(param);
-            });
-            cmd += `${this.hashFileManager.filePath} ${this.execEndpoint.wordlist}`;
-        }
-        return cmd;
-    }
-
-    private generateRestoreCmd(): string {
-        let cmd = '';
-        if (this.restoreEndpoint) {
+            const hashlistCmd = task.hashlistId.path;
+            const attackModeCmd = `--attack-mode=${task.options.attackModeId.mode}`;
+            const hashTypeCmd = `--hash-type=${task.hashTypeId.typeNumber}`;
+            const sessionCmd = `--session=${task.name}-${task.id}`;
+            const cpuOnly = task.options.CPUOnly
+                ? '--opencl-device-types=1'
+                : '';
+            const workloadProfiles = task.options.workloadProfileId
+                ? `--workload-profile=${task.options.workloadProfileId.profileId}`
+                : '--workload-profile=3';
+            const ruleFile = task.options.ruleName
+                ? `--rule=${Constants.rulesPath}/${task.options.ruleName}`
+                : '';
             cmd =
-                `${this.bin} ${this.buildFlag(this.restoreEndpoint)} ` +
-                `${this.buildFlag({ name: 'restore' })} `;
-            this.defaultFlags.map(param => {
-                cmd += this.buildFlag(param);
-            });
+                `${this.bin} ${attackModeCmd} ${hashTypeCmd} ` +
+                `${sessionCmd} ${cpuOnly} ${ruleFile} ${workloadProfiles} ` +
+                `${hashlistCmd} ${wordlistCmd}`;
+        } else {
+            const sessionCmd = `--session=${task.name}-${task.id}`;
+            cmd += `--restore ${sessionCmd}`;
         }
         return cmd;
     }

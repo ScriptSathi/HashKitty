@@ -2,6 +2,7 @@ import * as path from 'path';
 import { THttpServerConfig } from './types/TApi';
 
 export class Constants {
+    // TODO mkdir folder if not exists
     public static readonly baseDir =
         process.env?.HASHKITTY_WORDLIST_DIR || path.join('/opt/hashkitty');
     public static readonly wordlistPath = path.join(
@@ -17,6 +18,10 @@ export class Constants {
         'potfiles'
     );
     public static readonly rulesPath = path.join(Constants.baseDir, 'rules');
+    public static readonly restorePath = path.join(
+        Constants.baseDir,
+        'restore'
+    );
     public static readonly defaultBin = 'hashcat';
     public static readonly debugMode = true;
     public static readonly defaultApiConfig: THttpServerConfig = {

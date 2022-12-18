@@ -1,4 +1,4 @@
-import { DataSource, EntityTarget } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 import { AttackMode } from '../../ORM/entity/AttackMode';
 import { Hashlist } from '../../ORM/entity/Hashlist';
