@@ -18,12 +18,14 @@ import { Constants } from '../Constants';
 
 type HomePageState = {
     newTaskToogle: boolean;
+    isMouseOverNewTask: boolean;
     tasks: TTask[];
 };
 
 class HomePage extends Component<HomePageState> {
     public state: HomePageState = {
         newTaskToogle: false,
+        isMouseOverNewTask: false,
         tasks: [],
     };
 
@@ -42,9 +44,24 @@ class HomePage extends Component<HomePageState> {
         });
     };
 
+    private onMouseEnterNewTaskCantClick: () => void = () => {
+        this.setState({
+            isMouseOverNewTask: true,
+        });
+        console.log(this.state.isMouseOverNewTask);
+    };
+
+    private onMouseLeaveNewTaskCanClick: () => void = () => {
+        this.setState({
+            isMouseOverNewTask: false,
+        });
+        console.log(this.state.isMouseOverNewTask);
+    };
+
     render() {
         return (
-            <div className="App">
+            <div style={this.state.newTaskToogle ? { overflow: 'hidden' } : {}}>
+                // TODO BLOQUER LE SCROLL (useEffect ?)
                 <Navbar />
                 <div style={mainBox}>
                     <div style={LeftBox}>
@@ -60,11 +77,52 @@ class HomePage extends Component<HomePageState> {
                                     alt="create a new task"
                                     onClick={this.toggleNewTask}
                                 />
-                                {this.state.newTaskToogle ? (
-                                    <NewTask toggle={this.toggleNewTask} />
-                                ) : (
-                                    ''
-                                )}
+                                <div
+                                    style={
+                                        this.state.newTaskToogle
+                                            ? {
+                                                  position: 'absolute',
+                                                  backdropFilter:
+                                                      'blur(5px) brightness(0.60)',
+                                                  height: '100%',
+                                                  width: '100%',
+                                                  top: 0,
+                                                  left: 0,
+                                              }
+                                            : {}
+                                    }
+                                    onClick={
+                                        this.state.isMouseOverNewTask
+                                            ? () => {}
+                                            : this.toggleNewTask
+                                    }
+                                >
+                                    <div
+                                        onMouseEnter={
+                                            this.onMouseEnterNewTaskCantClick
+                                        }
+                                        onMouseLeave={
+                                            this.onMouseLeaveNewTaskCanClick
+                                        }
+                                        style={
+                                            this.state.newTaskToogle
+                                                ? {
+                                                      position: 'absolute',
+                                                      top: '20%',
+                                                      left: '20%',
+                                                      width: '60%',
+                                                      height: 400,
+                                                  }
+                                                : {}
+                                        }
+                                    >
+                                        {this.state.newTaskToogle ? (
+                                            <NewTask />
+                                        ) : (
+                                            ''
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
