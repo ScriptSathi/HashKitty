@@ -24,6 +24,7 @@ import { THashcatStatus } from '../types/TServer';
 type CardTaskState = {
     mouseIsEnterTaskCard: boolean;
     mouseIsEnterRunTask: boolean;
+    moreDetailsClicked: boolean;
     clickedRunTask: boolean;
     onErrorStart: string;
     isRunning: boolean;
@@ -39,6 +40,7 @@ export default class CardTask extends Component<
     public state: CardTaskState = {
         mouseIsEnterTaskCard: false,
         mouseIsEnterRunTask: false,
+        moreDetailsClicked: false,
         clickedRunTask: this.props.isRunning,
         isRunning: this.props.isRunning,
         onErrorStart: '',
@@ -80,7 +82,7 @@ export default class CardTask extends Component<
                         this.displayErrorMessageOnHashcatStart();
                     }
                 });
-            setTimeout(this.refreshStatus, 5000);
+            setTimeout(this.refreshStatus, 2000);
         } else {
             this.setState({
                 estimatedStop: 'Not running',
@@ -92,7 +94,7 @@ export default class CardTask extends Component<
 
     private displayErrorMessageOnHashcatStart(): void {
         this.setState({ onErrorStart: 'An error occured' });
-        setTimeout(() => this.setState({ onErrorStart: '' }), 5000);
+        setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
     }
 
     private fetchStartHashcat(isClicked: boolean): void {
@@ -196,7 +198,9 @@ export default class CardTask extends Component<
                         </div>
                     </div>
                     <div style={moreDetails}>
-                        <p className="moreDetails">More details</p>
+                        <p onClick={() => alert(1)} className="moreDetails">
+                            More details
+                        </p>
                         <p style={cardOnStartError}>
                             {this.state.onErrorStart}
                         </p>
@@ -222,6 +226,11 @@ export default class CardTask extends Component<
                         />
                     </div>
                 </div>
+                {this.state.moreDetailsClicked ? (
+                    <NewTask toggle={this.toggleNewTask} />
+                ) : (
+                    ''
+                )}
             </div>
         );
     }
