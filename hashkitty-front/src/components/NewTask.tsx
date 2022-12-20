@@ -1,32 +1,28 @@
 import React, { Component, CSSProperties } from 'react';
 
-interface NewTaskProps {
-    toggle: () => void;
+interface NewTaskState {
+    isMouseIn: boolean;
 }
 
-class NewTask extends Component<NewTaskProps> {
-    private handleClick = () => {
-        this.props.toggle();
+export default class NewTask extends Component<{}, NewTaskState> {
+    public state: NewTaskState = {
+        isMouseIn: false,
     };
 
     private cardBody: CSSProperties = {
-        backgroundColor: 'orange',
+        backgroundColor: 'white',
         position: 'absolute',
-        top: '20%',
-        left: '20%',
-        right: '20%',
-        width: '60%',
-        height: 440,
+        width: '100%',
+        height: '100%',
+        border: '2px solid',
+        borderRadius: '8%',
     };
 
     render() {
         return (
             <div style={this.cardBody}>
-                <span onClick={this.handleClick}>X</span>
                 <p>I'm A Pop Up!!!</p>
             </div>
         );
     }
 }
-
-export default NewTask;
