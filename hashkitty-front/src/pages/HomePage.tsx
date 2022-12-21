@@ -5,7 +5,6 @@ import newTask from '../assets/images/newTask.svg';
 import '../assets/fonts/Inter-Bold.ttf';
 import '../assets/styles/main.scss';
 import '../assets/styles/HomePage.scss';
-import NewTask from '../components/NewTask';
 import { TTask } from '../types/TypesORM';
 import RunningTasksBody from '../components/RunningTasksBody';
 import {
@@ -15,6 +14,7 @@ import {
     cardBody,
 } from '../styles/HomePage';
 import { Constants } from '../Constants';
+import CreateTask from '../components/CreateTask';
 
 type HomePageState = {
     newTaskToogle: boolean;
@@ -22,7 +22,7 @@ type HomePageState = {
     tasks: TTask[];
 };
 
-class HomePage extends Component<HomePageState> {
+export default class HomePage extends Component<HomePageState> {
     public state: HomePageState = {
         newTaskToogle: false,
         isMouseOverNewTask: false,
@@ -34,7 +34,7 @@ class HomePage extends Component<HomePageState> {
             ((await (await fetch(Constants.apiGetTasks)).json())
                 .success as TTask[]) || [];
         this.setState({
-            tasks: tasks,
+            tasks,
         });
     }
 
@@ -42,26 +42,26 @@ class HomePage extends Component<HomePageState> {
         this.setState({
             newTaskToogle: !this.state.newTaskToogle,
         });
+        this.state.newTaskToogle
+            ? (document.body.style.overflow = 'visible')
+            : (document.body.style.overflow = 'hidden');
     };
 
     private onMouseEnterNewTaskCantClick: () => void = () => {
         this.setState({
             isMouseOverNewTask: true,
         });
-        console.log(this.state.isMouseOverNewTask);
     };
 
     private onMouseLeaveNewTaskCanClick: () => void = () => {
         this.setState({
             isMouseOverNewTask: false,
         });
-        console.log(this.state.isMouseOverNewTask);
     };
 
-    render() {
+    public render() {
         return (
             <div style={this.state.newTaskToogle ? { overflow: 'hidden' } : {}}>
-                // TODO BLOQUER LE SCROLL (useEffect ?)
                 <Navbar />
                 <div style={mainBox}>
                     <div style={LeftBox}>
@@ -108,16 +108,18 @@ class HomePage extends Component<HomePageState> {
                                             this.state.newTaskToogle
                                                 ? {
                                                       position: 'absolute',
-                                                      top: '20%',
-                                                      left: '20%',
-                                                      width: '60%',
+                                                      top: '50%',
+                                                      left: '50%',
+                                                      transform:
+                                                          'translate(-50%, -70%)',
+                                                      width: '45%',
                                                       height: 400,
                                                   }
                                                 : {}
                                         }
                                     >
                                         {this.state.newTaskToogle ? (
-                                            <NewTask />
+                                            <CreateTask />
                                         ) : (
                                             ''
                                         )}
@@ -131,5 +133,3 @@ class HomePage extends Component<HomePageState> {
         );
     }
 }
-
-export default HomePage;
