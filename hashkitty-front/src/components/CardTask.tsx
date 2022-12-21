@@ -183,7 +183,7 @@ export default class CardTask extends Component<
         );
     };
 
-    render() {
+    public render() {
         return (
             <div
                 onMouseEnter={this.onMouseEnterCard}
@@ -226,11 +226,7 @@ export default class CardTask extends Component<
                         />
                     </div>
                 </div>
-                {this.state.moreDetailsClicked ? (
-                    <NewTask toggle={this.toggleNewTask} />
-                ) : (
-                    ''
-                )}
+                {this.state.moreDetailsClicked ? <p>Bonjour</p> : ''}
             </div>
         );
     }

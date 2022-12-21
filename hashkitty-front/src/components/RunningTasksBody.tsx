@@ -33,7 +33,7 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
         }
     }
 
-    render() {
+    public render() {
         return (
             <div style={this.style}>
                 {this.props.tasks.length === 0 ? (

@@ -13,7 +13,7 @@ import {
 import '../assets/styles/Navbar.scss';
 
 export default class Navbar extends Component {
-    render() {
+    public render() {
         return (
             <header className="Navbar" style={mainStyle}>
                 <Link to="/home" className="links" style={leftBlock}>
