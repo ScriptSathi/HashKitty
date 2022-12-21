@@ -1,4 +1,4 @@
-import path from 'path';
+import path = require('path');
 
 import { DataSource } from 'typeorm';
 import { Hashlist } from '../../ORM/entity/Hashlist';
@@ -41,7 +41,10 @@ export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
             },
         });
         if (hashlist) {
-            hashlist.name = this.parentDao.sanitizeLength(30, hashlistData.name);
+            hashlist.name = this.parentDao.sanitizeLength(
+                30,
+                hashlistData.name
+            );
             hashlist.description = this.parentDao.sanitizeLength(
                 100,
                 hashlistData.description || ''

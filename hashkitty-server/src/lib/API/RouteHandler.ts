@@ -378,12 +378,22 @@ export class RouteHandler {
         }
     };
 
-    public getFilesInWordlistDir = (_: Request, res: Response): void => {
-        this.getFileInDir(res, Constants.wordlistPath);
+    public getHashlists = async (_: Request, res: Response): Promise<void> => {
+        try {
+            res.status(200).json({
+                success: await this.dao.hashlist.getAll(),
+            });
+        } catch (err) {
+            logger.error(err);
+            res.status(200).json({
+                fail: Dao.UnexpectedError,
+                error: `[ERROR]: ${err}`,
+            });
+        }
     };
 
-    public getFilesInHashlistDir = (_: Request, res: Response): void => {
-        this.getFileInDir(res, Constants.hashlistsPath);
+    public getFilesInWordlistDir = (_: Request, res: Response): void => {
+        this.getFileInDir(res, Constants.wordlistPath);
     };
 
     public getFilesInPotfileDir = (_: Request, res: Response): void => {
