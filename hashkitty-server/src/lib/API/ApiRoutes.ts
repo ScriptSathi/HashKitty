@@ -21,7 +21,7 @@ export class ApiRouter {
         this.router.get('/stop', this.routeHandler.stopHashcat);
         this.router.get('/status', this.routeHandler.getHashcatStatus);
         this.router.get('/wordlists', this.routeHandler.getFilesInWordlistDir);
-        this.router.get('/hashlists', this.routeHandler.getFilesInHashlistDir);
+        this.router.get('/hashlists', this.routeHandler.getHashlists);
         this.router.get('/potfiles', this.routeHandler.getFilesInPotfileDir);
         this.router.get('/rules', this.routeHandler.getFilesInRulesDir);
         this.router.post(

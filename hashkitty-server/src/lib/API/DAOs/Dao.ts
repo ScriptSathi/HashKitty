@@ -17,10 +17,12 @@ import {
 } from '../../types/TDAOs';
 import { DaoTasks } from './DaoTasks';
 import { DaoTemplateTasks } from './DaoTemplateTasks';
+import { DaoHashlist } from './DaoHashlist';
 
 export class Dao {
     public db: DataSource;
     public task: DaoTasks;
+    public hashlist: DaoHashlist;
     public templateTask: DaoTemplateTasks;
 
     public static get UnexpectedError(): string {
@@ -35,6 +37,7 @@ export class Dao {
         this.db = db;
         this.task = new DaoTasks(db, this);
         this.templateTask = new DaoTemplateTasks(db, this);
+        this.hashlist = new DaoHashlist(db, this);
     }
 
     public async taskExistById(id: number): Promise<boolean> {
