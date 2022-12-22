@@ -28,6 +28,7 @@ export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
             100,
             hashlistData.description
         );
+        hashlist.hashTypeId = hashlistData.hashTypeId;
         hashlist.createdAt = new Date();
         hashlist.lastestModification = new Date();
         hashlist.path = path.join(Constants.hashlistsPath, hashlist.name);

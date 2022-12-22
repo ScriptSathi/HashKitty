@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    JoinColumn,
+} from 'typeorm';
+import { HashType } from './HashType';
 
 @Entity()
 export class Hashlist {
@@ -14,6 +21,10 @@ export class Hashlist {
 
     @Column('varchar')
     path!: string;
+
+    @ManyToOne(() => HashType, (hashType: HashType) => hashType.id)
+    @JoinColumn({ name: 'hashtype_id', referencedColumnName: 'id' })
+    hashTypeId!: number;
 
     @Column('date', { default: new Date(), name: 'created_at' })
     createdAt!: Date;

@@ -25,8 +25,8 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
                 'options.attackModeId',
                 'options.workloadProfileId',
                 'templateTaskId',
-                'hashTypeId',
                 'hashlistId',
+                'hashlistId.hashTypeId',
             ],
         });
     }
@@ -38,7 +38,6 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
             100,
             taskData.description
         );
-        task.hashTypeId = taskData.hashTypeId;
         task.hashlistId = taskData.hashlistId;
         task.templateTaskId = taskData.templateTaskId;
         task.createdAt = new Date();
@@ -65,8 +64,8 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
                 'options.attackModeId',
                 'options.workloadProfileId',
                 'templateTaskId',
-                'hashTypeId',
                 'hashlistId',
+                'hashlistId.hashTypeId',
             ],
         });
         return task === null ? new Task() : task;
@@ -83,8 +82,8 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
                 'options.attackModeId',
                 'options.workloadProfileId',
                 'templateTaskId',
-                'hashTypeId',
                 'hashlistId',
+                'hashlistId.hashTypeId',
             ],
         });
         if (task) {
@@ -93,7 +92,6 @@ export class DaoTasks implements IDaoSub<Task, TDaoTaskCreate> {
                 100,
                 taskData.description
             );
-            task.hashTypeId = taskData.hashTypeId;
             task.hashlistId = taskData.hashlistId;
             task.templateTaskId = taskData.templateTaskId;
             task.lastestModification = new Date();
