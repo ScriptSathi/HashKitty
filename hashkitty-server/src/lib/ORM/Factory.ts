@@ -59,13 +59,6 @@ export class Factory {
             task.name = `${this.makeFakeString(5)}-${i}`;
             task.description =
                 Math.random() < 0.5 ? this.makeFakeString(50) : '';
-
-            const hashTypes = await this.createListIfNotExist<HashType>(
-                HashType,
-                this.migration.migrateHashTypes
-            );
-            task.hashTypeId =
-                hashTypes[this.getRandomValueInRange(hashTypes.length)].id;
             task.isfinished = Math.random() < 0.5 ? 0 : 1;
             task.lastestModification = this.randomDate();
             task.createdAt = this.randomDate();
@@ -200,7 +193,13 @@ export class Factory {
         numberOfFakeToCreate: number
     ): Promise<void> => {
         for (const i in [...Array(numberOfFakeToCreate).keys()]) {
+            const hashTypes = await this.createListIfNotExist<HashType>(
+                HashType,
+                this.migration.migrateHashTypes
+            );
             const hashlist = new Hashlist();
+            hashlist.hashTypeId =
+                hashTypes[this.getRandomValueInRange(hashTypes.length)].id;
             hashlist.name = `${this.makeFakeString(5)}-${i}`;
             hashlist.description = this.makeFakeString(50);
             hashlist.numberOfCrackedPasswords = Math.random() * 20;
