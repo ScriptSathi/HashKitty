@@ -75,11 +75,7 @@ export class Dao {
                 sanityCheck = await this.sanityTaskExists(
                     (reqTask as TDaoTaskUpdate).id
                 );
-            } else if (
-                key === 'hashTypeId' ||
-                key === 'hashlistId' ||
-                key === 'templateTaskId'
-            ) {
+            } else if (key === 'hashlistId' || key === 'templateTaskId') {
                 sanityCheck = await this.sanitizeById(key, reqTask[key]);
             } else if (key === 'name' || key === 'description') {
                 sanityCheck = this.isExpectedType(

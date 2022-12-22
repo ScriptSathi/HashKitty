@@ -17,7 +17,6 @@ export type TsanitizeCheck = {
 export type TDaoById = { id: number };
 
 export type TDaoTaskCreate = TDaoCreate & {
-    hashTypeId: number;
     hashlistId: number;
     options?: Options;
     templateTaskId?: number;
@@ -34,6 +33,7 @@ export type TDaoTemplateTaskDelete = TDaoById;
 export type TDaoHashlistDelete = TDaoById;
 export type TDaoHashlistCreate = TDaoCreate & {
     path: string;
+    hashTypeId: number;
 };
 
 export type TDaoAllPossibleInputs =

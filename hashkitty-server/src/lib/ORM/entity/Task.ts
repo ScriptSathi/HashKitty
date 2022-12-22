@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Options } from './Options';
-import { HashType } from './HashType';
 import { TemplateTask } from './TemplateTask';
 import { Hashlist } from './Hashlist';
 import {
@@ -36,10 +35,6 @@ export class Task {
     )
     @JoinColumn({ name: 'template_task_id', referencedColumnName: 'id' })
     templateTaskId?: number;
-
-    @ManyToOne(() => HashType, (hashType: HashType) => hashType.id)
-    @JoinColumn({ name: 'hashtype_id', referencedColumnName: 'id' })
-    hashTypeId!: number;
 
     @ManyToOne(() => Hashlist, (hashlist: Hashlist) => hashlist.id)
     @JoinColumn({ name: 'hashlist_id', referencedColumnName: 'id' })
