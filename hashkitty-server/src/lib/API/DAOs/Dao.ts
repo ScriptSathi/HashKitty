@@ -59,34 +59,47 @@ export class Dao {
     public async sanityCheckTask(
         reqTask: TDaoTaskCreate | TDaoTaskUpdate,
         job = 'update'
-    ) {
-        let sanityCheck = {
+    ): Promise<TsanitizeCheckById<TDaoTaskCreate | TDaoTaskUpdate>> {
+        const sanityCheck = {
             hasSucceded: false,
             message: '',
+            data: reqTask,
         };
         if (job === 'update' && !(reqTask as TDaoTaskUpdate).id) {
             return {
                 hasSucceded: false,
                 message: Dao.NoIdProvided,
+                data: reqTask,
             };
         }
         for (const key in reqTask) {
             if (job === 'update ' && key === 'id') {
-                sanityCheck = await this.sanityTaskExists(
+                const { message, hasSucceded } = await this.sanityTaskExists(
                     (reqTask as TDaoTaskUpdate).id
                 );
+                sanityCheck.message = message;
+                sanityCheck.hasSucceded = hasSucceded;
             } else if (key === 'hashlistId' || key === 'templateTaskId') {
-                sanityCheck = await this.sanitizeById(key, reqTask[key]);
+                const { message, hasSucceded } = await this.sanitizeById(
+                    key,
+                    reqTask[key]
+                );
+                sanityCheck.message = message;
+                sanityCheck.hasSucceded = hasSucceded;
             } else if (key === 'name' || key === 'description') {
-                sanityCheck = this.isExpectedType(
+                const { message, hasSucceded } = this.isExpectedType(
                     { expectedType: 'string', obj: reqTask },
                     'name',
                     'description'
                 );
+                if (key === 'name') {
+                    reqTask[key] = this.sanitizeInput(reqTask[key]);
+                }
+                sanityCheck.message = message;
+                sanityCheck.hasSucceded = hasSucceded;
             } else if (reqTask.options && key === 'options') {
-                const { hasSucceded, message } = await this.sanitizeOptions(
-                    reqTask.options
-                );
+                const { hasSucceded, message } =
+                    await this.sanitizeCheckOptions(reqTask.options);
                 sanityCheck.hasSucceded = hasSucceded;
                 sanityCheck.message = message;
             }
@@ -97,35 +110,46 @@ export class Dao {
         return sanityCheck;
     }
 
+    private sanitizeInput(input: string): string {
+        return input.replace(/[^a-z0-9-_]/gi, '');
+    }
+
     public async sanityCheckTemplateTask(
         reqTask: TDaoTemplateTaskCreate | TDaoTemplateTaskUpdate,
         job = 'update'
-    ) {
-        let sanityCheck = {
+    ): Promise<
+        TsanitizeCheckById<TDaoTemplateTaskCreate | TDaoTemplateTaskUpdate>
+    > {
+        const sanityCheck = {
             hasSucceded: false,
             message: '',
+            data: reqTask,
         };
         if (job === 'update' && !(reqTask as TDaoTemplateTaskUpdate).id) {
             return {
                 hasSucceded: false,
                 message: Dao.NoIdProvided,
+                data: reqTask,
             };
         }
         for (const key in reqTask) {
             if (job === 'update ' && key === 'id') {
-                sanityCheck = await this.sanityTaskExists(
+                const { message, hasSucceded } = await this.sanityTaskExists(
                     (reqTask as TDaoTemplateTaskUpdate).id
                 );
+                sanityCheck.message = message;
+                sanityCheck.hasSucceded = hasSucceded;
             } else if (key === 'name' || key === 'description') {
-                sanityCheck = this.isExpectedType(
+                const { message, hasSucceded } = this.isExpectedType(
                     { expectedType: 'string', obj: reqTask },
                     'name',
                     'description'
                 );
+                sanityCheck.message = message;
+                sanityCheck.hasSucceded = hasSucceded;
             } else if (reqTask.options && key === 'options') {
-                const { hasSucceded, message } = await this.sanitizeOptions(
-                    reqTask.options
-                );
+                const { hasSucceded, message } =
+                    await this.sanitizeCheckOptions(reqTask.options);
                 sanityCheck.hasSucceded = hasSucceded;
                 sanityCheck.message = message;
             }
@@ -183,26 +207,23 @@ export class Dao {
         EntityOption.wordlistId = optionsData.wordlistId;
         EntityOption.workloadProfileId = optionsData.workloadProfileId;
         EntityOption.kernelOpti = optionsData.kernelOpti;
-        EntityOption.ruleName = this.sanitizeLength(
-            100,
-            optionsData.ruleName || ''
+        EntityOption.ruleName = this.sanitizeInput(
+            this.sanitizeLength(100, optionsData.ruleName || '')
         );
-        EntityOption.potfileName = this.sanitizeLength(
-            100,
-            optionsData.potfileName || ''
+        EntityOption.potfileName = this.sanitizeInput(
+            this.sanitizeLength(100, optionsData.potfileName || '')
         );
         EntityOption.maskQuery = this.sanitizeLength(
             100,
             optionsData.maskQuery || ''
         );
-        EntityOption.maskFilename = this.sanitizeLength(
-            100,
-            optionsData.maskFilename || ''
+        EntityOption.maskFilename = this.sanitizeInput(
+            this.sanitizeLength(100, optionsData.maskFilename || '')
         );
         return EntityOption;
     }
 
-    public async sanitizeOptions(
+    public async sanitizeCheckOptions(
         options: Options
     ): Promise<TsanitizeCheckById> {
         let sanitizeCheck = {
