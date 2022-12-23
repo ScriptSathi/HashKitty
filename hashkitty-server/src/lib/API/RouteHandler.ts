@@ -183,6 +183,7 @@ export class RouteHandler {
             taskData
         );
         if (taskData.id && hasSucceded) {
+            taskData.name = taskData.name.replace(/[^a-z0-9-_]/gi, '');
             try {
                 res.status(200).json({
                     success: this.dao.task.update(taskData),

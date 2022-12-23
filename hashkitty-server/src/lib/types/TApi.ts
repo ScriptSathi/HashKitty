@@ -91,7 +91,6 @@ export type TTask = {
     id: number;
     name: string;
     options: Options;
-    hashTypeId: THashType;
     hashlistId: THashlist;
     createdAt: string;
     lastestModification: string;
@@ -134,6 +133,7 @@ export type THashlist = {
     id: number;
     name: string;
     description: string;
+    hashTypeId: THashType;
     path: string;
     createdAt: string;
     lastestModification: string;

@@ -56,8 +56,8 @@ export class Hashcat {
             );
             const hashlistCmd = task.hashlistId.path;
             const attackModeCmd = `--attack-mode=${task.options.attackModeId.mode}`;
-            const hashTypeCmd = `--hash-type=${task.hashTypeId.typeNumber}`;
-            const sessionCmd = `--session=${task.name}-${task.id}`;
+            const hashTypeCmd = `--hash-type=${task.hashlistId.hashTypeId.typeNumber}`;
+            const sessionCmd = `--session="${task.name}-${task.id}"`;
             const cpuOnly = task.options.CPUOnly
                 ? '--opencl-device-types=1'
                 : '';
