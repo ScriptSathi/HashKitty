@@ -18,7 +18,9 @@ export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
     }
 
     public getAll(): Promise<Hashlist[]> {
-        return this.db.getRepository(Hashlist).find();
+        return this.db
+            .getRepository(Hashlist)
+            .find({ relations: ['hashTypeId'] });
     }
 
     public async create(hashlistData: TDaoHashlistCreate): Promise<Hashlist> {
@@ -40,6 +42,7 @@ export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
             where: {
                 id: hashlistData.id,
             },
+            relations: ['hashTypeId'],
         });
         if (hashlist) {
             hashlist.name = this.parentDao.sanitizeLength(

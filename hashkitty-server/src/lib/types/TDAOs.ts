@@ -1,18 +1,20 @@
 import { Options } from '../ORM/entity/Options';
+import { Task } from '../ORM/entity/Task';
+import { TemplateTask } from './TApi';
 
 export type TDaoCreate = {
     name: string;
     description: string;
 };
 
-export type TsanitizeCheckById = {
+type PatialSanitizeCheckById = {
     hasSucceded: boolean;
     message: string;
 };
 
-export type TsanitizeCheck = {
-    taskData: TDaoTaskCreate;
-} & TsanitizeCheckById;
+export type TsanitizeCheckById<T = undefined> = T extends undefined
+    ? PatialSanitizeCheckById
+    : PatialSanitizeCheckById & { data: T };
 
 export type TDaoById = { id: number };
 
