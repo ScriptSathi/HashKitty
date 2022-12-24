@@ -10,15 +10,24 @@ import {
     inputs,
     inputName,
     labels,
-    inputDatalists,
     submitInput,
     divCheckbox,
     inputCheckboxes,
+    advancedConfigs,
+    advancedConfigsImg,
+    advancedConfigsTxt,
 } from '../styles/CreateTask';
 import { Constants } from '../Constants';
 import { THashlist, TemplateTask } from '../types/TypesORM';
+import InputDropdown from './minorComponents/InputDropdown';
+import toggleClose from '../assets/images/toggleClose.svg';
+import toggleOpen from '../assets/images/toggleOpen.svg';
 
 interface CreateTaskState {
+    handleTaskCreationAdded: () => void;
+    handleTaskCreationError: () => void;
+    toggleNewTask: () => void;
+    createOptionsToggle: boolean;
     isMouseIn: boolean;
     checkboxChecked: boolean;
     templateTaskCheckBoxId: number;
@@ -37,15 +46,29 @@ interface CreateTaskState {
     formBreakpointGPUTemperature: number;
 }
 
+interface CreateTaskProps {
+    handleTaskCreationAdded: () => void;
+    handleTaskCreationError: () => void;
+    toggleNewTask: () => void;
+}
+
 type inputDatalist = {
     list: THashlist[] | TemplateTask[];
     formName: keyof CreateTaskState;
 };
 
-export default class CreateTask extends Component<{}, CreateTaskState> {
-    constructor(props: CreateTask) {
+export default class CreateTask extends Component<
+    CreateTaskProps,
+    CreateTaskState
+> {
+    private toggleIcon = toggleClose;
+    constructor(props: CreateTaskProps) {
         super(props);
         this.state = {
+            handleTaskCreationAdded: props.handleTaskCreationAdded,
+            handleTaskCreationError: props.handleTaskCreationError,
+            toggleNewTask: props.toggleNewTask,
+            createOptionsToggle: false,
             isMouseIn: false,
             checkboxChecked: false,
             templateTaskCheckBoxId: -1,
@@ -64,6 +87,7 @@ export default class CreateTask extends Component<{}, CreateTaskState> {
             formBreakpointGPUTemperature: -1,
         };
     }
+
     public async componentDidMount(): Promise<void> {
         const hashlist = await this.fetchListWithEndpoint<THashlist>(
             Constants.apiGetHashlists
@@ -77,16 +101,18 @@ export default class CreateTask extends Component<{}, CreateTaskState> {
         });
     }
 
-    private handleInputChange(event) {
+    private handleInputChange = event => {
         if (event.target.name !== '' && event.target.name in this.state) {
             const target = event.target;
             const value =
-                target.type === 'checkbox' ? target.checked : target.value;
+                target.type === 'checkbox'
+                    ? target.checked
+                    : target.value.replace(/[^a-z0-9-_]/gi, '');
             this.setState({
                 [target.name]: value,
             } as Pick<CreateTaskState, keyof CreateTaskState>);
         }
-    }
+    };
 
     private handleSubmit = event => {
         event.preventDefault();
@@ -100,13 +126,14 @@ export default class CreateTask extends Component<{}, CreateTaskState> {
             this.submitForm({
                 name: this.state.formName,
                 description: 'test',
-                hashTypeId: 1000, // TODO OMMMGGG IL FAUT CHANGER ça POUR LE METTRE DANS HASHLIST
+                hashTypeId: hashList.hashTypeId.id,
                 hashlistId: hashList.id,
                 templateTaskId: templateTask.id,
             });
         } else {
             //TODO No reference found
         }
+        this.state.toggleNewTask();
     };
 
     private submitForm(form): void {
@@ -117,53 +144,23 @@ export default class CreateTask extends Component<{}, CreateTaskState> {
         };
         fetch(Constants.apiPOSTCreateTask, requestOptions)
             .then(response => {
-                console.log(response);
                 return response.json();
             })
             .then(res => {
                 if (res.success) {
-                    console.log('WOOORKSS');
-                    console.dir(res);
+                    this.state.handleTaskCreationAdded();
                 } else {
-                    console.log('Not work :(');
-                    console.dir(res);
+                    this.state.handleTaskCreationError();
                 }
             });
     }
 
-    private async fetchListWithEndpoint<T>(endpoint: string): Promise<T[]> {
+    private async fetchListWithEndpoint<List>(
+        endpoint: string
+    ): Promise<List[]> {
         const req = await (await fetch(endpoint)).json();
         return req && req.success.length > 0 ? req.success : [];
     }
-
-    private renderInputDatalist = ({ list, formName }: inputDatalist) => {
-        return list.length > 0 ? (
-            <div>
-                <input
-                    type="text"
-                    list={formName}
-                    placeholder="Name of the list"
-                    style={{ ...inputs, ...inputDatalists }}
-                    value={this.state[formName] as string}
-                    name={formName}
-                    onChange={event => this.handleInputChange(event)}
-                ></input>
-                <datalist id={formName}>
-                    {list.map(elem => {
-                        return (
-                            <option key={elem.id} value={elem.name}>
-                                {elem.name.length > 20
-                                    ? elem.name.slice(0, 17) + '...'
-                                    : elem.name}
-                            </option>
-                        );
-                    })}
-                </datalist>
-            </div>
-        ) : (
-            <p>No hashlist loaded</p>
-        );
-    };
 
     private handleTemplateTaskCheckbox(event) {
         if (this.state.checkboxChecked) {
@@ -178,6 +175,15 @@ export default class CreateTask extends Component<{}, CreateTaskState> {
             });
         }
     }
+
+    private toggleOptionCreation = () => {
+        this.setState({
+            createOptionsToggle: !this.state.createOptionsToggle,
+        });
+        this.toggleIcon = this.state.createOptionsToggle
+            ? toggleClose
+            : toggleOpen;
+    };
 
     private renderTemplateTaskCheckBox = ({
         list,
@@ -212,56 +218,81 @@ export default class CreateTask extends Component<{}, CreateTaskState> {
         );
     };
 
+    private renderAdvancedConfigButton = () => {
+        return (
+            <div style={advancedConfigs} onClick={this.toggleOptionCreation}>
+                <p style={advancedConfigsTxt}>Advanced configs</p>
+                <img
+                    style={advancedConfigsImg}
+                    src={this.toggleIcon}
+                    alt="options icon"
+                />
+            </div>
+        );
+    };
+
     public render() {
         return (
-            <div style={cardBody}>
-                <div style={contentBody}>
-                    <p style={title}>New Task</p>
-                    <form
-                        // action="/"
-                        // method="post"
-                        onSubmit={e => {
-                            this.handleSubmit(e);
-                        }}
-                        style={mandatoryBody}
-                    >
-                        <div style={mandatoryBodyLeft}>
-                            <label style={labels}>
-                                Name
+            <div
+                style={{
+                    position: 'absolute',
+                    top: '10%',
+                    left: '27.5%',
+                    width: '45%',
+                    height: this.state.createOptionsToggle ? 800 : 400,
+                }}
+            >
+                <div style={cardBody}>
+                    <div style={contentBody}>
+                        <p style={title}>New Task</p>
+                        <form
+                            onSubmit={e => {
+                                this.handleSubmit(e);
+                            }}
+                            style={mandatoryBody}
+                        >
+                            <div style={mandatoryBodyLeft}>
+                                <label style={labels}>
+                                    Name
+                                    <input
+                                        type="text"
+                                        placeholder="Task name"
+                                        style={{ ...inputs, ...inputName }}
+                                        value={this.state.formName}
+                                        name="formName"
+                                        onChange={event =>
+                                            this.handleInputChange(event)
+                                        }
+                                    ></input>
+                                </label>
+                                <br />
+                                <label style={labels}>
+                                    Choose a hashlist
+                                    <InputDropdown
+                                        list={this.state.hashlist}
+                                        formName="formHashlistName"
+                                        handleInputChange={
+                                            this.handleInputChange
+                                        }
+                                    />
+                                    <this.renderAdvancedConfigButton />
+                                </label>
+                            </div>
+                            <div style={mandatoryBodyRight}>
+                                <label>
+                                    Choose a template
+                                    <this.renderTemplateTaskCheckBox
+                                        list={this.state.templateTasks}
+                                    />
+                                </label>
                                 <input
-                                    type="text"
-                                    placeholder="Task name"
-                                    style={{ ...inputs, ...inputName }}
-                                    value={this.state.formName}
-                                    name="formName"
-                                    onChange={event =>
-                                        this.handleInputChange(event)
-                                    }
+                                    style={{ ...inputs, ...submitInput }}
+                                    type="submit"
+                                    value="Create task"
                                 ></input>
-                            </label>
-                            <br />
-                            <label style={labels}>
-                                Choose a hashlist
-                                <this.renderInputDatalist
-                                    list={this.state.hashlist}
-                                    formName="formHashlistName"
-                                />
-                            </label>
-                        </div>
-                        <div style={mandatoryBodyRight}>
-                            <label>
-                                Choose a template task
-                                <this.renderTemplateTaskCheckBox
-                                    list={this.state.templateTasks}
-                                />
-                            </label>
-                            <input
-                                style={{ ...inputs, ...submitInput }}
-                                type="submit"
-                                value="Create task"
-                            ></input>
-                        </div>
-                    </form>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         );

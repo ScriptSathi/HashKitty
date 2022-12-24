@@ -24,7 +24,7 @@ const router = createBrowserRouter([
                 element: <HomePage />,
             },
             {
-                path: 'template-tasks',
+                path: 'templates',
                 element: <HomePage />,
             },
             {
