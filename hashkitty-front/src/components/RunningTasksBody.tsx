@@ -46,7 +46,6 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
                                 id={task.id}
                                 name={task.name}
                                 options={task.options}
-                                hashTypeId={task.hashTypeId}
                                 hashlistId={task.hashlistId}
                                 createdAt={task.createdAt}
                                 lastestModification={task.lastestModification}

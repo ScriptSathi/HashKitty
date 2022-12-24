@@ -26,8 +26,8 @@ export default class Navbar extends Component {
                     <Link to="/home" className="links pages">
                         Home
                     </Link>
-                    <Link to="/template-tasks" className="links pages">
-                        Template tasks
+                    <Link to="/templates" className="links pages">
+                        Templates
                     </Link>
                     <Link to="/lists" className="links pages">
                         Lists

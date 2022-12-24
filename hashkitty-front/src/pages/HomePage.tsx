@@ -12,27 +12,42 @@ import {
     LeftBox,
     runningTasksTitle,
     cardBody,
+    creationTaskStatusMessage,
 } from '../styles/HomePage';
 import { Constants } from '../Constants';
 import CreateTask from '../components/CreateTask';
 
 type HomePageState = {
     newTaskToogle: boolean;
+    taskCreationAdded: boolean;
+    taskCreationError: boolean;
     isMouseOverNewTask: boolean;
     tasks: TTask[];
 };
 
-export default class HomePage extends Component<HomePageState> {
+export default class HomePage extends Component<{}, HomePageState> {
     public state: HomePageState = {
+        taskCreationAdded: false,
+        taskCreationError: false,
         newTaskToogle: false,
         isMouseOverNewTask: false,
         tasks: [],
     };
 
-    public async componentDidMount() {
+    public componentDidMount() {
+        this.loadTasks();
+    }
+
+    private async loadTasks(): Promise<void> {
         const tasks =
             ((await (await fetch(Constants.apiGetTasks)).json())
                 .success as TTask[]) || [];
+        tasks.sort((a, b) => {
+            return (
+                new Date(b.lastestModification).valueOf() -
+                new Date(a.lastestModification).valueOf()
+            );
+        });
         this.setState({
             tasks,
         });
@@ -59,10 +74,55 @@ export default class HomePage extends Component<HomePageState> {
         });
     };
 
+    private handleTaskCreationAdded = () => {
+        this.setState({
+            taskCreationAdded: true,
+        });
+        this.loadTasks();
+        setTimeout(() => {
+            this.setState({
+                taskCreationAdded: false,
+            });
+        }, 5000);
+    };
+
+    private handleTaskCreationError = () => {
+        this.setState({
+            taskCreationError: true,
+        });
+        setTimeout(() => {
+            this.setState({
+                taskCreationError: false,
+            });
+        }, 5000);
+    };
+
+    private renderCreationTaskStatus = () => {
+        let message = '';
+        let style = creationTaskStatusMessage;
+
+        if (this.state.taskCreationAdded) {
+            style = {
+                ...creationTaskStatusMessage,
+                ...{ color: 'green' },
+            };
+            message = 'New task added successfully';
+        } else if (this.state.taskCreationError) {
+            style = {
+                ...creationTaskStatusMessage,
+                ...{ color: 'red' },
+            };
+            message =
+                'An error occured while creating the task. Check the server logs for more informations';
+        }
+        return <p style={style}>{message}</p>;
+    };
+
     public render() {
         return (
             <div style={this.state.newTaskToogle ? { overflow: 'hidden' } : {}}>
                 <Navbar />
+                <this.renderCreationTaskStatus />
                 <div style={mainBox}>
                     <div style={LeftBox}>
                         <div style={runningTasksTitle}>
@@ -105,21 +165,21 @@ export default class HomePage extends Component<HomePageState> {
                                             this.onMouseLeaveNewTaskCanClick
                                         }
                                         style={
-                                            this.state.newTaskToogle
-                                                ? {
-                                                      position: 'absolute',
-                                                      top: '50%',
-                                                      left: '50%',
-                                                      transform:
-                                                          'translate(-50%, -70%)',
-                                                      width: '45%',
-                                                      height: 400,
-                                                  }
-                                                : {}
+                                            this.state.newTaskToogle ? {} : {}
                                         }
                                     >
                                         {this.state.newTaskToogle ? (
-                                            <CreateTask />
+                                            <CreateTask
+                                                handleTaskCreationAdded={this.handleTaskCreationAdded.bind(
+                                                    this
+                                                )}
+                                                handleTaskCreationError={this.handleTaskCreationError.bind(
+                                                    this
+                                                )}
+                                                toggleNewTask={this.toggleNewTask.bind(
+                                                    this
+                                                )}
+                                            />
                                         ) : (
                                             ''
                                         )}

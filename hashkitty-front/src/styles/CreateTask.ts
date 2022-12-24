@@ -29,7 +29,6 @@ export const contentBody: CSSProperties = {
     margin: '5% 7.5%',
     height: '80%',
     width: '90%',
-    position: 'relative',
 };
 
 export const title: CSSProperties = {
@@ -40,7 +39,6 @@ export const title: CSSProperties = {
 export const mandatoryBody: CSSProperties = {
     fontFamily: 'InterMedium',
     fontSize: 20,
-    backgroundColor: 'grey',
     display: 'grid',
     gridTemplateColumns: '1.5fr 1fr',
     height: 'max-content',
@@ -66,20 +64,37 @@ export const inputDatalists: CSSProperties = {
 };
 
 export const submitInput: CSSProperties = {
-    marginTop: '150px',
     padding: '0 10px',
     height: '30px',
     position: 'absolute',
-    bottom: '5%',
+    bottom: '10%',
     right: '10%',
 };
 
 export const divCheckbox: CSSProperties = {
     marginTop: 10,
     overflowY: 'scroll',
-    maxHeight: 150,
+    maxHeight: 350,
     maxWidth: '100%',
     display: 'grid',
+};
+
+export const advancedConfigs: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(auto, 90%) auto',
+    width: 160,
+    marginTop: 20,
+};
+
+export const advancedConfigsImg: CSSProperties = {
+    width: 15,
+    height: 15,
+    marginTop: 17,
+};
+
+export const advancedConfigsTxt: CSSProperties = {
+    fontSize: 16,
+    fontFamily: 'InterMedium',
 };
 
 export const inputCheckboxes: CSSProperties = { marginTop: 5, marginRight: 5 };
