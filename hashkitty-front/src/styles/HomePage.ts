@@ -40,3 +40,11 @@ export const newTask: CSSProperties = {
     height: 310,
     width: 285,
 };
+
+export const creationTaskStatusMessage: CSSProperties = {
+    position: 'absolute',
+    left: '50%',
+    fontSize: 30,
+    fontFamily: 'InterMedium',
+    transform: 'translate(-50%, 0%)',
+};

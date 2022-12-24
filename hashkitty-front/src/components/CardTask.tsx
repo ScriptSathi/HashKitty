@@ -164,9 +164,9 @@ export default class CardTask extends Component<
 
     private renderTaskInfo = () => {
         const hashTypeName =
-            this.props.hashTypeId.name.length > 20
-                ? this.props.hashTypeId.name.substring(0, 20) + '...'
-                : this.props.hashTypeId.name;
+            this.props.hashlistId.hashTypeId.name.length > 20
+                ? this.props.hashlistId.hashTypeId.name.substring(0, 20) + '...'
+                : this.props.hashlistId.hashTypeId.name;
         return (
             <p>
                 {hashTypeName}

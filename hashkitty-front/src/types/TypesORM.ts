@@ -2,7 +2,6 @@ export type TTask = {
     id: number;
     name: string;
     options: Options;
-    hashTypeId: THashType;
     hashlistId: THashlist;
     createdAt: string;
     lastestModification: string;
@@ -46,6 +45,7 @@ export type THashlist = {
     name: string;
     description: string;
     path: string;
+    hashTypeId: THashType;
     createdAt: string;
     lastestModification: string;
     numberOfCrackedPasswords: number;
