@@ -36,25 +36,21 @@ export const title: CSSProperties = {
     fontSize: 24,
 };
 
-export const mandatoryBody: CSSProperties = {
+export const formBody: CSSProperties = {
     fontFamily: 'InterMedium',
     fontSize: 20,
     display: 'grid',
-    gridTemplateColumns: '1.5fr 1fr',
-    height: 'max-content',
+    gridTemplateRows: 'auto',
     width: '100%',
 };
 
-export const mandatoryBodyLeft: CSSProperties = {
-    backgroundColor: 'white',
-};
-
-export const mandatoryBodyRight: CSSProperties = {
-    backgroundColor: 'white',
+export const mandatoryBody: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: '1.5fr 1fr',
 };
 
 export const labels: CSSProperties = {
-    marginBottom: 10,
+    marginBottom: 0,
 };
 
 export const inputDatalists: CSSProperties = {
@@ -67,29 +63,38 @@ export const submitInput: CSSProperties = {
     padding: '0 10px',
     height: '30px',
     position: 'absolute',
-    bottom: '10%',
+    bottom: '50px',
     right: '10%',
 };
 
 export const divCheckbox: CSSProperties = {
     marginTop: 10,
     overflowY: 'scroll',
-    maxHeight: 350,
+    maxHeight: 180,
+    maxWidth: '100%',
+    display: 'grid',
+};
+
+export const divRadio: CSSProperties = {
+    marginTop: 5,
+    overflowY: 'scroll',
+    maxHeight: 120,
     maxWidth: '100%',
     display: 'grid',
 };
 
 export const advancedConfigs: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'minmax(auto, 90%) auto',
+    gridTemplateColumns: 'minmax(auto, 10%) auto',
     width: 160,
     marginTop: 20,
 };
 
 export const advancedConfigsImg: CSSProperties = {
-    width: 15,
-    height: 15,
-    marginTop: 17,
+    width: 10,
+    height: 10,
+    marginTop: 20,
+    marginRight: 5,
 };
 
 export const advancedConfigsTxt: CSSProperties = {
@@ -98,3 +103,12 @@ export const advancedConfigsTxt: CSSProperties = {
 };
 
 export const inputCheckboxes: CSSProperties = { marginTop: 5, marginRight: 5 };
+
+export const advancedConfigsDivMain: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(auto, 50%) auto',
+    height: 'max-content',
+    width: '100%',
+};
+
+export const advancedConfigsDivLeft: CSSProperties = {};

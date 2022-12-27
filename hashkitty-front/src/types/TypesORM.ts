@@ -17,8 +17,8 @@ export type Options = {
     breakpointGPUTemperature: number;
     wordlistId: TWordlist;
     workloadProfileId: TWorkloadProfile;
-    kernelOpti: Boolean;
-    CPUOnly: Boolean;
+    kernelOpti: boolean;
+    CPUOnly: boolean;
     ruleName?: string;
     potfileName?: string;
     maskQuery?: string;
@@ -31,6 +31,7 @@ export type TemplateTask = {
     description?: string;
     createdAt: string;
     lastestModification: string;
+    options: Options;
 };
 
 export type THashType = {

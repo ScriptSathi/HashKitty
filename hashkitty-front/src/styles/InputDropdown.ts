@@ -16,6 +16,7 @@ export const listFrame: CSSProperties = {
     position: 'absolute',
     display: 'grid',
     maxHeight: '200px',
+    zIndex: 2,
     top: 50,
     border: '1px solid',
     borderRadius: '12px',
