@@ -61,6 +61,54 @@ export default class CardTask extends Component<
         }
     }
 
+    public render() {
+        return (
+            <div
+                onMouseEnter={this.onMouseEnterCard}
+                onMouseLeave={this.onMouseLeaveCard}
+                style={this.cardBody}
+            >
+                <div style={topPart}>
+                    <div style={topLeftPart}>
+                        <p style={taskName}>{this.props.name}</p>
+                        <div style={taskSoftInfos}>
+                            <this.renderTaskInfo />
+                        </div>
+                    </div>
+                    <div style={moreDetails}>
+                        <p onClick={() => alert(1)} className="moreDetails">
+                            More details
+                        </p>
+                        <p style={cardOnStartError}>
+                            {this.state.onErrorStart}
+                        </p>
+                    </div>
+                </div>
+                <div style={bottomBox}>
+                    <div>
+                        <p style={bottomBoxText}>
+                            Speed: {this.state.speed} H/s
+                            <br />
+                            Progress: {this.state.runningProgress}
+                            <br />
+                            Estimated end: {this.state.estimatedStop}
+                        </p>
+                    </div>
+                    <div style={runButton}>
+                        <img
+                            onMouseEnter={this.onMouseEnterRunTask}
+                            onMouseLeave={this.onMouseLeaveRunTask}
+                            onClick={this.onClickRunTask}
+                            src={this.displayedLogo}
+                            alt="Logo"
+                        />
+                    </div>
+                </div>
+                {this.state.moreDetailsClicked ? <p>Bonjour</p> : ''}
+            </div>
+        );
+    }
+
     private refreshStatus: () => void = () => {
         if (this.state.isRunning) {
             fetch(Constants.apiGetStatus)
@@ -182,52 +230,4 @@ export default class CardTask extends Component<
             </p>
         );
     };
-
-    public render() {
-        return (
-            <div
-                onMouseEnter={this.onMouseEnterCard}
-                onMouseLeave={this.onMouseLeaveCard}
-                style={this.cardBody}
-            >
-                <div style={topPart}>
-                    <div style={topLeftPart}>
-                        <p style={taskName}>{this.props.name}</p>
-                        <div style={taskSoftInfos}>
-                            <this.renderTaskInfo />
-                        </div>
-                    </div>
-                    <div style={moreDetails}>
-                        <p onClick={() => alert(1)} className="moreDetails">
-                            More details
-                        </p>
-                        <p style={cardOnStartError}>
-                            {this.state.onErrorStart}
-                        </p>
-                    </div>
-                </div>
-                <div style={bottomBox}>
-                    <div>
-                        <p style={bottomBoxText}>
-                            Speed: {this.state.speed} H/s
-                            <br />
-                            Progress: {this.state.runningProgress}
-                            <br />
-                            Estimated end: {this.state.estimatedStop}
-                        </p>
-                    </div>
-                    <div style={runButton}>
-                        <img
-                            onMouseEnter={this.onMouseEnterRunTask}
-                            onMouseLeave={this.onMouseLeaveRunTask}
-                            onClick={this.onClickRunTask}
-                            src={this.displayedLogo}
-                            alt="Logo"
-                        />
-                    </div>
-                </div>
-                {this.state.moreDetailsClicked ? <p>Bonjour</p> : ''}
-            </div>
-        );
-    }
 }

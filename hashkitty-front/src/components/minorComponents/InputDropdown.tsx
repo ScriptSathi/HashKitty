@@ -1,14 +1,14 @@
-import React, { CSSProperties, Component } from 'react';
+import React, { CSSProperties, ChangeEvent, Component } from 'react';
 
 import { inputDatalists, inputs } from '../../styles/CreateTask';
 import { frame, inputText, listFrame } from '../../styles/InputDropdown';
 
-type inputItem = { name: string; id: number };
+export type inputItem = { name: string; id: number };
 
 interface InputDropdownProps {
     list: inputItem[];
     formName: string;
-    handleInputChange: (event) => void;
+    handleInputChange: (event: unknown) => void;
 }
 
 interface InputDropdownState {
@@ -16,7 +16,7 @@ interface InputDropdownState {
     mouseInInput: boolean;
     inputData: string;
     sortedDropdownList: inputItem[];
-    handleInputChange: (event) => void;
+    handleInputChange: (event: unknown) => void;
 }
 
 export default class InputDropdown extends Component<
@@ -51,8 +51,48 @@ export default class InputDropdown extends Component<
         }
     }
 
-    private handleInputChange = event => {
-        const inputData = event.target.value.replace(/[^a-z0-9-_]/gi, '');
+    public render() {
+        return (
+            <div style={frame}>
+                <input
+                    type="text"
+                    onClick={event =>
+                        this.toggleDropdown(
+                            event as React.MouseEvent<
+                                HTMLInputElement,
+                                MouseEvent
+                            > &
+                                ChangeEvent<HTMLInputElement>
+                        )
+                    }
+                    onKeyUp={event =>
+                        this.toggleDropdown(
+                            event as unknown as ChangeEvent<HTMLInputElement>
+                        )
+                    }
+                    onChange={event => this.handleInputChange(event)}
+                    onMouseEnter={this.onMouseEnter}
+                    onMouseLeave={this.onMouseLeave}
+                    placeholder="Name of the list"
+                    style={{ ...inputs, ...inputDatalists }}
+                    value={this.state.inputData}
+                    name={this.formName}
+                    autoComplete="off"
+                ></input>
+                <div></div>
+                <this.renderMatchingList />
+            </div>
+        );
+    }
+
+    private handleInputChange = (
+        event:
+            | ChangeEvent<HTMLInputElement>
+            | (React.MouseEvent<HTMLInputElement, MouseEvent> &
+                  ChangeEvent<HTMLInputElement>)
+    ) => {
+        console.log(event);
+        const inputData = event.target.value.replace(/[^\w._-]/gi, '');
         event.preventDefault();
         event.stopPropagation();
         this.props.handleInputChange(event);
@@ -69,7 +109,7 @@ export default class InputDropdown extends Component<
         });
     }
 
-    private toggleDropdown = event => {
+    private toggleDropdown = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
         if (this.state.mouseInInput) {
             this.setState({
@@ -102,11 +142,10 @@ export default class InputDropdown extends Component<
                     return (
                         <input
                             className="mainHover"
-                            onClick={event => {
+                            onFocus={event => {
                                 this.handleInputChange(event);
                                 this.toggleDropdown(event);
                             }}
-                            onKeyUp={event => this.handleInputChange(event)}
                             key={elem.id}
                             value={elem.name}
                             name={this.formName}
@@ -121,31 +160,9 @@ export default class InputDropdown extends Component<
                 <input
                     readOnly
                     style={inputText}
-                    value="No hashlist loaded"
+                    value="No element found"
                 ></input>
             </div>
         );
     };
-
-    public render() {
-        return (
-            <div style={frame}>
-                <input
-                    type="text"
-                    onClick={event => this.toggleDropdown(event)}
-                    onKeyUp={event => this.toggleDropdown(event)}
-                    onChange={event => this.handleInputChange(event)}
-                    onMouseEnter={this.onMouseEnter}
-                    onMouseLeave={this.onMouseLeave}
-                    placeholder="Name of the list"
-                    style={{ ...inputs, ...inputDatalists }}
-                    value={this.state.inputData}
-                    name={this.formName}
-                    autoComplete="off"
-                ></input>
-                <div></div>
-                <this.renderMatchingList />
-            </div>
-        );
-    }
 }

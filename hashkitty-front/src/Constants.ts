@@ -9,4 +9,9 @@ export class Constants {
     public static readonly apiPOSTStart: string = `${this.apiUrl}/start`;
     public static readonly apiPOSTCreateTask: string = `${this.apiUrl}/tasks`;
     public static readonly apiGetTemplateTasks: string = `${this.apiUrl}/templatetasks`;
+    public static readonly apiGetRules: string = `${this.apiUrl}/rules`;
+    public static readonly apiGetPotfiles: string = `${this.apiUrl}/potfiles`;
+    public static readonly apiGetWordlists: string = `${this.apiUrl}/wordlists`;
+    public static readonly apiGetAttackModes: string = `${this.apiUrl}/attackmodes`;
+    public static readonly apiGetHashTypes: string = `${this.apiUrl}/hashtypes`;
 }
