@@ -1,7 +1,7 @@
 import {
     ApiOptionsFormData,
-    ApiTaskCreate,
     ApiTaskUpdate,
+    ApiTemplateTaskUpdate,
 } from '../types/TDAOs';
 import { Options } from '../ORM/entity/Options';
 import { Dao } from './DAOs/Dao';
@@ -13,6 +13,7 @@ import { Constants } from '../Constants';
 
 export class Sanitizer {
     public hasSucceded: boolean;
+    public isAnUpdate: boolean;
     public errorMessage: string;
     private dao: Dao;
     private options: Options;
@@ -25,16 +26,16 @@ export class Sanitizer {
         this.task = new Task();
         this.templateTask = new TemplateTask();
         this.hasSucceded = true;
+        this.isAnUpdate = false;
         this.errorMessage = '';
     }
 
-    public async analyseTask(
-        form: ApiTaskCreate | ApiTaskUpdate
-    ): Promise<void> {
-        console.dir(form);
-        if ('id' in form) {
+    public async analyseTask(form: ApiTaskUpdate): Promise<void> {
+        if (form.id) {
             if (await this.dao.taskExistById(form.id)) {
                 this.task = await this.dao.task.getById(form.id);
+                this.options = this.task.options;
+                this.isAnUpdate = true;
             } else {
                 this.responsesForFailId('task', form.id);
             }
@@ -44,27 +45,57 @@ export class Sanitizer {
             this.removeSpecialCharInString(form.name)
         );
         this.task.description = this.shortenStringByLength(
-            30,
+            255,
             form.description
         );
-        this.prepareOptions(form.options);
-        this.task.options = this.options;
-        await this.checkHashlit(form.hashlistId);
+        await this.prepareOptions(form.options);
+        await this.checkHashlist(form.hashlistId);
+    }
+
+    public async analyseTemplateTask(
+        form: ApiTemplateTaskUpdate
+    ): Promise<void> {
+        if (form.id) {
+            if (await this.dao.templateTaskExistById(form.id)) {
+                this.templateTask = await this.dao.templateTask.getById(
+                    form.id
+                );
+                this.options = this.templateTask.options;
+                this.isAnUpdate = true;
+            } else {
+                this.responsesForFailId('template task', form.id);
+            }
+        }
+        this.templateTask.name = this.shortenStringByLength(
+            30,
+            this.removeSpecialCharInString(form.name)
+        );
+        this.templateTask.description = this.shortenStringByLength(
+            255,
+            form.description
+        );
+        await this.prepareOptions(form.options);
     }
 
     public getTask(): Task {
         return this.task;
     }
 
-    private prepareOptions(options: ApiOptionsFormData): void {
-        this.checkWordlist(options.wordlistName);
-        this.checkWorkloadProfile(options.workloadProfileId);
-        this.checkAttackMode(options.attackModeId);
+    public getTemplateTask(): TemplateTask {
+        return this.templateTask;
+    }
+
+    private async prepareOptions(options: ApiOptionsFormData): Promise<void> {
+        await this.checkWordlist(options.wordlistName);
+        await this.checkWorkloadProfile(options.workloadProfileId);
+        await this.checkAttackMode(options.attackModeId);
         this.breakpointGPUTemperature(options.breakpointGPUTemperature);
         this.checkKernelOptions(options.kernelOpti);
         this.checkCPUOnly(options.CPUOnly);
         this.checkRules(options.ruleName || '');
         this.checkPotfiles(options.potfileName || '');
+        this.task.options = this.options;
+        this.templateTask.options = this.options;
     }
 
     private removeSpecialCharInString(input: string): string {
@@ -75,25 +106,21 @@ export class Sanitizer {
         return str.length > length ? `${str.substring(0, length - 3)}...` : str;
     }
 
-    private checkWordlist(name: string): void {
-        this.dao
-            .findWordlistByName(name)
-            .then(wordlist => {
-                console.log(wordlist);
-                console.log(name);
-                if (wordlist !== null) {
-                    this.options.wordlistId = wordlist.id;
-                } else {
-                    this.incorrectDataSubmitted('wordlist');
-                }
-            })
-            .catch(error => {
-                this.unexpectedError('wordlist');
-                logger.debug(error.message);
-            });
+    private async checkWordlist(name: string): Promise<void> {
+        try {
+            const wordlist = await this.dao.findWordlistByName(name)
+            if (wordlist !== null) {
+                this.options.wordlistId = wordlist.id;
+            } else {
+                this.incorrectDataSubmitted('wordlist');
+            }
+        } catch (error) {
+            this.unexpectedError('wordlist');
+            logger.debug(error);
+        }
     }
 
-    private async checkHashlit(id: number): Promise<void> {
+    private async checkHashlist(id: number): Promise<void> {
         try {
             if (await this.dao.findHashlistExistById(id)) {
                 const hashlist = await this.dao.hashlist.getById(id);
@@ -111,20 +138,20 @@ export class Sanitizer {
         }
     }
 
-    private checkWorkloadProfile(profileId: number): void {
-        this.dao
-            .findWorkloadProfileByName(profileId)
-            .then(wordlist => {
-                if (wordlist !== null) {
-                    this.options.wordlistId = wordlist.id;
-                } else {
-                    this.incorrectDataSubmitted('workload profile');
-                }
-            })
-            .catch(error => {
-                this.unexpectedError('workload profile');
-                logger.debug(error.message);
-            });
+    private async checkWorkloadProfile(profileId: number): Promise<void> {
+        try {
+            const workloadProfile = await this.dao.findWorkloadProfileByName(
+                profileId
+            );
+            if (workloadProfile !== null) {
+                this.options.workloadProfileId = workloadProfile.id;
+            } else {
+                this.incorrectDataSubmitted('workload profile');
+            }
+        } catch (error) {
+            this.unexpectedError('workload profile');
+            logger.debug(error);
+        }
     }
 
     private breakpointGPUTemperature(temperature: number): void {
@@ -146,20 +173,18 @@ export class Sanitizer {
         }
     }
 
-    private checkAttackMode(id: number): void {
-        this.dao
-            .findAttackModeById(id)
-            .then(attackMode => {
-                if (attackMode !== null) {
-                    this.options.attackModeId = attackMode.id;
-                } else {
-                    this.responsesForFailId('attack mode', id);
-                }
-            })
-            .catch(error => {
-                this.unexpectedError('attack mode');
-                logger.debug(error.message);
-            });
+    private async checkAttackMode(id: number): Promise<void> {
+        try {
+            const attackMode = await this.dao.findAttackModeById(id)
+            if (attackMode !== null) {
+                this.options.attackModeId = attackMode.id;
+            } else {
+                this.responsesForFailId('attack mode', id);
+            }
+        } catch (error) {
+            this.unexpectedError('attack mode');
+            logger.debug(error);
+        }
     }
 
     private checkKernelOptions(value: boolean): void {

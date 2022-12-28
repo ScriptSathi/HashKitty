@@ -2,22 +2,13 @@ import { DataSource } from 'typeorm';
 
 import { TemplateTask } from '../../ORM/entity/TemplateTask';
 import { IDaoSub } from './IDaoSub';
-import { Dao } from './Dao';
-import {
-    TDaoTemplateTaskCreate,
-    TDaoTemplateTaskUpdate,
-} from '../../types/TDAOs';
 import { Options } from '../../ORM/entity/Options';
 
-export class DaoTemplateTasks
-    implements IDaoSub<TemplateTask, TDaoTemplateTaskCreate>
-{
+export class DaoTemplateTasks implements IDaoSub<TemplateTask> {
     private db: DataSource;
-    private parentDao: Dao;
 
-    constructor(db: DataSource, parentDao: Dao) {
+    constructor(db: DataSource) {
         this.db = db;
-        this.parentDao = parentDao;
     }
 
     public getAll(): Promise<TemplateTask[]> {
@@ -31,28 +22,9 @@ export class DaoTemplateTasks
         });
     }
 
-    public async create(
-        templateTaskData: TDaoTemplateTaskCreate
-    ): Promise<TemplateTask> {
-        const templateTask = new TemplateTask();
-        // templateTask.name = this.parentDao.sanitizeLength(
-        //     30,
-        //     templateTaskData.name
-        // );
-        // templateTask.description = this.parentDao.sanitizeLength(
-        //     100,
-        //     templateTaskData.description
-        // );
-        // templateTask.createdAt = new Date();
-        // templateTask.lastestModification = new Date();
-        // templateTask.options = await this.db.getRepository(Options).save({
-        //     ...this.parentDao.sanitizeOptionsData(
-        //         new Options(),
-        //         templateTaskData.options
-        //     ),
-        // });
-
-        return this.db.getRepository(TemplateTask).save(templateTask);
+    public async create(templateTask: TemplateTask): Promise<TemplateTask> {
+        templateTask.lastestModification = new Date();
+        return this.update(templateTask);
     }
 
     public deleteById(id: number): void {
@@ -74,38 +46,13 @@ export class DaoTemplateTasks
         return templateTask === null ? new TemplateTask() : templateTask;
     }
 
-    public async update(
-        templateTaskData: TDaoTemplateTaskUpdate
-    ): Promise<void> {
-        // const templateTask = await this.db.getRepository(TemplateTask).findOne({
-        //     where: {
-        //         id: templateTaskData.id,
-        //     },
-        //     relations: [
-        //         'options',
-        //         'options.wordlistId',
-        //         'options.attackModeId',
-        //         'options.workloadProfileId',
-        //     ],
-        // });
-        // if (templateTask) {
-        //     templateTask.lastestModification = new Date();
-        //     templateTask.name = this.parentDao.sanitizeLength(
-        //         30,
-        //         templateTaskData.name
-        //     );
-        //     templateTask.description = this.parentDao.sanitizeLength(
-        //         100,
-        //         templateTaskData.description
-        //     );
-        //     await this.db.getRepository(TemplateTask).save(templateTask);
-        //     await this.db.getRepository(Options).save({
-        //         ...this.parentDao.sanitizeOptionsData(
-        //             templateTask.options,
-        //             templateTaskData.options
-        //         ),
-        //         ...{ id: templateTask.options.id },
-        //     });
-        // }
+    public async update(templateTask: TemplateTask): Promise<TemplateTask> {
+        templateTask.lastestModification = new Date();
+        templateTask.options = await this.updateOptions(templateTask.options);
+        return this.db.getRepository(TemplateTask).save(templateTask);
+    }
+
+    private updateOptions(options: Options): Promise<Options> {
+        return this.db.getRepository(Options).save(options);
     }
 }

@@ -33,9 +33,9 @@ export class Dao {
 
     constructor(db: DataSource) {
         this.db = db;
-        this.task = new DaoTasks(db, this);
-        this.templateTask = new DaoTemplateTasks(db, this);
-        this.hashlist = new DaoHashlist(db, this);
+        this.task = new DaoTasks(db);
+        this.templateTask = new DaoTemplateTasks(db);
+        this.hashlist = new DaoHashlist(db);
         this.attackMode = new DaoAttackMode(db);
         this.hashType = new DaoHashType(db);
     }

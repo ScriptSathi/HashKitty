@@ -29,18 +29,13 @@ export class ApiRouter {
         this.router.get('/rules', this.routeHandler.getFilesInRulesDir);
         this.router.post(
             '/templatetasks',
-            this.routeHandler.createTemplateTask
+            this.routeHandler.updateTemplateTask
         );
         this.router.post(
             '/templatetasks/delete',
             this.routeHandler.deleteTemplateTask
         );
-        this.router.post(
-            '/templatetasks/update',
-            this.routeHandler.updateTemplateTask
-        );
-        this.router.post('/tasks', this.routeHandler.createTask);
-        this.router.post('/tasks/update', this.routeHandler.updateTask);
+        this.router.post('/tasks', this.routeHandler.updateTask);
         this.router.post('/tasks/delete', this.routeHandler.deleteTask);
         this.router.get(
             '/templateTasks/:id',
