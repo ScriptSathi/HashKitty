@@ -11,6 +11,9 @@ import { DaoTemplateTasks } from './DaoTemplateTasks';
 import { DaoHashlist } from './DaoHashlist';
 import { DaoAttackMode } from './DaoAttackMode';
 import { DaoHashType } from './DaoHashType';
+import { FsUtils } from '../../utils/FsUtils';
+import { Constants } from '../../Constants';
+import { logger } from '../../utils/Logger';
 
 export class Dao {
     public db: DataSource;
@@ -35,6 +38,29 @@ export class Dao {
         this.hashlist = new DaoHashlist(db, this);
         this.attackMode = new DaoAttackMode(db);
         this.hashType = new DaoHashType(db);
+    }
+
+    public async reloadWordlistInDB(): Promise<void> {
+        const filesInDir = FsUtils.listFileInDir(Constants.wordlistPath);
+        const wordlistInDb = await this.db.getRepository(Wordlist).find();
+        const missingInDb = filesInDir.filter(x =>
+            wordlistInDb.find(elem => !x.includes(elem.name))
+        );
+        missingInDb.map(file => {
+            const wl = new Wordlist();
+            wl.name = file;
+            wl.description = '';
+            wl.path = `${Constants.wordlistPath}/${file}`;
+            try {
+                this.db.getRepository(Wordlist).save(wl);
+            } catch (e) {
+                logger.error('An error occured', e);
+            }
+        });
+        // const dbElemToDelete = wordlistInDb.filter(
+        //     x => !filesInDir.includes(x.name)
+        // );
+        // TODO Remove deleted wordlists (the filter above is working)
     }
 
     public async taskExistById(id: number): Promise<boolean> {
@@ -80,6 +106,6 @@ export class Dao {
     }
 
     public async findHashlistExistById(id: number): Promise<boolean> {
-        return await this.db.getRepository(Hashlist).exist({where: {id},});
+        return await this.db.getRepository(Hashlist).exist({ where: { id } });
     }
 }
