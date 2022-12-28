@@ -2,19 +2,13 @@ import path = require('path');
 
 import { DataSource } from 'typeorm';
 import { Hashlist } from '../../ORM/entity/Hashlist';
-import { TDaoHashlistCreate } from '../../types/TDAOs';
 import { IDaoSub } from './IDaoSub';
-import { Dao } from './Dao';
-import { Constants } from '../../Constants';
-import { logger } from '../../utils/Logger';
 
-export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
+export class DaoHashlist implements IDaoSub<Hashlist> {
     private db: DataSource;
-    private parentDao: Dao;
 
-    constructor(db: DataSource, parentDao: Dao) {
+    constructor(db: DataSource) {
         this.db = db;
-        this.parentDao = parentDao;
     }
 
     public getAll(): Promise<Hashlist[]> {
@@ -23,31 +17,14 @@ export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
             .find({ relations: ['hashTypeId'] });
     }
 
-    public create(hashlistData: TDaoHashlistCreate): Promise<Hashlist> {
-        const hashlist = new Hashlist();
-        hashlist.name = hashlistData.name;
-        hashlist.description = hashlistData.description;
-        hashlist.hashTypeId = hashlistData.hashTypeId;
+    public create(hashlist: Hashlist): Promise<Hashlist> {
         hashlist.createdAt = new Date();
-        hashlist.lastestModification = new Date();
-        hashlist.path = path.join(Constants.hashlistsPath, hashlist.name);
-        return this.db.getRepository(Hashlist).save(hashlist);
+        return this.update(hashlist);
     }
 
-    public async update(hashlistData: Hashlist): Promise<void> {
-        const hashlist = await this.db.getRepository(Hashlist).findOne({
-            where: {
-                id: hashlistData.id,
-            },
-            relations: ['hashTypeId'],
-        });
-        if (hashlist) {
-            hashlist.name = hashlistData.name;
-            hashlist.description = hashlistData.description;
-            hashlist.lastestModification = new Date();
-            this.db.getRepository(Hashlist).save(hashlist);
-            logger.debug('Update hashlist with id:' + hashlistData.id);
-        }
+    public update(hashlist: Hashlist): Promise<Hashlist> {
+        hashlist.lastestModification = new Date();
+        return this.db.getRepository(Hashlist).save(hashlist);
     }
 
     public deleteById(id: number): void {

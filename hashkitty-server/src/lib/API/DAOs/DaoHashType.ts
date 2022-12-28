@@ -1,9 +1,8 @@
 import { IDaoSub } from './IDaoSub';
 import { DataSource } from 'typeorm';
 import { HashType } from '../../ORM/entity/HashType';
-import { TDaoHashTypeCreate } from '../../types/TDAOs';
 
-export class DaoHashType implements IDaoSub<HashType, TDaoHashTypeCreate> {
+export class DaoHashType implements IDaoSub<HashType> {
     private db: DataSource;
 
     constructor(db: DataSource) {
@@ -14,11 +13,7 @@ export class DaoHashType implements IDaoSub<HashType, TDaoHashTypeCreate> {
         return this.db.getRepository(HashType).find();
     }
 
-    public create(reqBody: TDaoHashTypeCreate): Promise<HashType> {
-        const hashType = new HashType();
-        hashType.typeNumber = reqBody.typeNumber;
-        hashType.name = reqBody.name;
-        hashType.description = reqBody.description;
+    public create(hashType: HashType): Promise<HashType> {
         return this.db.getRepository(HashType).save(hashType);
     }
 
@@ -34,7 +29,7 @@ export class DaoHashType implements IDaoSub<HashType, TDaoHashTypeCreate> {
         return hashType === null ? new HashType() : hashType;
     }
 
-    public update(reqBody: Partial<HashType>): Promise<void> {
+    public update(reqBody: HashType): Promise<HashType> {
         return new Promise(() => {
             reqBody;
         }); // Nothing to do here

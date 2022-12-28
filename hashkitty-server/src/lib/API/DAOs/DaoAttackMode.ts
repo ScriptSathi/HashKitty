@@ -1,11 +1,8 @@
 import { AttackMode } from '../../ORM/entity/AttackMode';
-import { TDaoCreateAttackMode } from '../../types/TDAOs';
 import { IDaoSub } from './IDaoSub';
 import { DataSource } from 'typeorm';
 
-export class DaoAttackMode
-    implements IDaoSub<AttackMode, TDaoCreateAttackMode>
-{
+export class DaoAttackMode implements IDaoSub<AttackMode> {
     private db: DataSource;
 
     constructor(db: DataSource) {
@@ -16,10 +13,7 @@ export class DaoAttackMode
         return this.db.getRepository(AttackMode).find();
     }
 
-    public create(reqBody: TDaoCreateAttackMode): Promise<AttackMode> {
-        const attackMode = new AttackMode();
-        attackMode.mode = reqBody.mode;
-        attackMode.name = reqBody.name;
+    public create(attackMode: AttackMode): Promise<AttackMode> {
         return this.db.getRepository(AttackMode).save(attackMode);
     }
 
@@ -35,9 +29,9 @@ export class DaoAttackMode
         return attackMode === null ? new AttackMode() : attackMode;
     }
 
-    public update(reqBody: Partial<AttackMode>): Promise<void> {
+    public update(attackMode: AttackMode): Promise<AttackMode> {
         return new Promise(() => {
-            reqBody;
+            attackMode;
         }); // Nothing to do here
     }
 }
