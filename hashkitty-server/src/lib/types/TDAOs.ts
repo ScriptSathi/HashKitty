@@ -1,5 +1,3 @@
-import { Options } from '../ORM/entity/Options';
-
 export type TDaoCreate = {
     name: string;
     description: string;
@@ -34,19 +32,21 @@ export type ApiOptionsFormData = {
     maskFilename?: string;
 };
 
-export type ApiTaskCreate = TDaoCreate & {
-    hashlistId: number;
-    options: ApiOptionsFormData;
-    templateTaskId?: number;
-};
-export type ApiTaskUpdate = ApiTaskCreate & TDaoById;
-export type TDaoTaskDelete = TDaoById;
+export type ApiTemplateTaskUpdate = TDaoCreate &
+    Partial<TDaoById> & {
+        options: ApiOptionsFormData;
+    };
 
-export type TDaoTemplateTaskCreate = TDaoCreate & {
-    options: Options;
-};
-export type TDaoTemplateTaskUpdate = TDaoTemplateTaskCreate & TDaoById;
-export type TDaoTemplateTaskDelete = TDaoById;
+export type ApiTaskUpdate = TDaoCreate &
+    Partial<TDaoById> & {
+        hashlistId: number;
+        options: ApiOptionsFormData;
+        templateTaskId?: number;
+    };
+
+export type ApiTaskDelete = TDaoById;
+
+export type ApiTemplateTaskDelete = TDaoById;
 
 export type TDaoHashlistDelete = TDaoById;
 export type TDaoHashlistCreate = TDaoCreate & {
