@@ -8,7 +8,7 @@ import { TAttackMode, THashlist } from './types/TypesORM';
 import { inputItem } from './components/minorComponents/InputDropdown';
 
 const newTaskKeys: keyErrors[] = [
-    'formAttackMode',
+    'formAttackModeId',
     'formRuleName',
     'formMaskQuery',
     'formPotfileName',
@@ -54,11 +54,13 @@ export class ErrorHandling {
     ): void {
         this.hasErrors = false;
         this.checkName(form.formName);
-        this.checkAttackMode(form.formAttackMode, dbData.attackModes);
+        this.checkAttackMode(form.formAttackModeId, dbData.attackModes);
         this.checkHashlist(form.formHashlistName, dbData.hashlist);
         this.checkWordlist(form.formWordlistName, dbData.wordlist);
         this.checkRules(form.formRuleName, dbData.rules);
         this.checkPotfiles(form.formPotfileName, dbData.potfiles);
+        this.checkWorkloadProfile(form.formWorkloadProfile);
+        this.checkBreakpointTemp(form.formBreakpointGPUTemperature);
     }
 
     private get defaultField(): fieldError {
@@ -91,20 +93,20 @@ export class ErrorHandling {
     }
 
     private checkAttackMode(
-        attackMode: TAttackMode['mode'],
+        attackModeId: TAttackMode['id'],
         dbAttackModes: TAttackMode[]
     ): void {
         const find = dbAttackModes.find(elem => {
-            return elem.mode === attackMode;
+            return elem.id === attackModeId;
         });
         if (find) {
-            this.results.formAttackMode = {
+            this.results.formAttackModeId = {
                 isError: false,
                 message: '',
                 itemId: find.id,
             };
         } else {
-            this.results.formAttackMode = this.requieredFields;
+            this.results.formAttackModeId = this.requieredFields;
             this.hasErrors = true;
         }
     }
@@ -114,7 +116,7 @@ export class ErrorHandling {
             return elem.name === name;
         });
         if (find) {
-            this.defaultField;
+            this.results.formWordlistName = this.defaultField;
         } else if (name === '') {
             this.results.formWordlistName = this.requieredFields;
             this.hasErrors = true;
@@ -148,9 +150,9 @@ export class ErrorHandling {
             return elem.name === name;
         });
         if (find || name.length === 0) {
-            this.results.formPotfileName = this.defaultField;
+            this.results.formRuleName = this.defaultField;
         } else {
-            this.results.formPotfileName = this.requieredFields;
+            this.results.formRuleName = this.wrongData;
             this.hasErrors = true;
         }
     }
@@ -162,8 +164,24 @@ export class ErrorHandling {
         if (find || name.length === 0) {
             this.results.formPotfileName = this.defaultField;
         } else {
-            this.results.formPotfileName = this.requieredFields;
+            this.results.formPotfileName = this.wrongData;
             this.hasErrors = true;
+        }
+    }
+
+    private checkBreakpointTemp(temp: number) {
+        if (temp > 110 || temp < 0 || typeof temp !== 'number') {
+            this.results.formBreakpointGPUTemperature = this.wrongData;
+        } else {
+            this.results.formBreakpointGPUTemperature = this.defaultField;
+        }
+    }
+
+    private checkWorkloadProfile(profile: number) {
+        if (profile > 110 || profile < 0 || typeof profile !== 'number') {
+            this.results.formWorkloadProfile = this.wrongData;
+        } else {
+            this.results.formWorkloadProfile = this.defaultField;
         }
     }
 }
