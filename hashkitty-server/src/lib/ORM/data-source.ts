@@ -11,7 +11,7 @@ import { WorkloadProfile } from './entity/WorkloadProfile';
 
 export const AppDataSource = new DataSource({
     type: 'mysql',
-    host: 'mysql',
+    host: 'localhost',
     port: 3306,
     username: 'hashkitty',
     password: 'hashkitty',
