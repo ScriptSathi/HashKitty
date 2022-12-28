@@ -5,7 +5,7 @@ export type fieldError = {
 };
 
 export type keyErrors =
-    | 'formAttackMode'
+    | 'formAttackModeId'
     | 'formRuleName'
     | 'formMaskQuery'
     | 'formPotfileName'

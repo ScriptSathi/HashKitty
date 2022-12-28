@@ -91,7 +91,6 @@ export default class InputDropdown extends Component<
             | (React.MouseEvent<HTMLInputElement, MouseEvent> &
                   ChangeEvent<HTMLInputElement>)
     ) => {
-        console.log(event);
         const inputData = event.target.value.replace(/[^\w._-]/gi, '');
         event.preventDefault();
         event.stopPropagation();

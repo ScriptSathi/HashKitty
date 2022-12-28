@@ -22,7 +22,11 @@ import {
 import { Constants } from '../Constants';
 import { ErrorHandling } from '../ErrorHandling';
 import { THashlist, TemplateTask, TAttackMode } from '../types/TypesORM';
-import { newTaskFormData } from '../types/TComponents';
+import {
+    ApiOptionsFormData,
+    ApiTaskFormData,
+    newTaskFormData,
+} from '../types/TComponents';
 import { newTaskInputsError } from '../types/TErrorHandling';
 import InputDropdown, { inputItem } from './minorComponents/InputDropdown';
 import toggleClose from '../assets/images/toggleClose.svg';
@@ -36,7 +40,7 @@ type CreateTaskState = {
     formHasErrors: boolean;
     createOptionsToggle: boolean;
     isMouseIn: boolean;
-    checkboxChecked: boolean;
+    templateCheckboxIsChecked: boolean;
     templateTaskCheckBoxId: number;
     hashlist: THashlist[];
     wordlists: inputItem[];
@@ -58,7 +62,7 @@ type inputDatalist = {
 };
 
 const defaultFormData = {
-    formAttackMode: 0,
+    formAttackModeId: -1,
     formCpuOnly: false,
     formRuleName: '',
     formMaskQuery: '',
@@ -86,7 +90,7 @@ export default class CreateTask extends Component<
             createOptionsToggle: false,
             formHasErrors: false,
             isMouseIn: false,
-            checkboxChecked: false,
+            templateCheckboxIsChecked: false,
             templateTaskCheckBoxId: -1,
             hashlist: [],
             wordlists: [],
@@ -210,33 +214,11 @@ export default class CreateTask extends Component<
         });
     }
 
-    private handleInputChange = event => {
-        if (event.target.name !== '' && event.target.name in this.state) {
-            const target = event.target;
-            let value =
-                target.type === 'checkbox'
-                    ? target.checked
-                    : target.value.replace(/[^\w._-]/gi, '');
-            if (target.name === 'formWorkloadProfile') {
-                if (value < 1) value = 1;
-                else if (value > 4) value = 4;
-            }
-            if (target.name === 'formBreakpointGPUTemperature') {
-                if (value < 0) value = 0;
-                else if (value > 110) value = 110;
-            }
-            this.setState({
-                [target.name]: value,
-            } as Pick<CreateTaskState, keyof CreateTaskState>);
-        }
-    };
-
-    private handleSubmit = event => {
-        event.preventDefault();
-        const form: newTaskFormData = {
+    private get form(): newTaskFormData {
+        return {
             formName: this.state.formName,
             formHashlistName: this.state.formHashlistName,
-            formAttackMode: this.state.formAttackMode,
+            formAttackModeId: this.state.formAttackModeId,
             formCpuOnly: this.state.formCpuOnly,
             formRuleName: this.state.formRuleName,
             formMaskQuery: this.state.formMaskQuery,
@@ -247,14 +229,57 @@ export default class CreateTask extends Component<
             formBreakpointGPUTemperature:
                 this.state.formBreakpointGPUTemperature,
         };
-        this.inputsError.checkTask(form, {
+    }
+
+    private handleInputChange = event => {
+        if (event.target.name !== '' && event.target.name in this.state) {
+            const target = event.target;
+            let value =
+                target.type === 'checkbox'
+                    ? target.checked
+                    : target.value.replace(/[^\w._-]/gi, '');
+            if (target.name === 'formWorkloadProfile') {
+                value = parseInt(value) || 1;
+                if (value < 1) value = 1;
+                else if (value > 4) value = 4;
+            }
+            if (target.name === 'formBreakpointGPUTemperature') {
+                value = parseInt(value) || 0;
+                if (value < 0) value = 0;
+                else if (value > 110) value = 110;
+            }
+            if (target.name === 'formAttackModeId') {
+                if (this.state.templateCheckboxIsChecked) {
+                    const templateTask = this.state.templateTasks.find(
+                        templateTask => {
+                            return (
+                                templateTask.id ===
+                                this.state.templateTaskCheckBoxId
+                            );
+                        }
+                    );
+                    value =
+                        templateTask?.options.attackModeId.id ||
+                        this.state.attackModes[0].id;
+                } else {
+                    value = parseInt(value);
+                }
+            }
+            this.setState({
+                [target.name]: value,
+            } as Pick<CreateTaskState, keyof CreateTaskState>);
+        }
+    };
+
+    private handleSubmit = event => {
+        event.preventDefault();
+        this.inputsError.checkTask(this.form, {
             attackModes: this.state.attackModes,
             hashlist: this.state.hashlist,
             wordlist: this.state.wordlists,
             rules: this.state.rules,
             potfiles: this.state.potfiles,
         });
-        console.log(this.inputsError);
         this.setState({
             inputsErrorCheck: this.inputsError.results,
             formHasErrors: this.inputsError.hasErrors,
@@ -266,13 +291,29 @@ export default class CreateTask extends Component<
             const hashList = this.state.hashlist.find(hashlist => {
                 return hashlist.name === this.state.formHashlistName;
             });
+            const options: ApiOptionsFormData = {
+                attackModeId: this.state.formAttackModeId,
+                breakpointGPUTemperature:
+                    this.state.formBreakpointGPUTemperature,
+                wordlistName: this.state.formWordlistName,
+                workloadProfileId: this.state.formWorkloadProfile,
+                kernelOpti: this.state.formKernelOpti,
+                CPUOnly: this.state.formCpuOnly,
+            };
             if (hashList && templateTask) {
                 this.submitForm({
                     name: this.state.formName,
                     description: 'test',
-                    hashTypeId: hashList.hashTypeId.id,
                     hashlistId: hashList.id,
                     templateTaskId: templateTask.id,
+                    options,
+                });
+            } else if (hashList && this.form.formWordlistName.length > 0) {
+                this.submitForm({
+                    name: this.state.formName,
+                    description: 'test',
+                    hashlistId: hashList.id,
+                    options,
                 });
             } else {
                 //TODO No reference found
@@ -280,7 +321,7 @@ export default class CreateTask extends Component<
         }
     };
 
-    private submitForm(form): void {
+    private submitForm(form: ApiTaskFormData): void {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -308,10 +349,11 @@ export default class CreateTask extends Component<
     }
 
     private handleTemplateTaskCheckbox(event) {
-        if (this.state.checkboxChecked) {
+        if (this.state.templateCheckboxIsChecked) {
             this.setState({
                 templateTaskCheckBoxId: -1,
-                checkboxChecked: !this.state.checkboxChecked,
+                templateCheckboxIsChecked:
+                    !this.state.templateCheckboxIsChecked,
                 ...defaultFormData,
             });
         } else {
@@ -322,14 +364,15 @@ export default class CreateTask extends Component<
             if (template) {
                 this.setState({
                     templateTaskCheckBoxId: templateId,
-                    checkboxChecked: !this.state.checkboxChecked,
-                    formAttackMode: template.options.attackModeId.mode,
+                    templateCheckboxIsChecked:
+                        !this.state.templateCheckboxIsChecked,
+                    formAttackModeId: template.options.attackModeId.id,
                     formCpuOnly: template.options.CPUOnly,
                     formRuleName: template.options.ruleName || '',
                     formMaskQuery: template.options.maskQuery || '',
                     formPotfileName: template.options.potfileName || '',
                     formKernelOpti: template.options.kernelOpti,
-                    formWordlistName: template.options.wordlistId.name || '',
+                    formWordlistName: template.options.wordlistId.name,
                     formWorkloadProfile:
                         template.options.workloadProfileId.profileId,
                     formBreakpointGPUTemperature:
@@ -360,7 +403,7 @@ export default class CreateTask extends Component<
                             : { margin: 0, visibility: 'hidden' }
                     }
                 >
-                    {this.state.inputsErrorCheck.formAttackMode.message}
+                    {this.state.inputsErrorCheck.formAttackModeId.message}
                 </p>
                 <div style={divRadio}>
                     {this.state.attackModes.map(elem => {
@@ -369,9 +412,11 @@ export default class CreateTask extends Component<
                                 <input
                                     style={inputCheckboxes}
                                     type="radio"
-                                    name="formAttackMode"
+                                    name="formAttackModeId"
                                     value={elem.id}
-                                    checked={defaultVal === elem.mode}
+                                    checked={
+                                        this.state.formAttackModeId === elem.id
+                                    }
                                     onChange={event =>
                                         this.handleInputChange(event)
                                     }
@@ -447,7 +492,7 @@ export default class CreateTask extends Component<
                     style={
                         this.state.formHasErrors &&
                         this.state.inputsErrorCheck.formWordlistName.isError
-                            ? { display: 'grid', margin: 0, color: 'red' }
+                            ? { margin: 0, color: 'red' }
                             : { margin: 0, visibility: 'hidden' }
                     }
                 >
@@ -470,11 +515,11 @@ export default class CreateTask extends Component<
                     style={
                         this.state.formHasErrors &&
                         this.state.inputsErrorCheck.formRuleName.isError
-                            ? { display: 'grid', margin: 0, color: 'red' }
+                            ? { margin: 0, color: 'red' }
                             : { margin: 0, visibility: 'hidden' }
                     }
                 >
-                    {this.state.inputsErrorCheck.formWordlistName.message}
+                    {this.state.inputsErrorCheck.formRuleName.message}
                 </p>
                 <InputDropdown
                     list={this.state.rules}
