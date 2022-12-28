@@ -10,10 +10,10 @@ services:
       MYSQL_USER: "hashkitty"
       MYSQL_PASSWORD: "hashkitty"
       MYSQL_DATABASE: "hashkitty"
+    networks:
+      - backend
     volumes:
       - hashkitty-storage:/var/lib/mysql
-    ports:
-      - 3306:3306
 
   phpmyadmin:
     image: phpmyadmin:5.2.0-apache
@@ -23,36 +23,44 @@ services:
       PMA_USER: root
       PMA_PASSWORD: root
       PMA_ARBITRARY: 1
+    networks:
+      - backend
     restart: always
     ports:
       - 8080:80
   
-  # hashkitty-server: 
-  # # TODO The image doesn not include nvidia drivers neither than hashcat binary. Need to find a solution ...
-  # # check this https://github.com/dizcza/docker-hashcat/blob/master/Dockerfile
-  # # install node over this maybe ?
-  #   container_name: hashkitty-server
-  #   restart: always
-  #   build:
-  #     context: ../SERVER
-  #     dockerfile: ../SERVER/Dockerfile.dev
-  #   env_file: .env
-  #   volumes:
-  #     - ../SERVER/:/app/
-  #     - ${HASHKITTY_WORDLIST_DIR}/hashkitty:/opt/hashkitty
-  #   environment:
-  #     PORT: ${PORT}
-  #   ports:
-  #     - 8081:${PORT}
-  #   depends_on:
-  #     - mysql
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+  hashkitty-back:
+    build:
+      context: '../hashkitty-server/'
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      - mysql
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    restart: always
+    container_name: hashkitty-back
+
+  hashkitty-front:
+    build:
+      context: '../hashkitty-front/'
+    networks:
+      - frontend
+    depends_on:
+      - hashkitty-back
+    restart: always
+    ports:
+    - 3000:3000
+    container_name: hashkitty-front
+  
+
+networks:
+  frontend:
+  backend:
 
 volumes:
   hashkitty-storage:
