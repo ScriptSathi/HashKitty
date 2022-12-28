@@ -14,6 +14,7 @@ services:
       - backend
     volumes:
       - hashkitty-storage:/var/lib/mysql
+      - ../hashkitty-server/sqldump:/docker-entrypoint-initdb.d:ro
 
   phpmyadmin:
     image: phpmyadmin:5.2.0-apache
