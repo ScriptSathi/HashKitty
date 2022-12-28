@@ -34,10 +34,10 @@ export class Options {
     workloadProfileId!: number;
 
     @Column('bool', { default: false, name: 'kernel_opti' })
-    kernelOpti!: Boolean;
+    kernelOpti!: boolean;
 
     @Column('bool', { default: false, name: 'cpu_only' })
-    CPUOnly!: Boolean;
+    CPUOnly!: boolean;
 
     @Column('varchar', { name: 'rule_name', default: '' })
     ruleName?: string;
