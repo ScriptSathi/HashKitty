@@ -23,6 +23,8 @@ export class ApiRouter {
         this.router.get('/wordlists', this.routeHandler.getFilesInWordlistDir);
         this.router.get('/hashlists', this.routeHandler.getHashlists);
         this.router.get('/potfiles', this.routeHandler.getFilesInPotfileDir);
+        this.router.get('/attackmodes', this.routeHandler.getAttackModes);
+        this.router.get('/hashtypes', this.routeHandler.getHashTypes);
         this.router.get('/rules', this.routeHandler.getFilesInRulesDir);
         this.router.post(
             '/templatetasks',

@@ -23,18 +23,15 @@ export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
             .find({ relations: ['hashTypeId'] });
     }
 
-    public async create(hashlistData: TDaoHashlistCreate): Promise<Hashlist> {
+    public create(hashlistData: TDaoHashlistCreate): Promise<Hashlist> {
         const hashlist = new Hashlist();
-        hashlist.name = this.parentDao.sanitizeLength(30, hashlistData.name);
-        hashlist.description = this.parentDao.sanitizeLength(
-            100,
-            hashlistData.description
-        );
+        hashlist.name = hashlistData.name;
+        hashlist.description = hashlistData.description;
         hashlist.hashTypeId = hashlistData.hashTypeId;
         hashlist.createdAt = new Date();
         hashlist.lastestModification = new Date();
         hashlist.path = path.join(Constants.hashlistsPath, hashlist.name);
-        return await this.db.getRepository(Hashlist).save(hashlist);
+        return this.db.getRepository(Hashlist).save(hashlist);
     }
 
     public async update(hashlistData: Hashlist): Promise<void> {
@@ -45,14 +42,8 @@ export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
             relations: ['hashTypeId'],
         });
         if (hashlist) {
-            hashlist.name = this.parentDao.sanitizeLength(
-                30,
-                hashlistData.name
-            );
-            hashlist.description = this.parentDao.sanitizeLength(
-                100,
-                hashlistData.description || ''
-            );
+            hashlist.name = hashlistData.name;
+            hashlist.description = hashlistData.description;
             hashlist.lastestModification = new Date();
             this.db.getRepository(Hashlist).save(hashlist);
             logger.debug('Update hashlist with id:' + hashlistData.id);
@@ -68,6 +59,7 @@ export class DaoHashlist implements IDaoSub<Hashlist, TDaoHashlistCreate> {
             where: {
                 id: id,
             },
+            relations: ['hashTypeId'],
         });
         return hashlist === null ? new Hashlist() : hashlist;
     }
