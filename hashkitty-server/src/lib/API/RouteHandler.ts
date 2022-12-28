@@ -421,6 +421,24 @@ export class RouteHandler {
         }
     };
 
+    public reloadWordlists = async (
+        _: Request,
+        res: Response
+    ): Promise<void> => {
+        try {
+            await this.dao.reloadWordlistInDB();
+            res.status(200).json({
+                success: 'Update successfully',
+            });
+        } catch (err) {
+            logger.error(err);
+            res.status(200).json({
+                fail: Dao.UnexpectedError,
+                error: `[ERROR]: ${err}`,
+            });
+        }
+    };
+
     public getFilesInWordlistDir = (_: Request, res: Response): void => {
         this.getFileInDir(res, Constants.wordlistPath);
     };
