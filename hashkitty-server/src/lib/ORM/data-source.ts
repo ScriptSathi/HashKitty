@@ -11,11 +11,11 @@ import { WorkloadProfile } from './entity/WorkloadProfile';
 
 export const AppDataSource = new DataSource({
     type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'hashkitty',
-    password: 'hashkitty',
-    database: 'hashkitty',
+    host: Constants.dbEnpoint,
+    port: Constants.dbPort,
+    username: Constants.dbUsername,
+    password: Constants.dbPassword,
+    database: Constants.dbDatabase,
     synchronize: Constants.isProduction,
     logging: false,
     entities: [

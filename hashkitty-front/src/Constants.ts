@@ -1,6 +1,11 @@
 export class Constants {
-    public static readonly domaineName = 'localhost';
-    public static readonly apiPort: number = 1337;
+    public static readonly mandatoryFetchOptions = {
+        mode: 'cors',
+        referrerPolicy: 'origin',
+    } satisfies RequestInit;
+    public static readonly domaineName =
+        process.env?.REACT_APP_SERVER_ENDPOINT || 'localhost';
+    public static readonly apiPort = process.env?.REACT_APP_API_PORT || '1337';
     public static readonly endpoint = '/api';
     public static readonly apiUrl: string = `http://${this.domaineName}:${this.apiPort}${this.endpoint}`;
     public static readonly apiGetTasks: string = `${this.apiUrl}/tasks`;

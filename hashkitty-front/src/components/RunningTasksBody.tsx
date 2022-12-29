@@ -24,7 +24,9 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
     };
 
     public async componentDidMount() {
-        const req = await (await fetch(Constants.apiGetStatus)).json();
+        const req = await (
+            await fetch(Constants.apiGetStatus, Constants.mandatoryFetchOptions)
+        ).json();
         if (req.status !== undefined && Object.keys(req.status).length !== 0) {
             const status = req.status as THashcatStatus;
             this.runningSessionName = status.session || '';

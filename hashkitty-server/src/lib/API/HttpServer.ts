@@ -4,6 +4,7 @@ import { AddressInfo } from 'net';
 import * as fs from 'fs';
 import * as express from 'express';
 import * as fileUpload from 'express-fileupload';
+import * as cors from 'cors';
 
 import { logger } from '../utils/Logger';
 import { IHttpServer, THttpServerConfig } from '../types/TApi';
@@ -11,12 +12,13 @@ import { ApiRouter } from './ApiRoutes';
 import { DataSource } from 'typeorm';
 
 export class HttpServer implements IHttpServer {
-    private app: express.Application = express();
+    private app: express.Application;
     private config: THttpServerConfig;
     private server!: http.Server | https.Server;
 
     constructor(config: THttpServerConfig, db: DataSource) {
         this.config = config;
+        this.app = express();
 
         this.enableCORS();
         this.registerRoutes(new ApiRouter(db).router);
@@ -111,18 +113,39 @@ export class HttpServer implements IHttpServer {
     }
 
     private enableCORS(): void {
-        this.app.use((_, res, next) => {
-            res.header('Access-Control-Allow-Origin', '*');
-            res.header(
-                'Access-Control-Allow-Methods',
-                'GET, POST, PUT, DELETE'
-            );
-            res.header(
-                'Access-Control-Allow-Headers',
-                'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-            );
-            next();
-        });
+        console.log('AAAAAAAAAAAAAAAAAAa');
+        this.app.use(
+            cors({
+                origin: true,
+                methods: ['GET', 'POST'],
+                maxAge: 3600,
+            })
+        );
+        // this.app.use(
+        //     cors({
+        //         origin: '*',
+        //         methods: 'GET,POST',
+        //         allowedHeaders: ['Content-Type'],
+        //         // exposedHeaders: ['Content-Type'],
+        //     })
+        // );
+        // this.app.use((_, res, next) => {
+        //     console.log('AAAAAAAAAAAA');
+        //     try {
+        //         res.header('Access-Control-Allow-Origin', '*');
+        //         res.header(
+        //             'Access-Control-Allow-Methods',
+        //             'GET, POST, OPTIONS'
+        //         );
+        //         res.header(
+        //             'Access-Control-Allow-Headers',
+        //             'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+        //         );
+        //     } catch (e) {
+        //         console.error(e);
+        //     }
+        //     next();
+        // });
     }
 
     private enableFileUpload(): void {

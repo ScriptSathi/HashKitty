@@ -3,13 +3,13 @@ services:
 
   mysql:
     image: "mysql:8.0.30"
-    container_name: mysql
+    container_name: ${DB_ENDPOINT}
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_USER: "hashkitty"
-      MYSQL_PASSWORD: "hashkitty"
-      MYSQL_DATABASE: "hashkitty"
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
     networks:
       - backend
     volumes:
@@ -20,7 +20,7 @@ services:
     image: phpmyadmin:5.2.0-apache
     container_name: phpmyadmin
     environment:
-      PMA_HOST: mysql
+      PMA_HOST: ${DB_ENDPOINT}
       PMA_USER: root
       PMA_PASSWORD: root
       PMA_ARBITRARY: 1
@@ -28,11 +28,22 @@ services:
       - backend
     restart: always
     ports:
-      - 8080:80
+      - ${PHPMYADMIN_PORT}:80
   
   hashkitty-back:
+    container_name: hashkitty-back
+    restart: always
     build:
       context: '../hashkitty-server/'
+      args:
+        PORT: ${API_PORT}
+    environment:
+      DB_ENDPOINT: ${DB_ENDPOINT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+    volumes:
+      - ../hashkitty-server:/app
     networks:
       - backend
       - frontend
@@ -43,21 +54,25 @@ services:
         reservations:
           devices:
             - capabilities: [gpu]
-    restart: always
-    container_name: hashkitty-back
 
   hashkitty-front:
+    container_name: hashkitty-front
     build:
       context: '../hashkitty-front/'
+      args:
+        SERVER_ENDPOINT: ${SERVER_ENDPOINT}
+        API_PORT: ${API_PORT}
+    environment:
+      PORT: 80
     networks:
       - frontend
     depends_on:
       - hashkitty-back
     restart: always
     ports:
-    - 3000:3000
-    container_name: hashkitty-front
-  
+      - ${WEB_FRONT_PORT}:80
+    volumes:
+      - ../hashkitty-front:/app
 
 networks:
   frontend:
