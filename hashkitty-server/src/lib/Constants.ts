@@ -4,7 +4,8 @@ import { THttpServerConfig } from './types/TApi';
 export class Constants {
     // TODO mkdir folder if not exists
     public static readonly baseDir =
-        process.env?.HASHKITTY_DIR || path.join('/opt/hashkitty');
+        process.env?.WORDLISTS_DIR_PATH ||
+        path.join(__dirname, '../../../hashkitty');
     public static readonly dbPort = parseInt(process.env?.DB_PORT || '3306');
     public static readonly dbDatabase = process.env?.DB_DATABASE || 'hashkitty';
     public static readonly dbUsername = process.env?.DB_USERNAME || 'hashkitty';

@@ -29,7 +29,7 @@ services:
     restart: always
     ports:
       - ${PHPMYADMIN_PORT}:80
-  
+
   hashkitty-back:
     container_name: hashkitty-back
     restart: always
@@ -42,9 +42,10 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_DATABASE: ${DB_DATABASE}
+      WORDLISTS_DIR_PATH: ${WORDLISTS_DIR_PATH}
     volumes:
       - ../hashkitty-server:/app
-      - hashkitty-wordlists:/opt/hashkitty/
+      - hashkitty-wordlists:${WORDLISTS_DIR_PATH}
     networks:
       - backend
       - frontend
