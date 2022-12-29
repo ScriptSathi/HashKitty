@@ -326,6 +326,7 @@ export default class CreateTask extends Component<
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(form),
+            ...Constants.mandatoryFetchOptions,
         };
         fetch(Constants.apiPOSTCreateTask, requestOptions)
             .then(response => {
@@ -344,7 +345,9 @@ export default class CreateTask extends Component<
     private async fetchListWithEndpoint<List>(
         endpoint: string
     ): Promise<List[]> {
-        const req = await (await fetch(endpoint)).json();
+        const req = await (
+            await fetch(endpoint, Constants.mandatoryFetchOptions)
+        ).json();
         return req && req.success && req.success.length > 0 ? req.success : [];
     }
 

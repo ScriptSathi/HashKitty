@@ -40,8 +40,14 @@ export default class HomePage extends Component<{}, HomePageState> {
 
     private async loadTasks(): Promise<void> {
         const tasks =
-            ((await (await fetch(Constants.apiGetTasks)).json())
-                .success as TTask[]) || [];
+            ((
+                await (
+                    await fetch(
+                        Constants.apiGetTasks,
+                        Constants.mandatoryFetchOptions
+                    )
+                ).json()
+            ).success as TTask[]) || [];
         tasks.sort((a, b) => {
             return (
                 new Date(b.lastestModification).valueOf() -

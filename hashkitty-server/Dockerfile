@@ -20,6 +20,8 @@ COPY package.json tsconfig.json /app/
 RUN npm i
 RUN npm run compile
 
-EXPOSE 1337
+ARG PORT
+ARG PORT $PORT
+EXPOSE $PORT
 
 CMD node /app/build/src/index.js
