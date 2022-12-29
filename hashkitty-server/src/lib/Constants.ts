@@ -4,7 +4,17 @@ import { THttpServerConfig } from './types/TApi';
 export class Constants {
     // TODO mkdir folder if not exists
     public static readonly baseDir =
-        process.env?.HASHKITTY_WORDLIST_DIR || path.join('/opt/hashkitty');
+        process.env?.HASHKITTY_DIR || path.join('/opt/hashkitty');
+    public static readonly dbPort = parseInt(process.env?.DB_PORT || '3306');
+    public static readonly dbDatabase = process.env?.DB_DATABASE || 'hashkitty';
+    public static readonly dbUsername = process.env?.DB_USERNAME || 'hashkitty';
+    public static readonly dbPassword = process.env?.DB_PASSWORD || 'hashkitty';
+    public static readonly defaultApiConfig = {
+        port: process.env?.PORT || '1337',
+    } satisfies THttpServerConfig;
+    public static readonly dbEnpoint = process.env?.DB_ENDPOINT || 'localhost';
+    public static readonly isProduction =
+        process.env?.PRODUCTION === 'true' || false;
     public static readonly wordlistPath = path.join(
         Constants.baseDir,
         'wordlists'
@@ -24,9 +34,4 @@ export class Constants {
     );
     public static readonly defaultBin = 'hashcat';
     public static readonly debugMode = true;
-    public static readonly defaultApiConfig: THttpServerConfig = {
-        port: process.env?.PORT || 1337,
-    };
-    public static readonly isProduction =
-        (process.env?.PRODUCTION as unknown as boolean) || false;
 }

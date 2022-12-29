@@ -111,7 +111,7 @@ export default class CardTask extends Component<
 
     private refreshStatus: () => void = () => {
         if (this.state.isRunning) {
-            fetch(Constants.apiGetStatus)
+            fetch(Constants.apiGetStatus, Constants.mandatoryFetchOptions)
                 .then(data => data.json())
                 .then(req => {
                     if (
@@ -151,6 +151,7 @@ export default class CardTask extends Component<
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: this.props.id }),
+                ...Constants.mandatoryFetchOptions,
             };
             fetch(Constants.apiPOSTStart, requestOptions)
                 .then(response => response.json())
