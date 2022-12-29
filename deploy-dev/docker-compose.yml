@@ -44,6 +44,7 @@ services:
       DB_DATABASE: ${DB_DATABASE}
     volumes:
       - ../hashkitty-server:/app
+      - hashkitty-wordlists:/opt/hashkitty/
     networks:
       - backend
       - frontend
@@ -60,7 +61,7 @@ services:
     build:
       context: '../hashkitty-front/'
       args:
-        SERVER_ENDPOINT: ${SERVER_ENDPOINT}
+        API_ENDPOINT: ${API_ENDPOINT}
         API_PORT: ${API_PORT}
     environment:
       PORT: 80
@@ -80,3 +81,4 @@ networks:
 
 volumes:
   hashkitty-storage:
+  hashkitty-wordlists:

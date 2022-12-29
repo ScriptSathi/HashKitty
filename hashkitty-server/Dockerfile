@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:1.4
+
 FROM nvidia/cuda:11.3.0-base-ubuntu20.04
 
 RUN apt update -y
@@ -17,11 +19,13 @@ ENV NVM_INC /bin/versions/node/v18.12.1/include/node
 WORKDIR /app
 COPY src/ /app/src/
 COPY package.json tsconfig.json /app/
-RUN npm i
+RUN --mount=type=cache,target=/usr/src/app/.npm \
+    npm set cache /usr/src/app/.npm && \
+    npm i
 RUN npm run compile
 
 ARG PORT
-ARG PORT $PORT
+ENV PORT $PORT
 EXPOSE $PORT
 
 CMD node /app/build/src/index.js

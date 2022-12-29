@@ -23,7 +23,7 @@ export class HttpServer implements IHttpServer {
         this.enableCORS();
         this.registerRoutes(new ApiRouter(db).router);
         this.enableFileUpload();
-        //TODO Add MiddleWare to prevent remote user communicate with the API
+        //TODO Add MiddleWare to prevent remote user communicate with the API (check preflight cors)
         //TODO Check bellow
         // const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
         // app.use(session({
@@ -113,39 +113,13 @@ export class HttpServer implements IHttpServer {
     }
 
     private enableCORS(): void {
-        console.log('AAAAAAAAAAAAAAAAAAa');
         this.app.use(
             cors({
-                origin: true,
-                methods: ['GET', 'POST'],
-                maxAge: 3600,
+                origin: '*',
+                methods: 'GET,POST',
+                allowedHeaders: ['Content-Type'],
             })
         );
-        // this.app.use(
-        //     cors({
-        //         origin: '*',
-        //         methods: 'GET,POST',
-        //         allowedHeaders: ['Content-Type'],
-        //         // exposedHeaders: ['Content-Type'],
-        //     })
-        // );
-        // this.app.use((_, res, next) => {
-        //     console.log('AAAAAAAAAAAA');
-        //     try {
-        //         res.header('Access-Control-Allow-Origin', '*');
-        //         res.header(
-        //             'Access-Control-Allow-Methods',
-        //             'GET, POST, OPTIONS'
-        //         );
-        //         res.header(
-        //             'Access-Control-Allow-Headers',
-        //             'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-        //         );
-        //     } catch (e) {
-        //         console.error(e);
-        //     }
-        //     next();
-        // });
     }
 
     private enableFileUpload(): void {

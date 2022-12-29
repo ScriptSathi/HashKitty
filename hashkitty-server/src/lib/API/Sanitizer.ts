@@ -108,7 +108,7 @@ export class Sanitizer {
 
     private async checkWordlist(name: string): Promise<void> {
         try {
-            const wordlist = await this.dao.findWordlistByName(name)
+            const wordlist = await this.dao.findWordlistByName(name);
             if (wordlist !== null) {
                 this.options.wordlistId = wordlist.id;
             } else {
@@ -175,7 +175,7 @@ export class Sanitizer {
 
     private async checkAttackMode(id: number): Promise<void> {
         try {
-            const attackMode = await this.dao.findAttackModeById(id)
+            const attackMode = await this.dao.findAttackModeById(id);
             if (attackMode !== null) {
                 this.options.attackModeId = attackMode.id;
             } else {
