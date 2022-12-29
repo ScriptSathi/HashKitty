@@ -395,7 +395,6 @@ export default class CreateTask extends Component<
     };
 
     private renderLabelAttackModes = () => {
-        const defaultVal = 0;
         return this.state.attackModes.length > 0 ? (
             <div style={{ marginTop: 30 }}>
                 <p style={{ margin: 0 }}>Choose an attack mode</p>
