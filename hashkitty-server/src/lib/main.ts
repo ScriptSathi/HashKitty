@@ -12,8 +12,9 @@ async function main(): Promise<void> {
             appDataSource = await AppDataSource.initialize();
         } catch (error) {
             const sleepTime = 5;
+            logger.error(error);
             logger.info(
-                `Wait for MySQL to start, sleep for ${sleepTime} seconds`
+                `Error while trying to connect to MySQL, retry in ${sleepTime} seconds`
             );
             await new Promise<void>(resolve =>
                 setTimeout(() => {
