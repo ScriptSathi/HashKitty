@@ -2,8 +2,9 @@ import React, { Component, CSSProperties } from 'react';
 
 import { TTask } from '../types/TypesORM';
 import { THashcatStatus } from '../types/TServer';
-import CardTask from './CardTask';
+import RunnableTaskCard from './RunnableTaskCard';
 import { Constants } from '../Constants';
+import EndedTaskCard from './EndedTaskCard';
 
 type RunningTasksBodyProps = {
     tasks: TTask[];
@@ -11,11 +12,6 @@ type RunningTasksBodyProps = {
 
 export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
     private runningSessionName = '';
-    private style: CSSProperties = {
-        display: 'grid',
-        gridTemplateColumns: 'minmax(auto, 36%) auto',
-        gap: '45px 20px',
-    };
 
     private styleNoTasksYet: CSSProperties = {
         fontSize: '20px',
@@ -37,13 +33,31 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
 
     public render() {
         return (
-            <div style={this.style}>
+            <>
                 {this.props.tasks.length === 0 ? (
                     <p style={this.styleNoTasksYet}>No tasks yet</p>
                 ) : (
                     this.props.tasks.map(task => {
-                        return (
-                            <CardTask
+                        return task.isfinished ? (
+                            <EndedTaskCard
+                                key={task.id}
+                                id={task.id}
+                                name={task.name}
+                                options={task.options}
+                                hashlistId={task.hashlistId}
+                                createdAt={task.createdAt}
+                                lastestModification={task.lastestModification}
+                                description={task.description || ''}
+                                templateTaskId={task.templateTaskId}
+                                endeddAt={task.endeddAt}
+                                isfinished={task.isfinished}
+                                isRunning={
+                                    this.runningSessionName ===
+                                    `${task.name}-${task.id}`
+                                }
+                            />
+                        ) : (
+                            <RunnableTaskCard
                                 key={task.id}
                                 id={task.id}
                                 name={task.name}
@@ -63,7 +77,7 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
                         );
                     })
                 )}
-            </div>
+            </>
         );
     }
 }
