@@ -12,16 +12,13 @@ import {
     taskSoftInfos,
     topLeftPart,
     topPart,
-} from '../styles/CardTask';
+} from '../styles/EndedTaskCard';
 import '../assets/styles/main.scss';
-import stopTask from '../assets/images/stopTask.svg';
-import stopTaskHover from '../assets/images/stopTaskHover.svg';
-import playTaskHover from '../assets/images/playTaskHover.svg';
-import playTask from '../assets/images/playTask.svg';
+import trash from '../assets/images/trash.svg';
 import { Constants } from '../Constants';
 import { THashcatStatus } from '../types/TServer';
 
-type CardTaskState = {
+type EndedTaskCardState = {
     mouseIsEnterTaskCard: boolean;
     mouseIsEnterRunTask: boolean;
     moreDetailsClicked: boolean;
@@ -33,11 +30,11 @@ type CardTaskState = {
     speed: string;
 };
 
-export default class CardTask extends Component<
+export default class EndedTaskCard extends Component<
     TTask & { isRunning: boolean },
-    CardTaskState
+    EndedTaskCardState
 > {
-    public state: CardTaskState = {
+    public state: EndedTaskCardState = {
         mouseIsEnterTaskCard: false,
         mouseIsEnterRunTask: false,
         moreDetailsClicked: false,
@@ -48,18 +45,8 @@ export default class CardTask extends Component<
         runningProgress: '0',
         speed: '0',
     };
-    private logo = this.state.clickedRunTask ? stopTask : playTask;
-    private logoHover = this.state.clickedRunTask
-        ? stopTaskHover
-        : playTaskHover;
-    private displayedLogo = this.logo;
+    private displayedLogo = trash;
     private cardBody = cardBodyGeneric;
-
-    public componentDidMount(): void {
-        if (this.state.isRunning) {
-            this.refreshStatus();
-        }
-    }
 
     public render() {
         return (
@@ -87,18 +74,23 @@ export default class CardTask extends Component<
                 <div style={bottomBox}>
                     <div>
                         <p style={bottomBoxText}>
-                            Speed: {this.state.speed} H/s
                             <br />
-                            Progress: {this.state.runningProgress}
+                            Ended at: {this.props.endeddAt}
                             <br />
-                            Estimated end: {this.state.estimatedStop}
+                            Nb of cracked passwords:{' '}
+                            {this.props.hashlistId.numberOfCrackedPasswords}
                         </p>
                     </div>
                     <div style={runButton}>
                         <img
+                            className={
+                                this.state.mouseIsEnterRunTask
+                                    ? ''
+                                    : 'deleteTask'
+                            }
                             onMouseEnter={this.onMouseEnterRunTask}
                             onMouseLeave={this.onMouseLeaveRunTask}
-                            onClick={this.onClickRunTask}
+                            onClick={this.onClickDeleteTask}
                             src={this.displayedLogo}
                             alt="Logo"
                         />
@@ -109,61 +101,29 @@ export default class CardTask extends Component<
         );
     }
 
-    private refreshStatus: () => void = () => {
-        if (this.state.isRunning) {
-            fetch(Constants.apiGetStatus, Constants.mandatoryFetchOptions)
-                .then(data => data.json())
-                .then(req => {
-                    if (
-                        req.status !== undefined &&
-                        Object.keys(req.status).length !== 0
-                    ) {
-                        const status = req.status as THashcatStatus;
-                        this.setState({
-                            estimatedStop: `${status.estimated_stop}`,
-                            runningProgress: `${status.progress[0]}`, // TODO TEST this
-                            speed: `${status.devices[0].speed}`,
-                        });
-                    } else {
-                        this.state.isRunning = false;
-                        this.updateStartStopButton();
-                        this.displayErrorMessageOnHashcatStart();
-                    }
-                });
-            setTimeout(this.refreshStatus, 2000);
-        } else {
-            this.setState({
-                estimatedStop: 'Not running',
-                runningProgress: '0',
-                speed: '0',
-            });
-        }
-    };
-
     private displayErrorMessageOnHashcatStart(): void {
         this.setState({ onErrorStart: 'An error occured' });
         setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
     }
 
     private fetchStartHashcat(isClicked: boolean): void {
-        if (isClicked && !this.state.isRunning) {
+        if (isClicked) {
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: this.props.id }),
                 ...Constants.mandatoryFetchOptions,
             };
-            fetch(Constants.apiPOSTStart, requestOptions)
+            fetch(Constants.apiPOSTDeleteTasks, requestOptions)
                 .then(response => response.json())
                 .then(() => {
                     this.state.isRunning = !this.state.isRunning;
-                    this.refreshStatus();
                 });
         }
     }
 
-    private onClickRunTask: () => void = () => {
-        this.updateStartStopButton();
+    private onClickDeleteTask: () => void = () => {
+        this.updateStartStopButton(); //TODO
         this.fetchStartHashcat(!this.state.clickedRunTask);
     };
 
@@ -171,13 +131,6 @@ export default class CardTask extends Component<
         this.setState({
             clickedRunTask: !this.state.clickedRunTask,
         });
-        this.logo = this.state.clickedRunTask ? playTask : stopTask;
-        this.logoHover = this.state.clickedRunTask
-            ? playTaskHover
-            : stopTaskHover;
-        this.displayedLogo = this.state.mouseIsEnterRunTask
-            ? this.logoHover
-            : this.logo;
     }
 
     private onMouseEnterCard: () => void = () => {
@@ -201,14 +154,12 @@ export default class CardTask extends Component<
         this.setState({
             mouseIsEnterRunTask: true,
         });
-        this.displayedLogo = this.logoHover;
     };
 
     private onMouseLeaveRunTask: () => void = () => {
         this.setState({
             mouseIsEnterRunTask: false,
         });
-        this.displayedLogo = this.logo;
     };
 
     private renderTaskInfo = () => {

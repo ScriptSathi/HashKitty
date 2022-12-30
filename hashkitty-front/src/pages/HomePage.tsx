@@ -10,9 +10,11 @@ import RunningTasksBody from '../components/RunningTasksBody';
 import {
     mainBox,
     LeftBox,
-    runningTasksTitle,
+    tasksTitle,
     cardBody,
     creationTaskStatusMessage,
+    RightBox,
+    runningTasks,
 } from '../styles/HomePage';
 import { Constants } from '../Constants';
 import CreateTask from '../components/CreateTask';
@@ -23,6 +25,7 @@ type HomePageState = {
     taskCreationError: boolean;
     isMouseOverNewTask: boolean;
     tasks: TTask[];
+    endedTasks: TTask[];
 };
 
 export default class HomePage extends Component<{}, HomePageState> {
@@ -32,6 +35,7 @@ export default class HomePage extends Component<{}, HomePageState> {
         newTaskToogle: false,
         isMouseOverNewTask: false,
         tasks: [],
+        endedTasks: [],
     };
 
     public componentDidMount() {
@@ -39,7 +43,15 @@ export default class HomePage extends Component<{}, HomePageState> {
     }
 
     private async loadTasks(): Promise<void> {
-        const tasks =
+        function sortByDate(arr: TTask[]) {
+            return arr.sort((a, b) => {
+                return (
+                    new Date(b.lastestModification).valueOf() -
+                    new Date(a.lastestModification).valueOf()
+                );
+            });
+        }
+        const allTasks =
             ((
                 await (
                     await fetch(
@@ -48,14 +60,22 @@ export default class HomePage extends Component<{}, HomePageState> {
                     )
                 ).json()
             ).success as TTask[]) || [];
-        tasks.sort((a, b) => {
-            return (
-                new Date(b.lastestModification).valueOf() -
-                new Date(a.lastestModification).valueOf()
-            );
-        });
+        const [unsortedTask, unsortedEndedTasks] = allTasks.reduce(
+            ([tasks, endedTasks]: TTask[][], element: TTask) =>
+                element.isfinished
+                    ? [tasks, [...endedTasks, ...[element]]]
+                    : [[...tasks, ...[element]], endedTasks],
+            [[], []]
+        );
+
+        const tasks = sortByDate(unsortedTask);
+        const endedTasks = sortByDate(unsortedEndedTasks);
+        console.log(allTasks);
+        console.log(tasks);
+        console.log(endedTasks);
         this.setState({
             tasks,
+            endedTasks,
         });
     }
 
@@ -131,11 +151,13 @@ export default class HomePage extends Component<{}, HomePageState> {
                 <this.renderCreationTaskStatus />
                 <div style={mainBox}>
                     <div style={LeftBox}>
-                        <div style={runningTasksTitle}>
+                        <div style={tasksTitle}>
                             <p>Running tasks</p>
                         </div>
                         <div style={cardBody}>
-                            <RunningTasksBody tasks={this.state.tasks} />
+                            <div style={runningTasks}>
+                                <RunningTasksBody tasks={this.state.tasks} />
+                            </div>
                             <div>
                                 <img
                                     className="newTask"
@@ -192,6 +214,16 @@ export default class HomePage extends Component<{}, HomePageState> {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div style={RightBox}>
+                        <div style={tasksTitle}>
+                            <p>Ended tasks</p>
+                        </div>
+                        <div
+                            style={{ display: 'grid', gap: 20, width: '100%' }}
+                        >
+                            <RunningTasksBody tasks={this.state.endedTasks} />
                         </div>
                     </div>
                 </div>

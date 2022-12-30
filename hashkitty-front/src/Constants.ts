@@ -6,6 +6,7 @@ export class Constants {
     public static readonly endpoint = '/api';
     public static readonly apiUrl: string = `http://${this.domaineName}:${this.apiPort}${this.endpoint}`;
     public static readonly apiGetTasks: string = `${this.apiUrl}/tasks`;
+    public static readonly apiPOSTDeleteTasks: string = `${this.apiUrl}/tasks/delete`;
     public static readonly apiGetStatus: string = `${this.apiUrl}/status`;
     public static readonly apiGetHashlists: string = `${this.apiUrl}/hashlists`;
     public static readonly apiPOSTStart: string = `${this.apiUrl}/start`;
