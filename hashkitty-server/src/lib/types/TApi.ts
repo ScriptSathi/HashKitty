@@ -94,10 +94,10 @@ export type TTask = {
     hashlistId: THashlist;
     createdAt: string;
     lastestModification: string;
-    isfinished: number;
+    isfinished: boolean;
     description?: string;
     templateTaskId?: TemplateTask;
-    endeddAt?: string | null;
+    endeddAt?: Date | null;
 };
 
 export type Options = {

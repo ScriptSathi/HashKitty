@@ -53,6 +53,6 @@ export class Task {
     @Column('date', { nullable: true, name: 'ended_at' })
     endeddAt?: Date;
 
-    @Column('tinyint', { nullable: true, default: false, name: 'is_finished' })
-    isfinished?: number;
+    @Column('bool', { nullable: true, default: false, name: 'is_finished' })
+    isfinished?: boolean;
 }
