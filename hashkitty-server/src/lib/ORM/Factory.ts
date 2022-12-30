@@ -59,7 +59,7 @@ export class Factory {
             task.name = `${this.makeFakeString(5)}-${i}`;
             task.description =
                 Math.random() < 0.5 ? this.makeFakeString(50) : '';
-            task.isfinished = Math.random() < 0.5 ? 0 : 1;
+            task.isfinished = Math.random() < 0.5;
             task.lastestModification = this.randomDate();
             task.createdAt = this.randomDate();
             if (Math.random() < 0.5) task.endeddAt = this.randomDate(2022);

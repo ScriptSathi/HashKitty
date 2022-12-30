@@ -17,11 +17,12 @@ import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
 
 export class RouteHandler {
-    public hashcat: Hashcat = new Hashcat();
+    public hashcat: Hashcat;
     private dao: Dao;
 
     constructor(db: DataSource) {
         this.dao = new Dao(db);
+        this.hashcat = new Hashcat(this.dao.task);
     }
 
     public execHashcat = async (req: Request, res: Response): Promise<void> => {
@@ -383,6 +384,7 @@ export class RouteHandler {
     ): Promise<void> => {
         try {
             await this.dao.reloadWordlistInDB();
+            await this.dao.reloadHashlistInDB();
             res.status(200).json({
                 success: 'Update successfully',
             });

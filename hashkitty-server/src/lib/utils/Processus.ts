@@ -53,10 +53,10 @@ export class Processus {
 
     private onStdout = (data: Buffer): void => {
         try {
-            const sessionStatus: THashcatPartialStatus = JSON.parse(
+            const status: THashcatPartialStatus = JSON.parse(
                 data.toString().trim()
             );
-            parentPort?.postMessage({ status: sessionStatus });
+            parentPort?.postMessage({ status });
         } catch (e) {
             parentPort?.postMessage({
                 any: data.toString().trim(),
@@ -69,17 +69,20 @@ export class Processus {
 
     private onClose = (code: number): void => {
         if (code !== 0 && code !== null && code !== 1) {
+            parentPort && parentPort.postMessage('close');
             logger.error(
                 new Error(`Command '${this.cmd}' failed with code ${code}`)
             );
         } else if (code === null) {
+            parentPort && parentPort.postMessage('close');
             logger.info(
                 `A request has been sent to stop the process: ${this.cmd[0]}`
             );
-        } else if (code === 1) {
+        } else if (code === 0) {
+            //TODO TRIGGER de fin de tache ? voir si le code passe ici
+            parentPort && parentPort.postMessage('ended');
             logger.info(`Process: ${this.cmd[0]} ended correctly`);
         }
-        parentPort && parentPort.postMessage('close');
     };
 }
 

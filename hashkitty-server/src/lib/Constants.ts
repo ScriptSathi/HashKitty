@@ -2,7 +2,6 @@ import * as path from 'path';
 import { THttpServerConfig } from './types/TApi';
 
 export class Constants {
-    // TODO mkdir folder if not exists
     public static readonly baseDir =
         process.env?.WORDLISTS_DIR_PATH ||
         path.join(__dirname, '../../../hashkitty');
@@ -27,6 +26,10 @@ export class Constants {
     public static readonly potfilesPath = path.join(
         Constants.baseDir,
         'potfiles'
+    );
+    public static readonly outputFilePath = path.join(
+        Constants.baseDir,
+        'outputs'
     );
     public static readonly rulesPath = path.join(Constants.baseDir, 'rules');
     public static readonly restorePath = path.join(
