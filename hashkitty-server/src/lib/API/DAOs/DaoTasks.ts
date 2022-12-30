@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { IDaoSub } from './IDaoSub';
 import { Task } from '../../ORM/entity/Task';
 import { Options } from '../../ORM/entity/Options';
+import { TTask } from '../../types/TApi';
 
 export class DaoTasks implements IDaoSub<Task> {
     private db: DataSource;
@@ -55,6 +56,12 @@ export class DaoTasks implements IDaoSub<Task> {
     public async update(task: Task): Promise<Task> {
         task.lastestModification = new Date();
         task.options = await this.updateOptions(task.options);
+        return this.db.getRepository(Task).save(task);
+    }
+
+    public registerTaskEnded(task: Task): Promise<Task> {
+        task.isfinished = true;
+        task.endeddAt = new Date();
         return this.db.getRepository(Task).save(task);
     }
 

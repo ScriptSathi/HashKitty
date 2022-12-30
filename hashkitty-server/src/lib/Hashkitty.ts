@@ -40,6 +40,8 @@ export class Hashkitty {
             Constants.rulesPath,
             Constants.wordlistPath,
             Constants.hashlistsPath,
+            Constants.restorePath,
+            Constants.outputFilePath,
         ];
         for (const dir of listsPaths) {
             if (!fs.existsSync(dir)) {

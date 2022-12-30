@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.4
 
-FROM nvidia/cuda:11.3.0-base-ubuntu20.04
+FROM nvidia/cuda:11.7.0-base-ubuntu22.04
 
 RUN apt update -y
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y hashcat cuda git curl
