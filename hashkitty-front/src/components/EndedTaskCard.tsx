@@ -16,7 +16,6 @@ import {
 import '../assets/styles/main.scss';
 import trash from '../assets/images/trash.svg';
 import { Constants } from '../Constants';
-import { THashcatStatus } from '../types/TServer';
 
 type EndedTaskCardState = {
     mouseIsEnterTaskCard: boolean;
@@ -30,8 +29,12 @@ type EndedTaskCardState = {
     speed: string;
 };
 
+type EndedTaskCardProps = TTask & { isRunning: boolean } & {
+    handleRefreshTasks: () => Promise<void>;
+};
+
 export default class EndedTaskCard extends Component<
-    TTask & { isRunning: boolean },
+    EndedTaskCardProps,
     EndedTaskCardState
 > {
     public state: EndedTaskCardState = {
@@ -101,12 +104,12 @@ export default class EndedTaskCard extends Component<
         );
     }
 
-    private displayErrorMessageOnHashcatStart(): void {
+    private displayErrorMessageOnDeleteTask(): void {
         this.setState({ onErrorStart: 'An error occured' });
         setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
     }
 
-    private fetchStartHashcat(isClicked: boolean): void {
+    private fetchDeleteTask(isClicked: boolean): void {
         if (isClicked) {
             const requestOptions = {
                 method: 'POST',
@@ -117,21 +120,15 @@ export default class EndedTaskCard extends Component<
             fetch(Constants.apiPOSTDeleteTasks, requestOptions)
                 .then(response => response.json())
                 .then(() => {
-                    this.state.isRunning = !this.state.isRunning;
+                    setTimeout(() => this.props.handleRefreshTasks(), 100);
+                    //Delay is needed here to let the server update itself
                 });
         }
     }
 
     private onClickDeleteTask: () => void = () => {
-        this.updateStartStopButton(); //TODO
-        this.fetchStartHashcat(!this.state.clickedRunTask);
+        this.fetchDeleteTask(!this.state.clickedRunTask);
     };
-
-    private updateStartStopButton(): void {
-        this.setState({
-            clickedRunTask: !this.state.clickedRunTask,
-        });
-    }
 
     private onMouseEnterCard: () => void = () => {
         this.setState({

@@ -8,6 +8,7 @@ import EndedTaskCard from './EndedTaskCard';
 
 type RunningTasksBodyProps = {
     tasks: TTask[];
+    handleRefreshTasks: () => Promise<void>;
 };
 
 export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
@@ -51,6 +52,9 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
                                 templateTaskId={task.templateTaskId}
                                 endeddAt={task.endeddAt}
                                 isfinished={task.isfinished}
+                                handleRefreshTasks={
+                                    this.props.handleRefreshTasks
+                                }
                                 isRunning={
                                     this.runningSessionName ===
                                     `${task.name}-${task.id}`

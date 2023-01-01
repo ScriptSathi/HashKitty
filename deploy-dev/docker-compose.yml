@@ -55,7 +55,8 @@ services:
       resources:
         reservations:
           devices:
-            - capabilities: [gpu]
+            - driver: nvidia
+              capabilities: [gpu]
 
   hashkitty-front:
     container_name: hashkitty-front
