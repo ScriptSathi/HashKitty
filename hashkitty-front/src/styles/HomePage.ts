@@ -18,6 +18,7 @@ export const runningTasks: CSSProperties = {
     display: 'grid',
     gridTemplateColumns: 'minmax(auto, 36%) auto',
     gap: '45px 20px',
+    marginBottom: 50,
 };
 export const RightBox: CSSProperties = {
     display: 'block',
