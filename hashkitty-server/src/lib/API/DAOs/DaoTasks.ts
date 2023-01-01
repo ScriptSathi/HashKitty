@@ -12,8 +12,8 @@ export class DaoTasks implements IDaoSub<Task> {
         this.db = db;
     }
 
-    public getAll(): Promise<Task[]> {
-        return this.db.getRepository(Task).find({
+    public async getAll(): Promise<Task[]> {
+        const tasks = await this.db.getRepository(Task).find({
             relations: [
                 'options',
                 'options.wordlistId',
@@ -23,6 +23,12 @@ export class DaoTasks implements IDaoSub<Task> {
                 'hashlistId',
                 'hashlistId.hashTypeId',
             ],
+        });
+        return tasks.sort((a, b) => {
+            return (
+                new Date(b.lastestModification).valueOf() -
+                new Date(a.lastestModification).valueOf()
+            );
         });
     }
 

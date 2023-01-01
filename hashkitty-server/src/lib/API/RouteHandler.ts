@@ -122,16 +122,14 @@ export class RouteHandler {
     public deleteTask = async (req: Request, res: Response): Promise<void> => {
         if (await this.dao.taskExistById((req.body as ApiTaskDelete).id)) {
             try {
+                this.dao.task.deleteById((req.body as ApiTaskDelete).id);
+                const respMessage = `Task deleted with id ${
+                    (req.body as ApiTaskDelete).id
+                } deleted successfully`;
                 res.status(200).json({
-                    success: this.dao.task.deleteById(
-                        (req.body as ApiTaskDelete).id
-                    ),
+                    success: respMessage,
                 });
-                logger.info(
-                    `Task deleted with id ${
-                        (req.body as ApiTaskDelete).id
-                    } deleted successfully`
-                );
+                logger.info(respMessage);
             } catch (err) {
                 logger.error(
                     `An error occured while trying to delete task: ${err}`

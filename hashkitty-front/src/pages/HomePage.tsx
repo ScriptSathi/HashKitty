@@ -6,7 +6,7 @@ import '../assets/fonts/Inter-Bold.ttf';
 import '../assets/styles/main.scss';
 import '../assets/styles/HomePage.scss';
 import { TTask } from '../types/TypesORM';
-import RunningTasksBody from '../components/RunningTasksBody';
+import TasksBody from '../components/TasksBody';
 import {
     mainBox,
     LeftBox,
@@ -42,15 +42,106 @@ export default class HomePage extends Component<{}, HomePageState> {
         this.loadTasks();
     }
 
+    public render() {
+        return (
+            <div style={this.state.newTaskToogle ? { overflow: 'hidden' } : {}}>
+                <Navbar />
+                <this.renderCreationTaskStatus />
+                <div style={mainBox}>
+                    <div style={LeftBox}>
+                        <div style={tasksTitle}>
+                            <p>Running tasks</p>
+                        </div>
+                        <div style={cardBody}>
+                            <div style={runningTasks}>
+                                <TasksBody
+                                    tasks={this.state.tasks}
+                                    handleRefreshTasks={this.loadTasks.bind(
+                                        this
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <img
+                                    className="newTask"
+                                    src={newTask}
+                                    alt="create a new task"
+                                    onClick={this.toggleNewTask}
+                                />
+                                <div
+                                    style={
+                                        this.state.newTaskToogle
+                                            ? {
+                                                  position: 'absolute',
+                                                  backdropFilter:
+                                                      'blur(5px) brightness(0.60)',
+                                                  height: '100%',
+                                                  width: '100%',
+                                                  top: 0,
+                                                  left: 0,
+                                              }
+                                            : {}
+                                    }
+                                    onClick={
+                                        this.state.isMouseOverNewTask
+                                            ? () => {}
+                                            : this.toggleNewTask
+                                    }
+                                >
+                                    <div
+                                        onMouseEnter={
+                                            this.onMouseEnterNewTaskCantClick
+                                        }
+                                        onMouseLeave={
+                                            this.onMouseLeaveNewTaskCanClick
+                                        }
+                                        style={
+                                            this.state.newTaskToogle ? {} : {}
+                                        }
+                                    >
+                                        {this.state.newTaskToogle ? (
+                                            <CreateTask
+                                                handleTaskCreationAdded={this.handleTaskCreationAdded.bind(
+                                                    this
+                                                )}
+                                                handleTaskCreationError={this.handleTaskCreationError.bind(
+                                                    this
+                                                )}
+                                                toggleNewTask={this.toggleNewTask.bind(
+                                                    this
+                                                )}
+                                            />
+                                        ) : (
+                                            ''
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style={RightBox}>
+                        <div style={tasksTitle}>
+                            <p>Ended tasks</p>
+                        </div>
+                        <div
+                            style={{ display: 'grid', gap: 20, width: '100%' }}
+                        >
+                            <TasksBody
+                                handleRefreshTasks={this.handleRefreshTasks}
+                                tasks={this.state.endedTasks}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    private handleRefreshTasks = (): Promise<void> => {
+        return this.loadTasks();
+    };
+
     private async loadTasks(): Promise<void> {
-        function sortByDate(arr: TTask[]) {
-            return arr.sort((a, b) => {
-                return (
-                    new Date(b.lastestModification).valueOf() -
-                    new Date(a.lastestModification).valueOf()
-                );
-            });
-        }
         const allTasks =
             ((
                 await (
@@ -60,19 +151,13 @@ export default class HomePage extends Component<{}, HomePageState> {
                     )
                 ).json()
             ).success as TTask[]) || [];
-        const [unsortedTask, unsortedEndedTasks] = allTasks.reduce(
+        const [tasks, endedTasks] = allTasks.reduce(
             ([tasks, endedTasks]: TTask[][], element: TTask) =>
                 element.isfinished
                     ? [tasks, [...endedTasks, ...[element]]]
                     : [[...tasks, ...[element]], endedTasks],
             [[], []]
         );
-
-        const tasks = sortByDate(unsortedTask);
-        const endedTasks = sortByDate(unsortedEndedTasks);
-        console.log(allTasks);
-        console.log(tasks);
-        console.log(endedTasks);
         this.setState({
             tasks,
             endedTasks,
@@ -143,91 +228,4 @@ export default class HomePage extends Component<{}, HomePageState> {
         }
         return <p style={style}>{message}</p>;
     };
-
-    public render() {
-        return (
-            <div style={this.state.newTaskToogle ? { overflow: 'hidden' } : {}}>
-                <Navbar />
-                <this.renderCreationTaskStatus />
-                <div style={mainBox}>
-                    <div style={LeftBox}>
-                        <div style={tasksTitle}>
-                            <p>Running tasks</p>
-                        </div>
-                        <div style={cardBody}>
-                            <div style={runningTasks}>
-                                <RunningTasksBody tasks={this.state.tasks} />
-                            </div>
-                            <div>
-                                <img
-                                    className="newTask"
-                                    src={newTask}
-                                    alt="create a new task"
-                                    onClick={this.toggleNewTask}
-                                />
-                                <div
-                                    style={
-                                        this.state.newTaskToogle
-                                            ? {
-                                                  position: 'absolute',
-                                                  backdropFilter:
-                                                      'blur(5px) brightness(0.60)',
-                                                  height: '100%',
-                                                  width: '100%',
-                                                  top: 0,
-                                                  left: 0,
-                                              }
-                                            : {}
-                                    }
-                                    onClick={
-                                        this.state.isMouseOverNewTask
-                                            ? () => {}
-                                            : this.toggleNewTask
-                                    }
-                                >
-                                    <div
-                                        onMouseEnter={
-                                            this.onMouseEnterNewTaskCantClick
-                                        }
-                                        onMouseLeave={
-                                            this.onMouseLeaveNewTaskCanClick
-                                        }
-                                        style={
-                                            this.state.newTaskToogle ? {} : {}
-                                        }
-                                    >
-                                        {this.state.newTaskToogle ? (
-                                            <CreateTask
-                                                handleTaskCreationAdded={this.handleTaskCreationAdded.bind(
-                                                    this
-                                                )}
-                                                handleTaskCreationError={this.handleTaskCreationError.bind(
-                                                    this
-                                                )}
-                                                toggleNewTask={this.toggleNewTask.bind(
-                                                    this
-                                                )}
-                                            />
-                                        ) : (
-                                            ''
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style={RightBox}>
-                        <div style={tasksTitle}>
-                            <p>Ended tasks</p>
-                        </div>
-                        <div
-                            style={{ display: 'grid', gap: 20, width: '100%' }}
-                        >
-                            <RunningTasksBody tasks={this.state.endedTasks} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 }
