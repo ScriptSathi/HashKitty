@@ -101,15 +101,15 @@ export default class HomePage extends Component<{}, HomePageState> {
                                     >
                                         {this.state.newTaskToogle ? (
                                             <CreateTask
-                                                handleTaskCreationAdded={this.handleTaskCreationAdded.bind(
-                                                    this
-                                                )}
-                                                handleTaskCreationError={this.handleTaskCreationError.bind(
-                                                    this
-                                                )}
-                                                toggleNewTask={this.toggleNewTask.bind(
-                                                    this
-                                                )}
+                                                handleTaskCreationAdded={
+                                                    this.handleTaskCreationAdded
+                                                }
+                                                handleTaskCreationError={
+                                                    this.handleTaskCreationError
+                                                }
+                                                toggleNewTask={
+                                                    this.toggleNewTask
+                                                }
                                             />
                                         ) : (
                                             ''

@@ -50,6 +50,7 @@ export type THashlist = {
     createdAt: string;
     lastestModification: string;
     numberOfCrackedPasswords: number;
+    crackedOutputFileName: string;
 };
 
 export type TWordlist = {

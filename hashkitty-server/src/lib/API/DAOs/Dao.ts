@@ -43,9 +43,9 @@ export class Dao {
     public async reloadWordlistInDB(): Promise<void> {
         const filesInDir = FsUtils.listFileInDir(Constants.wordlistPath);
         const wordlistInDb = await this.db.getRepository(Wordlist).find();
-        const missingInDb = filesInDir.filter(x =>
-            wordlistInDb.find(elem => !x.includes(elem.name))
-        );
+        const missingInDb = filesInDir.filter(file => {
+            return !wordlistInDb.find(elem => file === elem.name);
+        });
         missingInDb.map(file => {
             const wl = new Wordlist();
             wl.name = file;
@@ -64,17 +64,17 @@ export class Dao {
     }
 
     public async reloadHashlistInDB(): Promise<void> {
-        const filesInDir = FsUtils.listFileInDir(Constants.wordlistPath);
+        // TODO THIS IS TEMPORARY !!!!!!!!
+        const filesInDir = FsUtils.listFileInDir(Constants.hashlistsPath);
         const hashlistsInDb = await this.db.getRepository(Hashlist).find();
-        const missingInDb = filesInDir.filter(x =>
-            hashlistsInDb.find(elem => !x.includes(elem.name))
-        );
+        const missingInDb = filesInDir.filter(file => {
+            return !hashlistsInDb.find(elem => file === elem.name);
+        });
         missingInDb.map(file => {
             const wl = new Hashlist();
             wl.name = file;
             wl.description = '';
-            wl.hashTypeId = 8;
-            wl.path = `${Constants.wordlistPath}/${file}`;
+            wl.hashTypeId = 168;
             try {
                 this.db.getRepository(Hashlist).save(wl);
             } catch (e) {

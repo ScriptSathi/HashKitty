@@ -77,6 +77,9 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
                                     this.runningSessionName ===
                                     `${task.name}-${task.id}`
                                 }
+                                handleRefreshTasks={
+                                    this.props.handleRefreshTasks
+                                }
                             />
                         );
                     })
