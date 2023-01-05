@@ -3,27 +3,27 @@ import { DataSource } from 'typeorm';
 import { IDaoSub } from './IDaoSub';
 import { Task } from '../../ORM/entity/Task';
 import { Options } from '../../ORM/entity/Options';
-import { TTask } from '../../types/TApi';
 
 export class DaoTasks implements IDaoSub<Task> {
     private db: DataSource;
+    private dbRelations = {
+        relations: [
+            'options',
+            'options.wordlistId',
+            'options.attackModeId',
+            'options.workloadProfileId',
+            'templateTaskId',
+            'hashlistId',
+            'hashlistId.hashTypeId',
+        ],
+    };
 
     constructor(db: DataSource) {
         this.db = db;
     }
 
     public async getAll(): Promise<Task[]> {
-        const tasks = await this.db.getRepository(Task).find({
-            relations: [
-                'options',
-                'options.wordlistId',
-                'options.attackModeId',
-                'options.workloadProfileId',
-                'templateTaskId',
-                'hashlistId',
-                'hashlistId.hashTypeId',
-            ],
-        });
+        const tasks = await this.db.getRepository(Task).find(this.dbRelations);
         return tasks.sort((a, b) => {
             return (
                 new Date(b.lastestModification).valueOf() -
@@ -46,15 +46,7 @@ export class DaoTasks implements IDaoSub<Task> {
             where: {
                 id: id,
             },
-            relations: [
-                'options',
-                'options.wordlistId',
-                'options.attackModeId',
-                'options.workloadProfileId',
-                'templateTaskId',
-                'hashlistId',
-                'hashlistId.hashTypeId',
-            ],
+            ...this.dbRelations,
         });
         return task === null ? new Task() : task;
     }

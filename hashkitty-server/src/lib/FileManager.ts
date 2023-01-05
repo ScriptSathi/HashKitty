@@ -21,4 +21,10 @@ export class FileManager {
         await fs.writeFile(this.filePath, data.join('\n'));
         logger.debug(`Writing hash file at location ${this.filePath}`);
     }
+
+    public async countLineInFile(path: string): Promise<number> {
+        const file = await fs.readFile(path, 'utf-8');
+        console.log(file.toString());
+        return 1;
+    }
 }

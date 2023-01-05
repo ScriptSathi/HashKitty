@@ -33,8 +33,12 @@ type RunnableTaskCardState = {
     speed: string;
 };
 
+type RunnableTaskCardProps = TTask & { isRunning: boolean } & {
+    handleRefreshTasks: () => Promise<void>;
+};
+
 export default class RunnableTaskCard extends Component<
-    TTask & { isRunning: boolean },
+    RunnableTaskCardProps,
     RunnableTaskCardState
 > {
     public state: RunnableTaskCardState = {
@@ -110,7 +114,10 @@ export default class RunnableTaskCard extends Component<
     }
 
     private refreshStatus: () => void = () => {
-        if (this.state.isRunning) {
+        if (this.props.hashlistId.crackedOutputFileName) {
+            this.displayHashlistAlreadyCracked();
+            setTimeout(() => this.props.handleRefreshTasks(), 2000);
+        } else if (this.state.isRunning) {
             fetch(Constants.apiGetStatus, Constants.mandatoryFetchOptions)
                 .then(data => data.json())
                 .then(req => {
@@ -130,8 +137,13 @@ export default class RunnableTaskCard extends Component<
                         this.displayErrorMessageOnHashcatStart();
                     }
                 });
-            setTimeout(this.refreshStatus, 2000);
+            if (this.state.isRunning) {
+                setTimeout(this.refreshStatus, 2000);
+            } else {
+                this.refreshStatus();
+            }
         } else {
+            this.props.handleRefreshTasks();
             this.setState({
                 estimatedStop: 'Not running',
                 runningProgress: '0',
@@ -142,6 +154,13 @@ export default class RunnableTaskCard extends Component<
 
     private displayErrorMessageOnHashcatStart(): void {
         this.setState({ onErrorStart: 'An error occured' });
+        setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
+    }
+
+    private displayHashlistAlreadyCracked(): void {
+        this.setState({
+            onErrorStart: 'This hashlist has already been cracked',
+        });
         setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
     }
 

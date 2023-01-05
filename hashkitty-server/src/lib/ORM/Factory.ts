@@ -203,12 +203,7 @@ export class Factory {
             hashlist.name = `${this.makeFakeString(5)}-${i}`;
             hashlist.description = this.makeFakeString(50);
             hashlist.numberOfCrackedPasswords = Math.random() * 20;
-            hashlist.path = path.join(
-                `/${this.makeFakeString(5)}`,
-                this.makeFakeString(5),
-                this.makeFakeString(5),
-                this.makeFakeString(5)
-            );
+            hashlist.crackedOutputFileName = `${hashlist.name}-${hashlist.id}`;
             hashlist.lastestModification = this.randomDate();
             hashlist.createdAt = this.randomDate();
             await this.appDataSource.manager.save(hashlist);

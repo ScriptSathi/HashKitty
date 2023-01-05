@@ -12,6 +12,8 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE}
     networks:
       - backend
+    ports:
+      - 3306:3306
     volumes:
       - hashkitty-storage:/var/lib/mysql
       - ../hashkitty-server/sqldump:/docker-entrypoint-initdb.d:ro

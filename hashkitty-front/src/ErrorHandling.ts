@@ -72,6 +72,7 @@ export class ErrorHandling {
     }
 
     private get requieredFields(): fieldError {
+        this.hasErrors = true;
         return {
             isError: true,
             itemId: -1,
@@ -80,6 +81,7 @@ export class ErrorHandling {
     }
 
     private get wrongData(): fieldError {
+        this.hasErrors = true;
         return {
             isError: true,
             itemId: -1,
@@ -107,7 +109,6 @@ export class ErrorHandling {
             };
         } else {
             this.results.formAttackModeId = this.requieredFields;
-            this.hasErrors = true;
         }
     }
 
@@ -119,10 +120,8 @@ export class ErrorHandling {
             this.results.formWordlistName = this.defaultField;
         } else if (name === '') {
             this.results.formWordlistName = this.requieredFields;
-            this.hasErrors = true;
         } else {
             this.results.formWordlistName = this.wrongData;
-            this.hasErrors = true;
         }
     }
 
@@ -138,10 +137,8 @@ export class ErrorHandling {
             };
         } else if (name === '') {
             this.results.formHashlistName = this.requieredFields;
-            this.hasErrors = true;
         } else {
             this.results.formHashlistName = this.wrongData;
-            this.hasErrors = true;
         }
     }
 
@@ -153,7 +150,6 @@ export class ErrorHandling {
             this.results.formRuleName = this.defaultField;
         } else {
             this.results.formRuleName = this.wrongData;
-            this.hasErrors = true;
         }
     }
 
@@ -165,7 +161,6 @@ export class ErrorHandling {
             this.results.formPotfileName = this.defaultField;
         } else {
             this.results.formPotfileName = this.wrongData;
-            this.hasErrors = true;
         }
     }
 

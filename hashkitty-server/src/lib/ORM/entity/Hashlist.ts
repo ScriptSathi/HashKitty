@@ -19,9 +19,6 @@ export class Hashlist {
     @Column('varchar', { default: '' })
     description?: string;
 
-    @Column('varchar')
-    path!: string;
-
     @ManyToOne(() => HashType, (hashType: HashType) => hashType.id)
     @JoinColumn({ name: 'hashtype_id', referencedColumnName: 'id' })
     hashTypeId!: number;
@@ -34,4 +31,7 @@ export class Hashlist {
 
     @Column('int', { default: -1, name: 'number_of_cracked_passwords' })
     numberOfCrackedPasswords?: number;
+
+    @Column('varchar', { default: '', name: 'cracked_output_file_name' })
+    crackedOutputFileName?: string;
 }

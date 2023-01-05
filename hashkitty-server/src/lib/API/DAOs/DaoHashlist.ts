@@ -22,8 +22,11 @@ export class DaoHashlist implements IDaoSub<Hashlist> {
         return this.update(hashlist);
     }
 
-    public update(hashlist: Hashlist): Promise<Hashlist> {
-        hashlist.lastestModification = new Date();
+    public update(
+        hashlist: Hashlist,
+        isModification = true
+    ): Promise<Hashlist> {
+        if (isModification) hashlist.lastestModification = new Date();
         return this.db.getRepository(Hashlist).save(hashlist);
     }
 
