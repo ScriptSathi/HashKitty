@@ -22,7 +22,7 @@ export class RouteHandler {
 
     constructor(db: DataSource) {
         this.dao = new Dao(db);
-        this.hashcat = new Hashcat(this.dao.task);
+        this.hashcat = new Hashcat(this.dao);
     }
 
     public execHashcat = async (req: Request, res: Response): Promise<void> => {
@@ -95,7 +95,7 @@ export class RouteHandler {
     public getHashcatStatus = (_: Request, res: Response): void => {
         if (this.hashcat.status.isRunning) {
             res.status(200).json({
-                status: this.hashcat.status.isRunning,
+                status: this.hashcat.status,
             });
         } else {
             res.status(200).json({

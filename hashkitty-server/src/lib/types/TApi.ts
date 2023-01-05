@@ -7,11 +7,6 @@ export type TflagOption<T = string | number, S = ThashcatAllowedFlags> = {
     arg?: T;
 };
 
-export type ThashList = {
-    name: string;
-    hashs: string[];
-};
-
 export interface ISslConfig {
     use: boolean;
     key?: string;
@@ -137,6 +132,7 @@ export type THashlist = {
     path: string;
     createdAt: string;
     lastestModification: string;
+    crackedOutputFileName: string;
     numberOfCrackedPasswords: number;
 };
 

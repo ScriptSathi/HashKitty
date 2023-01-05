@@ -41,7 +41,7 @@ export class Sanitizer {
             }
         }
         this.task.name = this.shortenStringByLength(
-            30,
+            50,
             this.removeSpecialCharInString(form.name)
         );
         this.task.description = this.shortenStringByLength(
@@ -67,7 +67,7 @@ export class Sanitizer {
             }
         }
         this.templateTask.name = this.shortenStringByLength(
-            30,
+            50,
             this.removeSpecialCharInString(form.name)
         );
         this.templateTask.description = this.shortenStringByLength(

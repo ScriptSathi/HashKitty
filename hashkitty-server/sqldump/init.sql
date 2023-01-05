@@ -4,7 +4,7 @@
 --
 -- Hôte : mysql
 -- Généré le : lun. 26 déc. 2022 à 14:03
--- Version du serveur : 8.0.30
+-- Version du serveur : 8.0.50
 -- Version de PHP : 8.0.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -41,7 +41,7 @@ CREATE TABLE `attack_mode` (
 
 CREATE TABLE `hashlist` (
   `id` int NOT NULL,
-  `name` varchar(30) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `path` varchar(255) DEFAULT NULL,
   `created_at` date DEFAULT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE `options` (
 
 CREATE TABLE `task` (
   `id` int NOT NULL,
-  `name` varchar(30) NOT NULL,
+  `name` varchar(50) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `hashlist_id` int NOT NULL,
   `template_task_id` int DEFAULT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE `task` (
 
 CREATE TABLE `template_task` (
   `id` int NOT NULL COMMENT 'PRIMARY KEY of the table template task',
-  `name` varchar(30) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
   `description` varchar(255) DEFAULT (_utf8mb4''),
   `options_id` int DEFAULT NULL,
   `created_at` date DEFAULT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE `template_task` (
 
 CREATE TABLE `wordlist` (
   `id` int NOT NULL,
-  `name` varchar(30) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `path` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

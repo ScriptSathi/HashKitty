@@ -32,13 +32,14 @@ export class Processus {
         this.cmd = stringCommand.split(' ').filter(n => n);
         const args: string[] = this.cmd.splice(1);
         this.proc = spawn(this.cmd[0], args);
+        this.proc.stdout.setEncoding('utf8');
+
         logger.debug(`Executed command: ${stringCommand}`);
 
         parentPort && parentPort.once('message', this.onParentProcessMessage);
-
         this.proc.stderr && this.proc.stderr.on('data', this.onStderr);
         this.proc.stdout && this.proc.stdout.on('data', this.onStdout);
-        this.proc.on('close', this.onClose);
+        this.proc.on('exit', this.onExit);
     }
 
     private onParentProcessMessage = (message: string): void => {
@@ -62,12 +63,9 @@ export class Processus {
                 any: data.toString().trim(),
             });
         }
-        setTimeout(() => {
-            this.proc.stdin.write('\n');
-        }, 1000);
     };
 
-    private onClose = (code: number): void => {
+    private onExit = (code: number): void => {
         if (code !== 0 && code !== null && code !== 1) {
             parentPort && parentPort.postMessage('close');
             logger.error(
@@ -82,6 +80,16 @@ export class Processus {
             //TODO TRIGGER de fin de tache ? voir si le code passe ici
             parentPort && parentPort.postMessage('ended');
             logger.info(`Process: ${this.cmd[0]} ended correctly`);
+        } else if (code === 1) {
+            parentPort && parentPort.postMessage('exhausted');
+            logger.info(
+                `Process: ${this.cmd[0]} ended but no passwords were cracked !`
+            );
+        } else {
+            parentPort && parentPort.postMessage('error');
+            logger.info(
+                `Process: ${this.cmd[0]} ended with an unknown status code ${code} !`
+            );
         }
     };
 }
