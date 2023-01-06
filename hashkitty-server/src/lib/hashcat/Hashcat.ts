@@ -2,7 +2,7 @@ import path = require('node:path');
 import { Worker } from 'node:worker_threads';
 
 import { Constants } from '../Constants';
-import { FileManager } from '../FileManager';
+import { FsUtils } from '../utils/FsUtils';
 import { TTask } from '../types/TApi';
 import { THashcatStatus } from '../types/THashcat';
 import { logger } from '../utils/Logger';
@@ -16,17 +16,17 @@ export class Hashcat {
     private outputFile: string | undefined;
     private bin: string;
     private dao: Dao;
-    private hashFileManager: FileManager;
+    private fsUtils: FsUtils;
     private hashcatWorker: Worker | undefined;
 
     constructor(dao: Dao) {
         this.bin = Constants.defaultBin;
         this.dao = dao;
-        this.hashFileManager = new FileManager(Constants.hashlistsPath);
+        this.fsUtils = new FsUtils(Constants.hashlistsPath);
     }
 
     public exec(task: TTask): void {
-        // this.hashFileManager()
+        // this.fsUtils.
         if (this.hashlistHaveNeverBeenCracked(task)) {
             this.hashcatWorker = this.createWorkerThread();
             const cmd = this.generateCmd(task);
