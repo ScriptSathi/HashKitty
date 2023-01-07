@@ -5,17 +5,19 @@ import { logger } from './utils/Logger';
 import { AppDataSource } from './ORM/data-source';
 import { Constants } from './Constants';
 import { HttpServer } from './API/HttpServer';
+import { Dao } from './API/DAOs/Dao';
 
 export class Hashkitty {
     private db: DataSource | undefined;
 
     public async bootstrap(): Promise<void> {
-        await this.retryDBConnectionIfFails();
-        this.createWordlistDirs();
+        await this.connectToDb();
+        this.createStorageDir();
+        this.db && (await Dao.migrateOnInitDb(this.db));
         this.db && new HttpServer(Constants.defaultApiConfig, this.db).listen();
     }
 
-    private async retryDBConnectionIfFails(): Promise<void> {
+    private async connectToDb(): Promise<void> {
         if (!this.db) {
             try {
                 this.db = await AppDataSource.initialize();
@@ -27,14 +29,14 @@ export class Hashkitty {
                 );
                 await new Promise<void>(resolve =>
                     setTimeout(() => {
-                        resolve(this.retryDBConnectionIfFails());
+                        resolve(this.connectToDb());
                     }, sleepTime * 1000)
                 );
             }
         }
     }
 
-    private createWordlistDirs(): void {
+    private createStorageDir(): void {
         const listsPaths = [
             Constants.potfilesPath,
             Constants.rulesPath,
