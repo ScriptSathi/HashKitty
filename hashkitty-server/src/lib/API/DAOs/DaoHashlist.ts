@@ -1,5 +1,3 @@
-import path = require('path');
-
 import { DataSource } from 'typeorm';
 import { Hashlist } from '../../ORM/entity/Hashlist';
 import { IDaoSub } from './IDaoSub';

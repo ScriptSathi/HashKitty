@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `attack_mode` (
   `id` int NOT NULL,
-  `name` varchar(10) DEFAULT NULL,
+  `name` varchar(30) DEFAULT NULL,
   `mode` tinyint DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='The attack modes enable by hashcat';
 

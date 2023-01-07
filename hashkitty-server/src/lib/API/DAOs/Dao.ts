@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource, EntityTarget, ObjectLiteral } from 'typeorm';
 
 import { AttackMode } from '../../ORM/entity/AttackMode';
 import { Hashlist } from '../../ORM/entity/Hashlist';
@@ -14,15 +14,10 @@ import { DaoHashType } from './DaoHashType';
 import { FsUtils } from '../../utils/FsUtils';
 import { Constants } from '../../Constants';
 import { logger } from '../../utils/Logger';
+import { Migration } from '../../ORM/Migration';
+import { HashType } from '../../ORM/entity/HashType';
 
 export class Dao {
-    public db: DataSource;
-    public task: DaoTasks;
-    public hashlist: DaoHashlist;
-    public templateTask: DaoTemplateTasks;
-    public attackMode: DaoAttackMode;
-    public hashType: DaoHashType;
-
     public static get UnexpectedError(): string {
         return 'An unexpected error occurred';
     }
@@ -30,6 +25,56 @@ export class Dao {
     public static get NoIdProvided(): string {
         return 'You need to provide an id';
     }
+
+    public static async migrateOnInitDb(db: DataSource): Promise<void> {
+        const migration = new Migration(db);
+        this.migrateIfNotExist<AttackMode>(
+            db,
+            AttackMode,
+            migration.migrateAttackModes
+        );
+        this.migrateIfNotExist<HashType>(
+            db,
+            HashType,
+            migration.migrateHashTypes
+        );
+    }
+
+    private static async migrateIfNotExist<T extends ObjectLiteral>(
+        db: DataSource,
+        EntityList: EntityTarget<T>,
+        migrationCallback: () => Promise<void>,
+        findObject = {},
+        tryAgainCount = 0
+    ): Promise<T[]> {
+        let req: T[] = [];
+        try {
+            req = await db.getRepository(EntityList).find(findObject);
+        } catch (e) {
+            if (tryAgainCount > 0) {
+                throw e;
+            }
+        } finally {
+            if (req.length === 0) {
+                await migrationCallback();
+                await this.migrateIfNotExist(
+                    db,
+                    EntityList,
+                    migrationCallback,
+                    findObject,
+                    1
+                );
+            }
+        }
+        return req;
+    }
+
+    public db: DataSource;
+    public task: DaoTasks;
+    public hashlist: DaoHashlist;
+    public templateTask: DaoTemplateTasks;
+    public attackMode: DaoAttackMode;
+    public hashType: DaoHashType;
 
     constructor(db: DataSource) {
         this.db = db;

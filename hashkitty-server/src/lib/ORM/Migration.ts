@@ -3,6 +3,7 @@ import { attackModes } from './migration/attackModes';
 import { hashTypes } from './migration/hashtypes';
 import { AttackMode } from './entity/AttackMode';
 import { HashType } from './entity/HashType';
+import { logger } from '../utils/Logger';
 
 export class Migration {
     private appDataSource: DataSource;
@@ -25,15 +26,17 @@ export class Migration {
             dbHashType.description = hashType.description;
             await this.appDataSource.manager.save(dbHashType);
         }
+        logger.debug('Adding known hash types in the database');
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public migrateAttackModes = async (_ = 0): Promise<void> => {
         for (const attackMode of attackModes) {
             const dbAttackMode = new AttackMode();
-            dbAttackMode.mode = parseInt(attackMode.type);
+            dbAttackMode.mode = attackMode.mode;
             dbAttackMode.name = attackMode.name;
             await this.appDataSource.manager.save(dbAttackMode);
         }
+        logger.debug('Adding known attack modes in the database');
     };
 }
