@@ -12,9 +12,11 @@ import {
     ApiTaskUpdate,
     ApiTemplateTaskUpdate,
 } from '../types/TDAOs';
-import { TTask } from '../types/TApi';
+import { TTask, TUploadReqBody } from '../types/TApi';
 import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
+import { UploadedFile } from 'express-fileupload';
+import path = require('path');
 
 export class RouteHandler {
     public hashcat: Hashcat;
@@ -180,7 +182,53 @@ export class RouteHandler {
     };
 
     public addFile = (req: Request, res: Response): void => {
-        console.dir(req.files); //TODO
+        const body: TUploadReqBody = req.body;
+        if (!req.files || Object.keys(req.files).length === 0) {
+            res.status(400).json({
+                error: 'No files were uploaded.',
+            });
+            return;
+        }
+        if (!body.filetype || !body.filename) {
+            res.status(400).json({
+                error: 'No files were uploaded.',
+            });
+            return;
+        }
+
+        let baseDir = '';
+        switch (body.filetype) {
+            case 'hashlist':
+                baseDir = Constants.hashlistsPath;
+                break;
+            case 'wordlist':
+                baseDir = Constants.wordlistPath;
+                break;
+            case 'rule':
+                baseDir = Constants.rulesPath;
+                break;
+            case 'potfile':
+                baseDir = Constants.potfilesPath;
+                break;
+            default:
+                res.status(400).json({
+                    error: 'Wrong data submitted',
+                });
+                return;
+        }
+
+        const sampleFile = req.files.sampleFile as UploadedFile;
+        const uploadPath = path.join(baseDir, body.filename);
+
+        sampleFile.mv(uploadPath, err => {
+            if (err) {
+                res.status(500).json({ error: err });
+                return;
+            }
+        });
+        res.status(200).json({
+            success: `File ${body.filename} uploaded!`,
+        });
     };
 
     public deleteFile = (_: Request, res: Response): void => {

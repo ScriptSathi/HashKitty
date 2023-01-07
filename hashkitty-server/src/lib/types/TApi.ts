@@ -155,3 +155,10 @@ export type TWorkloadProfile = {
     desktopImpact: string;
     powerConsumation: string;
 };
+
+export type TUploadReqBody = {
+    filetype: TUploadFileName;
+    filename: string;
+};
+
+export type TUploadFileName = 'rule' | 'potfile' | 'wordlist' | 'hashlist';
