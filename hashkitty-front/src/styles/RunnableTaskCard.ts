@@ -53,7 +53,6 @@ export const bottomBox: CSSProperties = {
 };
 
 export const runButton: CSSProperties = {
-    cursor: 'pointer',
     marginTop: 40,
     paddingLeft: 10,
 };

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import duration from 'humanize-duration';
 
 import { TTask } from '../types/TypesORM';
 import {
@@ -14,10 +15,11 @@ import {
     topPart,
 } from '../styles/RunnableTaskCard';
 import '../assets/styles/main.scss';
+import loader from '../assets/images/loader.svg';
 import stopTask from '../assets/images/stopTask.svg';
 import stopTaskHover from '../assets/images/stopTaskHover.svg';
-import playTaskHover from '../assets/images/playTaskHover.svg';
-import playTask from '../assets/images/playTask.svg';
+import startTaskHover from '../assets/images/playTaskHover.svg';
+import startTask from '../assets/images/playTask.svg';
 import { Constants } from '../Constants';
 import { THashcatStatus } from '../types/TServer';
 
@@ -28,6 +30,7 @@ type RunnableTaskCardState = {
     clickedRunTask: boolean;
     onErrorStart: string;
     isRunning: boolean;
+    isLoading: boolean;
     estimatedStop: string;
     runningProgress: string;
     speed: string;
@@ -47,22 +50,21 @@ export default class RunnableTaskCard extends Component<
         moreDetailsClicked: false,
         clickedRunTask: this.props.isRunning,
         isRunning: this.props.isRunning,
+        isLoading: false,
         onErrorStart: '',
         estimatedStop: 'Not running',
         runningProgress: '0',
         speed: '0',
     };
-    private logo = this.state.clickedRunTask ? stopTask : playTask;
+    private logo = this.state.clickedRunTask ? stopTask : startTask;
     private logoHover = this.state.clickedRunTask
         ? stopTaskHover
-        : playTaskHover;
+        : startTaskHover;
     private displayedLogo = this.logo;
     private cardBody = cardBodyGeneric;
 
     public componentDidMount(): void {
-        if (this.state.isRunning) {
-            this.refreshStatus();
-        }
+        this.refreshStatus();
     }
 
     public render() {
@@ -95,17 +97,35 @@ export default class RunnableTaskCard extends Component<
                             <br />
                             Progress: {this.state.runningProgress}
                             <br />
-                            Estimated end: {this.state.estimatedStop}
+                            Time left: {this.state.estimatedStop}
                         </p>
                     </div>
                     <div style={runButton}>
-                        <img
-                            onMouseEnter={this.onMouseEnterRunTask}
-                            onMouseLeave={this.onMouseLeaveRunTask}
-                            onClick={this.onClickRunTask}
-                            src={this.displayedLogo}
-                            alt="Logo"
-                        />
+                        {!this.state.isLoading ? (
+                            <img
+                                onMouseEnter={this.onMouseEnterRunTask}
+                                onMouseLeave={this.onMouseLeaveRunTask}
+                                onClick={this.onClickRunOrStopTask}
+                                src={this.displayedLogo}
+                                style={{
+                                    cursor: 'pointer',
+                                    display: 'block',
+                                }}
+                                alt="Logo"
+                            />
+                        ) : (
+                            <img
+                                onMouseLeave={this.onMouseLeaveRunTask}
+                                className="loader"
+                                src={loader}
+                                alt="loader"
+                                style={{
+                                    display: 'block',
+                                    marginLeft: 5,
+                                    marginTop: 5,
+                                }}
+                            />
+                        )}
                     </div>
                 </div>
                 {this.state.moreDetailsClicked ? <p>Bonjour</p> : ''}
@@ -113,36 +133,16 @@ export default class RunnableTaskCard extends Component<
         );
     }
 
-    private refreshStatus: () => void = () => {
+    private refreshStatus: () => Promise<void> = async () => {
         if (this.props.hashlistId.crackedOutputFileName) {
             this.displayHashlistAlreadyCracked();
             setTimeout(() => this.props.handleRefreshTasks(), 2000);
         } else if (this.state.isRunning) {
-            fetch(Constants.apiGetStatus, Constants.mandatoryFetchOptions)
-                .then(data => data.json())
-                .then(req => {
-                    if (
-                        req.status !== undefined &&
-                        Object.keys(req.status).length !== 0
-                    ) {
-                        const status = req.status as THashcatStatus;
-                        this.setState({
-                            estimatedStop: `${status.estimated_stop}`,
-                            runningProgress: `${status.progress[0]}`, // TODO TEST this
-                            speed: `${status.devices[0].speed}`,
-                        });
-                    } else {
-                        this.state.isRunning = false;
-                        this.updateStartStopButton();
-                        this.displayErrorMessageOnHashcatStart();
-                    }
-                });
-            if (this.state.isRunning) {
-                setTimeout(this.refreshStatus, 2000);
-            } else {
-                this.refreshStatus();
-            }
+            await this.fetchStatus();
+            setTimeout(this.refreshStatus, 2000);
         } else {
+            this.setState({ isLoading: false });
+            this.updateStartButton();
             this.props.handleRefreshTasks();
             this.setState({
                 estimatedStop: 'Not running',
@@ -151,6 +151,58 @@ export default class RunnableTaskCard extends Component<
             });
         }
     };
+
+    private async fetchStatus(retryFetch = 0): Promise<void> {
+        const reqJson = await fetch(
+            Constants.apiGetStatus,
+            Constants.mandatoryFetchOptions
+        );
+        const req = await reqJson.json();
+        if (retryFetch < 5) {
+            if (
+                req.status.status !== undefined &&
+                Object.keys(req.status.status).length !== 0 &&
+                req.status.status.session ===
+                    `${this.props.name}-${this.props.id}`
+            ) {
+                const status = req.status.status as THashcatStatus;
+                const runningProgress = `${
+                    (status.progress[0] / status.progress[1]) * 100
+                }%`;
+                const timeLeft =
+                    status.estimated_stop * 1000 - Date.now().valueOf();
+                const estimatedStop =
+                    timeLeft > 0
+                        ? duration(
+                              status.estimated_stop * 1000 -
+                                  Date.now().valueOf(),
+                              {
+                                  largest: 2,
+                                  maxDecimalPoints: 0,
+                                  units: ['y', 'mo', 'w', 'd', 'h', 'm'],
+                              }
+                          )
+                        : '0 minutes';
+                this.setState({
+                    estimatedStop,
+                    runningProgress,
+                    speed: `${status.devices[0].speed}`,
+                });
+                this.state.isRunning = req.status.isRunning;
+                this.state.isLoading = false;
+                this.updateStopButton();
+            } else {
+                setTimeout(() => {
+                    this.fetchStatus((retryFetch += 1));
+                }, 500);
+            }
+        } else {
+            this.state.isRunning = false;
+            this.state.isLoading = false;
+            this.updateStartButton();
+            this.displayErrorMessageOnHashcatStart();
+        }
+    }
 
     private displayErrorMessageOnHashcatStart(): void {
         this.setState({ onErrorStart: 'An error occured' });
@@ -164,36 +216,52 @@ export default class RunnableTaskCard extends Component<
         setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
     }
 
-    private fetchStartHashcat(isClicked: boolean): void {
-        if (isClicked && !this.state.isRunning) {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: this.props.id }),
-                ...Constants.mandatoryFetchOptions,
-            };
-            fetch(Constants.apiPOSTStart, requestOptions)
-                .then(response => response.json())
-                .then(() => {
-                    this.state.isRunning = !this.state.isRunning;
-                    this.refreshStatus();
-                });
-        }
+    private fetchStartHashcat(): void {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: this.props.id }),
+            ...Constants.mandatoryFetchOptions,
+        };
+        fetch(Constants.apiPOSTStart, requestOptions);
+        this.refreshStatus();
     }
 
-    private onClickRunTask: () => void = () => {
-        this.updateStartStopButton();
-        this.fetchStartHashcat(!this.state.clickedRunTask);
+    private fetchStopHashcat(): void {
+        const requestOptions = {
+            method: 'GET',
+            ...Constants.mandatoryFetchOptions,
+        };
+        fetch(Constants.apiGetStop, requestOptions)
+            .then(response => response.json())
+            .then(() => {
+                this.state.isRunning = false;
+                this.refreshStatus();
+                this.updateStartButton();
+            });
+    }
+
+    private onClickRunOrStopTask: () => void = () => {
+        if (!this.state.isRunning) {
+            this.state.isRunning = true;
+            this.state.isLoading = true;
+            this.fetchStartHashcat();
+        } else {
+            this.fetchStopHashcat();
+        }
     };
 
-    private updateStartStopButton(): void {
-        this.setState({
-            clickedRunTask: !this.state.clickedRunTask,
-        });
-        this.logo = this.state.clickedRunTask ? playTask : stopTask;
-        this.logoHover = this.state.clickedRunTask
-            ? playTaskHover
-            : stopTaskHover;
+    private updateStopButton(): void {
+        this.logo = stopTask;
+        this.logoHover = stopTaskHover;
+        this.displayedLogo = this.state.mouseIsEnterRunTask
+            ? this.logoHover
+            : this.logo;
+    }
+
+    private updateStartButton(): void {
+        this.logo = startTask;
+        this.logoHover = startTaskHover;
         this.displayedLogo = this.state.mouseIsEnterRunTask
             ? this.logoHover
             : this.logo;
