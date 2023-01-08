@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mysql
--- Généré le : ven. 06 jan. 2023 à 23:20
+-- Généré le : dim. 08 jan. 2023 à 09:52
 -- Version du serveur : 8.0.30
 -- Version de PHP : 8.0.26
 
@@ -29,8 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `attack_mode` (
   `id` int NOT NULL,
-  `name` varchar(30) DEFAULT NULL,
-  `mode` tinyint DEFAULT NULL
+  `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `mode` tinyint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='The attack modes enable by hashcat';
 
 -- --------------------------------------------------------
@@ -41,10 +41,10 @@ CREATE TABLE `attack_mode` (
 
 CREATE TABLE `hashlist` (
   `id` int NOT NULL,
-  `name` varchar(50) DEFAULT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `created_at` date DEFAULT NULL,
-  `lastest_modification` date DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastest_modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `number_of_cracked_passwords` int DEFAULT NULL,
   `hashtype_id` int NOT NULL,
   `cracked_output_file_name` varchar(200) DEFAULT NULL
@@ -72,7 +72,7 @@ CREATE TABLE `hash_type` (
 CREATE TABLE `options` (
   `id` int NOT NULL,
   `wordlist_id` int NOT NULL,
-  `kernel_opti` bigint DEFAULT (false),
+  `kernel_opti` tinyint(1) DEFAULT '0',
   `rule_name` varchar(100) DEFAULT NULL,
   `mask_query` varchar(100) DEFAULT NULL,
   `mask_filename` varchar(100) DEFAULT NULL,
@@ -96,9 +96,9 @@ CREATE TABLE `task` (
   `hashlist_id` int NOT NULL,
   `template_task_id` int DEFAULT NULL,
   `options_id` int NOT NULL,
-  `created_at` date DEFAULT NULL,
-  `ended_at` date DEFAULT NULL,
-  `lastest_modification` date DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ended_at` timestamp NULL DEFAULT NULL,
+  `lastest_modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_finished` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -110,11 +110,11 @@ CREATE TABLE `task` (
 
 CREATE TABLE `template_task` (
   `id` int NOT NULL COMMENT 'PRIMARY KEY of the table template task',
-  `name` varchar(30) DEFAULT NULL,
+  `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `description` varchar(255) DEFAULT (_utf8mb4''),
   `options_id` int DEFAULT NULL,
-  `created_at` date DEFAULT NULL,
-  `lastest_modification` date DEFAULT NULL
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastest_modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
