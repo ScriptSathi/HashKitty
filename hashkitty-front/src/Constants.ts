@@ -10,6 +10,7 @@ export class Constants {
     public static readonly apiGetStatus: string = `${this.apiUrl}/status`;
     public static readonly apiGetHashlists: string = `${this.apiUrl}/hashlists`;
     public static readonly apiPOSTStart: string = `${this.apiUrl}/start`;
+    public static readonly apiGetStop: string = `${this.apiUrl}/stop`;
     public static readonly apiPOSTCreateTask: string = `${this.apiUrl}/tasks`;
     public static readonly apiGetTemplateTasks: string = `${this.apiUrl}/templatetasks`;
     public static readonly apiGetRules: string = `${this.apiUrl}/rules`;

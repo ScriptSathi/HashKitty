@@ -237,7 +237,7 @@ export default class CreateTask extends Component<
             let value =
                 target.type === 'checkbox'
                     ? target.checked
-                    : target.value.replace(/[^\w._-]/gi, '');
+                    : target.value.replace(' ', '-').replace(/[^\w._-]/gi, '');
             if (target.name === 'formWorkloadProfile') {
                 value = parseInt(value) || 1;
                 if (value < 1) value = 1;
