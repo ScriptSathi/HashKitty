@@ -4,6 +4,8 @@ import { hashTypes } from './migration/hashtypes';
 import { AttackMode } from './entity/AttackMode';
 import { HashType } from './entity/HashType';
 import { logger } from '../utils/Logger';
+import { workloadProfiles } from './migration/workloadProfiles';
+import { WorkloadProfile } from './entity/WorkloadProfile';
 
 export class Migration {
     private appDataSource: DataSource;
@@ -15,6 +17,7 @@ export class Migration {
     public migrateAll(): void {
         this.migrateAttackModes();
         this.migrateHashTypes();
+        this.migrateWorkloadProfiles();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,5 +41,17 @@ export class Migration {
             await this.appDataSource.manager.save(dbAttackMode);
         }
         logger.debug('Adding known attack modes in the database');
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public migrateWorkloadProfiles = async (_ = 0): Promise<void> => {
+        for (const wp of workloadProfiles) {
+            const dbWP = new WorkloadProfile();
+            dbWP.profileId = wp.profileId;
+            dbWP.desktopImpact = wp.desktopImpact;
+            dbWP.powerConsumation = wp.powerConsumation;
+            await this.appDataSource.manager.save(dbWP);
+        }
+        logger.debug('Adding known workload profiles in the database');
     };
 }

@@ -43,9 +43,7 @@ export class DaoTasks implements IDaoSub<Task> {
 
     public async getById(id: number): Promise<Task> {
         const task = await this.db.getRepository(Task).findOne({
-            where: {
-                id: id,
-            },
+            where: { id },
             ...this.dbRelations,
         });
         return task === null ? new Task() : task;
