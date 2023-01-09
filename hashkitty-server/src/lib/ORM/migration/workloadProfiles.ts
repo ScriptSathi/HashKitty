@@ -1,22 +1,22 @@
-export const workloadProfile = [
+export const workloadProfiles = [
     {
         profileId: 1,
         powerConsumation: 'Low',
-        desktopImpac: 'Minimal',
+        desktopImpact: 'Minimal',
     },
     {
         profileId: 2,
         powerConsumation: 'Economic',
-        desktopImpac: 'Noticeable',
+        desktopImpact: 'Noticeable',
     },
     {
         profileId: 3,
         powerConsumation: 'High',
-        desktopImpac: 'Unresponsive',
+        desktopImpact: 'Unresponsive',
     },
     {
         profileId: 4,
         powerConsumation: 'Insane',
-        desktopImpac: 'Headless',
+        desktopImpact: 'Headless',
     },
 ];

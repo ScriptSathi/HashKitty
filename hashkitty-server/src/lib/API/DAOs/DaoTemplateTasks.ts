@@ -33,9 +33,7 @@ export class DaoTemplateTasks implements IDaoSub<TemplateTask> {
 
     public async getById(id: number): Promise<TemplateTask> {
         const templateTask = await this.db.getRepository(TemplateTask).findOne({
-            where: {
-                id: id,
-            },
+            where: { id },
             relations: [
                 'options',
                 'options.wordlistId',

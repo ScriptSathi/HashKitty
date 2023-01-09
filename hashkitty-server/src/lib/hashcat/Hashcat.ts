@@ -31,7 +31,6 @@ export class Hashcat {
             this.hashcatWorker = this.createWorkerThread();
             const cmd = this.generateCmd(task);
             logger.debug('Starting Hashcat cracking');
-            logger.debug(cmd);
             this.hashcatWorker.postMessage(cmd);
             this.listenProcess();
         } else {
@@ -116,10 +115,15 @@ export class Hashcat {
                 } else if (hashcatStdout === 'exhausted' && this.lastTaskRun) {
                     this.status.isRunning = false;
                     this.hashcatWorker?.terminate();
+                    logger.debug('Status: Exhausted');
+                    logger.info(
+                        'Process: Hashcat ended but no passwords were cracked !'
+                    );
                     // TODO hashcat did not crack any passwords, what to do next ?
                 } else if (hashcatStdout === 'error' && this.lastTaskRun) {
                     this.status.isRunning = false;
                     this.hashcatWorker?.terminate();
+                    logger.debug('Status: Error');
                     // TODO hashcat return an unknow code
                 }
                 if (hashcatStdout.status) {

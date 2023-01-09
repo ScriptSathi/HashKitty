@@ -82,9 +82,6 @@ export class Processus {
             logger.info(`Process: ${this.cmd[0]} ended correctly`);
         } else if (code === 1) {
             parentPort && parentPort.postMessage('exhausted');
-            logger.info(
-                `Process: ${this.cmd[0]} ended but no passwords were cracked !`
-            );
         } else {
             parentPort && parentPort.postMessage('error');
             logger.info(

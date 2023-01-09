@@ -38,12 +38,17 @@ export class Dao {
             HashType,
             migration.migrateHashTypes
         );
+        this.migrateIfNotExist<WorkloadProfile>(
+            db,
+            WorkloadProfile,
+            migration.migrateWorkloadProfiles
+        );
     }
 
     private static async migrateIfNotExist<T extends ObjectLiteral>(
         db: DataSource,
         EntityList: EntityTarget<T>,
-        migrationCallback: () => Promise<void>,
+        migrateFunc: () => Promise<void>,
         findObject = {},
         tryAgainCount = 0
     ): Promise<T[]> {
@@ -56,11 +61,11 @@ export class Dao {
             }
         } finally {
             if (req.length === 0) {
-                await migrationCallback();
+                await migrateFunc();
                 await this.migrateIfNotExist(
                     db,
                     EntityList,
-                    migrationCallback,
+                    migrateFunc,
                     findObject,
                     1
                 );
