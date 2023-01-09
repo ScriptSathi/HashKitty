@@ -34,9 +34,7 @@ export class DaoHashlist implements IDaoSub<Hashlist> {
 
     public async getById(id: number): Promise<Hashlist> {
         const hashlist = await this.db.getRepository(Hashlist).findOne({
-            where: {
-                id: id,
-            },
+            where: { id },
             relations: ['hashTypeId'],
         });
         return hashlist === null ? new Hashlist() : hashlist;

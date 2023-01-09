@@ -29,33 +29,27 @@ export class RouteHandler {
 
     public execHashcat = async (req: Request, res: Response): Promise<void> => {
         const id = parseInt(req.body.id) as TDaoById['id'];
-        if (!this.hashcat.status.isRunning) {
-            if (id && (await this.dao.taskExistById(id))) {
-                try {
-                    this.hashcat.exec(
-                        (await this.dao.task.getById(id)) as unknown as TTask
-                    );
-                    res.status(200).json({
-                        success: 'Hashcat has started successfully',
-                    });
-                } catch (err) {
-                    logger.error(
-                        `An error occured while trying to start task: ${err}`
-                    );
-                    res.status(200).json({
-                        fail: Dao.UnexpectedError,
-                        error: `[ERROR]: ${err}`,
-                    });
-                }
-            } else {
-                this.responseFail(
-                    res,
-                    `There is not task for id ${id}`,
-                    'start'
-                );
-            }
-        } else {
+        if (this.hashcat.status.isRunning) {
             this.responseFail(res, 'Hashcat is already running', 'start');
+            return;
+        }
+        if (!id || (id && !(await this.dao.taskExistById(id)))) {
+            this.responseFail(res, `There is not task for id ${id}`, 'start');
+            return;
+        }
+        try {
+            this.hashcat.exec(
+                (await this.dao.task.getById(id)) as unknown as TTask
+            );
+            res.status(200).json({
+                success: 'Hashcat has started successfully',
+            });
+        } catch (err) {
+            logger.error(`An error occured while trying to start task: ${err}`);
+            res.status(200).json({
+                fail: Dao.UnexpectedError,
+                error: `[ERROR]: ${err}`,
+            });
         }
     };
 
@@ -95,7 +89,7 @@ export class RouteHandler {
     };
 
     public getHashcatStatus = (_: Request, res: Response): void => {
-        if (this.hashcat.status.isRunning) {
+        if (this.hashcat.status.isRunning || this.hashcat.status) {
             res.status(200).json({
                 status: this.hashcat.status,
             });
@@ -324,25 +318,25 @@ export class RouteHandler {
         res: Response
     ): Promise<void> => {
         const id = parseInt(req.params.id) as TDaoById['id'];
-        if (id && (await this.dao.templateTaskExistById(id))) {
-            try {
-                res.status(200).json({
-                    success: await this.dao.templateTask.getById(id),
-                });
-            } catch (err) {
-                logger.error(err);
-                res.status(200).json({
-                    fail: Dao.UnexpectedError,
-                    error: `[ERROR]: ${err}`,
-                });
-            }
-        } else {
+        if (!id || (id && !(await this.dao.templateTaskExistById(id)))) {
             this.responseFail(
                 res,
                 `There is no template task with id ${id}`,
                 'get',
                 'template task'
             );
+            return;
+        }
+        try {
+            res.status(200).json({
+                success: await this.dao.templateTask.getById(id),
+            });
+        } catch (err) {
+            logger.error(err);
+            res.status(200).json({
+                fail: Dao.UnexpectedError,
+                error: `[ERROR]: ${err}`,
+            });
         }
     };
 
