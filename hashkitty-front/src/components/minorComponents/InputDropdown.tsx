@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { CSSProperties, ChangeEvent, Component } from 'react';
 
 import { inputDatalists, inputs } from '../../styles/CreateTask';
@@ -13,7 +14,6 @@ interface InputDropdownProps {
 
 interface InputDropdownState {
     openDropdown: boolean;
-    mouseInInput: boolean;
     inputData: string;
     sortedDropdownList: inputItem[];
     handleInputChange: (event: unknown) => void;
@@ -32,7 +32,6 @@ export default class InputDropdown extends Component<
         this.retryCount = 0;
         this.state = {
             openDropdown: false,
-            mouseInInput: false,
             inputData: '',
             handleInputChange: props.handleInputChange,
             sortedDropdownList: [],
@@ -65,14 +64,7 @@ export default class InputDropdown extends Component<
                                 ChangeEvent<HTMLInputElement>
                         )
                     }
-                    onKeyUp={event =>
-                        this.toggleDropdown(
-                            event as unknown as ChangeEvent<HTMLInputElement>
-                        )
-                    }
                     onChange={event => this.handleInputChange(event)}
-                    onMouseEnter={this.onMouseEnter}
-                    onMouseLeave={this.onMouseLeave}
                     placeholder="Name of the list"
                     style={{ ...inputs, ...inputDatalists }}
                     value={this.state.inputData}
@@ -91,9 +83,12 @@ export default class InputDropdown extends Component<
             | (React.MouseEvent<HTMLInputElement, MouseEvent> &
                   ChangeEvent<HTMLInputElement>)
     ) => {
-        const inputData = event.target.value.replace(/[^\w._-]/gi, '');
+        const inputData = event.target.value.replace(' ', '-').replace(/[^\w._-]/gi, '');
         event.preventDefault();
         event.stopPropagation();
+        this.setState({
+            openDropdown: true,
+        });
         this.props.handleInputChange(event);
         const sort = this.sortDropdownList(inputData);
         this.setState({
@@ -110,22 +105,8 @@ export default class InputDropdown extends Component<
 
     private toggleDropdown = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
-        if (this.state.mouseInInput) {
-            this.setState({
-                openDropdown: !this.state.openDropdown,
-            });
-        }
-    };
-
-    private onMouseEnter = () => {
         this.setState({
-            mouseInInput: true,
-        });
-    };
-
-    private onMouseLeave = () => {
-        this.setState({
-            mouseInInput: false,
+            openDropdown: !this.state.openDropdown,
         });
     };
 
@@ -141,9 +122,21 @@ export default class InputDropdown extends Component<
                     return (
                         <input
                             className="mainHover"
-                            onFocus={event => {
-                                this.handleInputChange(event);
-                                this.toggleDropdown(event);
+                            onClick={event => {
+                                this.handleInputChange(
+                                    event as React.MouseEvent<
+                                        HTMLInputElement,
+                                        MouseEvent
+                                    > &
+                                        ChangeEvent<HTMLInputElement>
+                                );
+                                this.toggleDropdown(
+                                    event as React.MouseEvent<
+                                        HTMLInputElement,
+                                        MouseEvent
+                                    > &
+                                        ChangeEvent<HTMLInputElement>
+                                );
                             }}
                             key={elem.id}
                             value={elem.name}
