@@ -29,7 +29,7 @@ export class RouteHandler {
 
     public execHashcat = async (req: Request, res: Response): Promise<void> => {
         const id = parseInt(req.body.id) as TDaoById['id'];
-        if (this.hashcat.status.isRunning) {
+        if (this.hashcat.state.isRunning) {
             this.responseFail(res, 'Hashcat is already running', 'start');
             return;
         }
@@ -58,7 +58,7 @@ export class RouteHandler {
         res: Response
     ): Promise<void> => {
         const id = parseInt(req.body.id) as TDaoById['id'];
-        if (!this.hashcat.status.isRunning) {
+        if (!this.hashcat.state.isRunning) {
             if (id && (await this.dao.taskExistById(id))) {
                 try {
                     this.hashcat.restore(
@@ -89,9 +89,9 @@ export class RouteHandler {
     };
 
     public getHashcatStatus = (_: Request, res: Response): void => {
-        if (this.hashcat.status.isRunning || this.hashcat.status) {
+        if (this.hashcat.state.isRunning || this.hashcat.state) {
             res.status(200).json({
-                status: this.hashcat.status,
+                status: this.hashcat.state,
             });
         } else {
             res.status(200).json({
@@ -102,7 +102,7 @@ export class RouteHandler {
     };
 
     public stopHashcat = (_: Request, res: Response): void => {
-        if (this.hashcat.status.isRunning) {
+        if (this.hashcat.state.isRunning) {
             this.hashcat.stop();
             res.status(200).json({
                 success: 'Hashcat stopped successfully',

@@ -35,7 +35,7 @@ export type THashcatPartialStatus = {
     target: string;
     progress: number[];
     restore_point: number;
-    recovered_hashes: number[];
+    recovered_hashes: [number, number];
     recovered_salts: number[];
     rejected: number;
     devices: {
@@ -52,4 +52,6 @@ export type THashcatPartialStatus = {
 
 export type THashcatStatus = {
     isRunning: boolean;
-} & Partial<THashcatPartialStatus>;
+    ended: boolean;
+    status: Partial<THashcatPartialStatus>;
+};

@@ -40,17 +40,16 @@ export class Task {
     @JoinColumn({ name: 'hashlist_id', referencedColumnName: 'id' })
     hashlistId!: number;
 
-    @Column('date', { nullable: true, default: new Date(), name: 'created_at' })
+    @Column('timestamp', { default: new Date(), name: 'created_at' })
     createdAt!: Date;
 
-    @Column('date', {
-        nullable: true,
+    @Column('timestamp', {
         default: new Date(),
         name: 'lastest_modification',
     })
     lastestModification!: Date;
 
-    @Column('date', { nullable: true, name: 'ended_at' })
+    @Column('timestamp', { nullable: true, name: 'ended_at' })
     endeddAt?: Date;
 
     @Column('bool', { nullable: true, default: false, name: 'is_finished' })
