@@ -23,10 +23,10 @@ export class Hashlist {
     @JoinColumn({ name: 'hashtype_id', referencedColumnName: 'id' })
     hashTypeId!: number;
 
-    @Column('date', { default: new Date(), name: 'created_at' })
+    @Column('timestamp', { default: new Date(), name: 'created_at' })
     createdAt!: Date;
 
-    @Column('date', { default: new Date(), name: 'lastest_modification' })
+    @Column('timestamp', { default: new Date(), name: 'lastest_modification' })
     lastestModification!: Date;
 
     @Column('int', { default: -1, name: 'number_of_cracked_passwords' })

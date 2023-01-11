@@ -11,7 +11,11 @@ import { Dao } from '../API/DAOs/Dao';
 import { Hashlist } from '../ORM/entity/Hashlist';
 
 export class Hashcat {
-    public status: THashcatStatus = { isRunning: false };
+    public state: THashcatStatus = {
+        isRunning: false,
+        ended: false,
+        status: {},
+    };
     private lastTaskRun: TTask | undefined;
     private outputFile: string | undefined;
     private bin: string;
@@ -42,7 +46,7 @@ export class Hashcat {
         if (this.hashcatWorker) {
             logger.debug('Stopping the hashcat process');
             this.hashcatWorker.postMessage('exit');
-            this.status.isRunning = false;
+            this.state.isRunning = false;
         }
     }
 
@@ -106,6 +110,7 @@ export class Hashcat {
     }
 
     private listenProcess(): void {
+        //TODO create hashcat listener that wrap all this
         this.hashcatWorker &&
             this.hashcatWorker.on('message', hashcatStdout => {
                 if (hashcatStdout === 'ended' && this.lastTaskRun) {
@@ -113,21 +118,39 @@ export class Hashcat {
                     this.handleTaskHasFinnished();
                     this.handleHashlistIsCracked();
                 } else if (hashcatStdout === 'exhausted' && this.lastTaskRun) {
-                    this.status.isRunning = false;
+                    const [nbOfCrackedPasswords, amountOfPasswords] = this.state
+                        .status.recovered_hashes || [0, 0];
+                    if (nbOfCrackedPasswords > 0) {
+                        this.lastTaskRun.hashlistId.numberOfCrackedPasswords =
+                            nbOfCrackedPasswords;
+                        this.handleTaskHasFinnished();
+                        this.handleHashlistIsCracked();
+                        logger.debug('Status: Exhausted');
+                        logger.info(
+                            'Process: Hashcat ended and cracked' +
+                                `${nbOfCrackedPasswords}/${amountOfPasswords} passwords`
+                        );
+                    } else {
+                        logger.debug('Status: Exhausted');
+                        logger.info(
+                            'Process: Hashcat ended but no passwords were cracked !'
+                        );
+                    }
+                    this.state.isRunning = false;
                     this.hashcatWorker?.terminate();
-                    logger.debug('Status: Exhausted');
-                    logger.info(
-                        'Process: Hashcat ended but no passwords were cracked !'
-                    );
                     // TODO hashcat did not crack any passwords, what to do next ?
                 } else if (hashcatStdout === 'error' && this.lastTaskRun) {
-                    this.status.isRunning = false;
+                    this.state.isRunning = false;
                     this.hashcatWorker?.terminate();
                     logger.debug('Status: Error');
                     // TODO hashcat return an unknow code
                 }
                 if (hashcatStdout.status) {
-                    this.status = { ...hashcatStdout, isRunning: true };
+                    this.state = {
+                        ended: false,
+                        status: hashcatStdout.status,
+                        isRunning: true,
+                    };
                 } else if (hashcatStdout.any) {
                     if (hashcatStdout.any.match(/\n/g)) {
                         logger.debug(
@@ -152,7 +175,8 @@ export class Hashcat {
     }
 
     private handleTaskHasFinnished(task?: TTask): void {
-        this.status.isRunning = false;
+        this.state.isRunning = false;
+        this.state.ended = true;
         this.dao.task.registerTaskEnded(
             (task as unknown as Task) || (this.lastTaskRun as unknown as Task)
         );
