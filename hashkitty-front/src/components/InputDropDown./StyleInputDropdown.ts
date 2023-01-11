@@ -24,3 +24,18 @@ export const listFrame: CSSProperties = {
     fontFamily: 'InterMedium',
     overflowY: 'scroll',
 };
+
+export const inputDatalists: CSSProperties = {
+    fontSize: 16,
+    marginTop: 10,
+    width: '300px',
+};
+
+export const inputs: CSSProperties = {
+    border: '3px solid',
+    borderRadius: '10px',
+    height: '25px',
+    fontSize: 16,
+    fontFamily: 'InterMedium',
+    paddingLeft: 8,
+};

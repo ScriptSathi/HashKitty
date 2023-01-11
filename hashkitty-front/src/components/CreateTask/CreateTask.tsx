@@ -18,19 +18,19 @@ import {
     advancedConfigsDivLeft,
     formBody,
     divRadio,
-} from '../styles/CreateTask';
-import { Constants } from '../Constants';
-import { ErrorHandling } from '../ErrorHandling';
-import { THashlist, TemplateTask, TAttackMode } from '../types/TypesORM';
+} from './StyleCreateTask';
+import { Constants } from '../../Constants';
+import { ErrorHandling } from '../../ErrorHandling';
+import { THashlist, TemplateTask, TAttackMode } from '../../types/TypesORM';
 import {
     ApiOptionsFormData,
     ApiTaskFormData,
     newTaskFormData,
-} from '../types/TComponents';
-import { newTaskInputsError } from '../types/TErrorHandling';
-import InputDropdown, { inputItem } from './minorComponents/InputDropdown';
-import toggleClose from '../assets/images/toggleClose.svg';
-import toggleOpen from '../assets/images/toggleOpen.svg';
+} from '../../types/TComponents';
+import { newTaskInputsError } from '../../types/TErrorHandling';
+import InputDropdown, { inputItem } from '../InputDropDown./InputDropdown';
+import toggleClose from '../../assets/images/toggleClose.svg';
+import toggleOpen from '../../assets/images/toggleOpen.svg';
 
 type CreateTaskState = {
     handleTaskCreationAdded: () => void;
@@ -138,10 +138,6 @@ export default class CreateTask extends Component<
         return (
             <div
                 style={{
-                    position: 'absolute',
-                    top: '10%',
-                    left: '27.5%',
-                    width: '45%',
                     height: this.state.createOptionsToggle ? 800 : 400,
                 }}
             >
