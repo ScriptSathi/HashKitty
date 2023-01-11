@@ -26,6 +26,7 @@ import { THashcatStatus } from '../types/TServer';
 type RunnableTaskCardState = {
     mouseIsEnterTaskCard: boolean;
     mouseIsEnterRunTask: boolean;
+    taskIsFinnished: boolean;
     moreDetailsClicked: boolean;
     clickedRunTask: boolean;
     onErrorStart: string;
@@ -47,6 +48,7 @@ export default class RunnableTaskCard extends Component<
     public state: RunnableTaskCardState = {
         mouseIsEnterTaskCard: false,
         mouseIsEnterRunTask: false,
+        taskIsFinnished: false,
         moreDetailsClicked: false,
         clickedRunTask: this.props.isRunning,
         isRunning: this.props.isRunning,
@@ -184,6 +186,7 @@ export default class RunnableTaskCard extends Component<
                           )
                         : '0 minutes';
                 this.setState({
+                    taskIsFinnished: req.status.ended,
                     estimatedStop,
                     runningProgress,
                     speed: `${status.devices[0].speed}`,

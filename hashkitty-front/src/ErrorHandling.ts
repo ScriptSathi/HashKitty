@@ -5,7 +5,7 @@ import {
     fieldError,
 } from './types/TErrorHandling';
 import { TAttackMode, THashlist } from './types/TypesORM';
-import { inputItem } from './components/minorComponents/InputDropdown';
+import { inputItem } from './components/InputDropDown./InputDropdown';
 
 const newTaskKeys: keyErrors[] = [
     'formAttackModeId',

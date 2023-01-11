@@ -17,12 +17,15 @@ import {
     runningTasks,
 } from '../styles/HomePage';
 import { Constants } from '../Constants';
-import CreateTask from '../components/CreateTask';
+import CreateTask from '../components/CreateTask/CreateTask';
+import BackgroundBlur from '../components/BackgroundBlur/BackGroundBlur';
 
 type HomePageState = {
     newTaskToogle: boolean;
     taskCreationAdded: boolean;
+    isMouseOvershowResultsCard: boolean;
     taskCreationError: boolean;
+    taskResultsToggle: boolean;
     isMouseOverNewTask: boolean;
     tasks: TTask[];
     endedTasks: TTask[];
@@ -31,6 +34,8 @@ type HomePageState = {
 export default class HomePage extends Component<{}, HomePageState> {
     public state: HomePageState = {
         taskCreationAdded: false,
+        isMouseOvershowResultsCard: false,
+        taskResultsToggle: false,
         taskCreationError: false,
         newTaskToogle: false,
         isMouseOverNewTask: false,
@@ -68,54 +73,6 @@ export default class HomePage extends Component<{}, HomePageState> {
                                     alt="create a new task"
                                     onClick={this.toggleNewTask}
                                 />
-                                <div
-                                    style={
-                                        this.state.newTaskToogle
-                                            ? {
-                                                  position: 'absolute',
-                                                  backdropFilter:
-                                                      'blur(5px) brightness(0.60)',
-                                                  height: '100%',
-                                                  width: '100%',
-                                                  top: 0,
-                                                  left: 0,
-                                              }
-                                            : {}
-                                    }
-                                    onClick={
-                                        this.state.isMouseOverNewTask
-                                            ? () => {}
-                                            : this.toggleNewTask
-                                    }
-                                >
-                                    <div
-                                        onMouseEnter={
-                                            this.onMouseEnterNewTaskCantClick
-                                        }
-                                        onMouseLeave={
-                                            this.onMouseLeaveNewTaskCanClick
-                                        }
-                                        style={
-                                            this.state.newTaskToogle ? {} : {}
-                                        }
-                                    >
-                                        {this.state.newTaskToogle ? (
-                                            <CreateTask
-                                                handleTaskCreationAdded={
-                                                    this.handleTaskCreationAdded
-                                                }
-                                                handleTaskCreationError={
-                                                    this.handleTaskCreationError
-                                                }
-                                                toggleNewTask={
-                                                    this.toggleNewTask
-                                                }
-                                            />
-                                        ) : (
-                                            ''
-                                        )}
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -129,9 +86,32 @@ export default class HomePage extends Component<{}, HomePageState> {
                             <TasksBody
                                 handleRefreshTasks={this.handleRefreshTasks}
                                 tasks={this.state.endedTasks}
+                                toggleDisplayResults={this.toggleTaskResults}
                             />
                         </div>
                     </div>
+                </div>
+                <div>
+                    <BackgroundBlur
+                        isToggled={this.state.taskResultsToggle}
+                        toggleFn={this.toggleTaskResults}
+                    >
+                        <p>fafeafafafajfajfjafjaf</p>
+                    </BackgroundBlur>
+                    <BackgroundBlur
+                        isToggled={this.state.newTaskToogle}
+                        toggleFn={this.toggleNewTask}
+                    >
+                        <CreateTask
+                            handleTaskCreationAdded={
+                                this.handleTaskCreationAdded
+                            }
+                            handleTaskCreationError={
+                                this.handleTaskCreationError
+                            }
+                            toggleNewTask={this.toggleNewTask}
+                        />
+                    </BackgroundBlur>
                 </div>
             </div>
         );
@@ -173,6 +153,15 @@ export default class HomePage extends Component<{}, HomePageState> {
             : (document.body.style.overflow = 'hidden');
     };
 
+    private toggleTaskResults: () => void = () => {
+        this.setState({
+            taskResultsToggle: !this.state.taskResultsToggle,
+        });
+        this.state.taskResultsToggle
+            ? (document.body.style.overflow = 'visible')
+            : (document.body.style.overflow = 'hidden');
+    };
+
     private onMouseEnterNewTaskCantClick: () => void = () => {
         this.setState({
             isMouseOverNewTask: true,
@@ -182,6 +171,18 @@ export default class HomePage extends Component<{}, HomePageState> {
     private onMouseLeaveNewTaskCanClick: () => void = () => {
         this.setState({
             isMouseOverNewTask: false,
+        });
+    };
+
+    private onMouseEnterShowResultsCantClick: () => void = () => {
+        this.setState({
+            isMouseOvershowResultsCard: true,
+        });
+    };
+
+    private onMouseLeaveShowResultsCanClick: () => void = () => {
+        this.setState({
+            isMouseOvershowResultsCard: false,
         });
     };
 
