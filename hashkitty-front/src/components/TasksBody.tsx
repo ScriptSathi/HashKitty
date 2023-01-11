@@ -9,6 +9,7 @@ import EndedTaskCard from './EndedTaskCard';
 type RunningTasksBodyProps = {
     tasks: TTask[];
     handleRefreshTasks: () => Promise<void>;
+    toggleDisplayResults?: () => void;
 };
 
 export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
@@ -58,6 +59,11 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
                                 isRunning={
                                     this.runningSessionName ===
                                     `${task.name}-${task.id}`
+                                }
+                                toggleDisplayResults={
+                                    this.props.toggleDisplayResults
+                                        ? this.props.toggleDisplayResults
+                                        : () => {}
                                 }
                             />
                         ) : (

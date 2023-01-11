@@ -1,8 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { CSSProperties, ChangeEvent, Component } from 'react';
 
-import { inputDatalists, inputs } from '../../styles/CreateTask';
-import { frame, inputText, listFrame } from '../../styles/InputDropdown';
+import { frame, inputText, listFrame, inputDatalists, inputs } from './StyleInputDropdown';
 
 export type inputItem = { name: string; id: number };
 

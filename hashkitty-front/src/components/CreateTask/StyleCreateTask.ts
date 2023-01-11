@@ -42,6 +42,7 @@ export const formBody: CSSProperties = {
     display: 'grid',
     gridTemplateRows: 'auto',
     width: '100%',
+    height: 0,
 };
 
 export const mandatoryBody: CSSProperties = {
@@ -51,12 +52,6 @@ export const mandatoryBody: CSSProperties = {
 
 export const labels: CSSProperties = {
     marginBottom: 0,
-};
-
-export const inputDatalists: CSSProperties = {
-    fontSize: 16,
-    marginTop: 10,
-    width: '300px',
 };
 
 export const submitInput: CSSProperties = {

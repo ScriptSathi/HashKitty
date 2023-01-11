@@ -47,14 +47,14 @@ export const taskSoftInfos: CSSProperties = {
 
 export const bottomBox: CSSProperties = {
     paddingLeft: 40,
-    gridArea: '2 / 1 / 3 / 6',
     display: 'grid',
     gridTemplateColumns: '2.5fr 1fr',
+    marginTop: 20,
 };
 
-export const runButton: CSSProperties = {
+export const deleteButton: CSSProperties = {
     cursor: 'pointer',
-    marginTop: 40,
+    marginTop: 20,
     paddingLeft: 10,
 };
 
@@ -63,6 +63,7 @@ export const bottomBoxText: CSSProperties = {
     fontSize: '20px',
     fontWeight: 500,
     lineHeight: '30px',
+    marginTop: 0,
 };
 
 export const cardOnStartError: CSSProperties = {

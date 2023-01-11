@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import duration from 'humanize-duration';
 
 import { TTask } from '../types/TypesORM';
 import {
@@ -7,7 +8,7 @@ import {
     cardBodyGeneric,
     cardOnStartError,
     moreDetails,
-    runButton,
+    deleteButton,
     taskName,
     taskSoftInfos,
     topLeftPart,
@@ -31,6 +32,7 @@ type EndedTaskCardState = {
 
 type EndedTaskCardProps = TTask & { isRunning: boolean } & {
     handleRefreshTasks: () => Promise<void>;
+    toggleDisplayResults: () => void;
 };
 
 export default class EndedTaskCard extends Component<
@@ -66,6 +68,9 @@ export default class EndedTaskCard extends Component<
                         </div>
                     </div>
                     <div style={moreDetails}>
+                        <button onClick={this.props.toggleDisplayResults}>
+                            Results
+                        </button>
                         <p onClick={() => alert(1)} className="moreDetails">
                             More details
                         </p>
@@ -75,21 +80,28 @@ export default class EndedTaskCard extends Component<
                     </div>
                 </div>
                 <div style={bottomBox}>
-                    <div>
-                        <p style={bottomBoxText}>
-                            <br />
-                            Ended at: {this.props.endeddAt}
-                            <br />
-                            Nb of cracked passwords:{' '}
-                            {this.props.hashlistId.numberOfCrackedPasswords}
-                        </p>
-                    </div>
-                    <div style={runButton}>
+                    <p style={bottomBoxText}>
+                        <br />
+                        Ended since:{' '}
+                        {duration(
+                            Date.parse(this.props.endeddAt || '') -
+                                Date.now().valueOf(),
+                            {
+                                largest: 1,
+                                maxDecimalPoints: 0,
+                                units: ['y', 'mo', 'w', 'd', 'h', 'm'],
+                            }
+                        )}
+                        <br />
+                        Nb of cracked passwords:{' '}
+                        {this.props.hashlistId.numberOfCrackedPasswords}
+                    </p>
+                    <div style={deleteButton}>
                         <img
                             className={
                                 this.state.mouseIsEnterRunTask
-                                    ? ''
-                                    : 'deleteTask'
+                                    ? 'deleteTask'
+                                    : ''
                             }
                             onMouseEnter={this.onMouseEnterRunTask}
                             onMouseLeave={this.onMouseLeaveRunTask}
