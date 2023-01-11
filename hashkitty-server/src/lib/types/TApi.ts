@@ -63,17 +63,6 @@ export type TresponsesNamesMessagesObjectKeys<
     fail: TresponseMessageObject<string>;
 };
 
-export type TresponsesNamesWitMessagesObjectKeys = keyof TresponseMessages;
-
-export type TresponseMessages = {
-    status: TresponsesNamesMessagesObjectKeys<THashcatStatus>;
-    exec: TresponsesNamesMessagesObjectKeys<string>;
-    stop: TresponsesNamesMessagesObjectKeys<string>;
-    create: TresponsesNamesMessagesObjectKeys<string>;
-    delete: TresponsesNamesMessagesObjectKeys<string>;
-    update: TresponsesNamesMessagesObjectKeys<string>;
-};
-
 export type AllowedResponseFormat = string | THashcatStatus;
 
 export type TresponseMessagesTypesAgregator =

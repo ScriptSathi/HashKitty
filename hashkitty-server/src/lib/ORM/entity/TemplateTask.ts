@@ -23,9 +23,9 @@ export class TemplateTask {
     @JoinColumn({ name: 'options_id', referencedColumnName: 'id' })
     options!: Options;
 
-    @Column('date', { default: new Date(), name: 'created_at' })
+    @Column('timestamp', { default: new Date(), name: 'created_at' })
     createdAt!: Date;
 
-    @Column('date', { default: new Date(), name: 'lastest_modification' })
+    @Column('timestamp', { default: new Date(), name: 'lastest_modification' })
     lastestModification!: Date;
 }
