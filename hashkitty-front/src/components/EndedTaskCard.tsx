@@ -17,6 +17,8 @@ import {
 import '../assets/styles/main.scss';
 import trash from '../assets/images/trash.svg';
 import { Constants } from '../Constants';
+import BackgroundBlur from './BackgroundBlur/BackGroundBlur';
+import ResultsCard from './ResultsCard/ResultsCard';
 
 type EndedTaskCardState = {
     mouseIsEnterTaskCard: boolean;
@@ -25,9 +27,8 @@ type EndedTaskCardState = {
     clickedRunTask: boolean;
     onErrorStart: string;
     isRunning: boolean;
-    estimatedStop: string;
-    runningProgress: string;
-    speed: string;
+    toggledResults: boolean;
+    endedSince: string;
 };
 
 type EndedTaskCardProps = TTask & { isRunning: boolean } & {
@@ -43,15 +44,25 @@ export default class EndedTaskCard extends Component<
         mouseIsEnterTaskCard: false,
         mouseIsEnterRunTask: false,
         moreDetailsClicked: false,
+        toggledResults: false,
         clickedRunTask: this.props.isRunning,
         isRunning: this.props.isRunning,
         onErrorStart: '',
-        estimatedStop: 'Not running',
-        runningProgress: '0',
-        speed: '0',
+        endedSince: 'Unknown',
     };
+
+    private interval: number;
     private displayedLogo = trash;
     private cardBody = cardBodyGeneric;
+
+    public componentDidMount() {
+        this.setNewDurationTime();
+        this.interval = setInterval(() => this.setNewDurationTime(), 20000);
+    }
+
+    public componentWillUnmount() {
+        clearInterval(this.interval);
+    }
 
     public render() {
         return (
@@ -68,9 +79,7 @@ export default class EndedTaskCard extends Component<
                         </div>
                     </div>
                     <div style={moreDetails}>
-                        <button onClick={this.props.toggleDisplayResults}>
-                            Results
-                        </button>
+                        <button onClick={this.displayResults}>Results</button>
                         <p onClick={() => alert(1)} className="moreDetails">
                             More details
                         </p>
@@ -82,16 +91,7 @@ export default class EndedTaskCard extends Component<
                 <div style={bottomBox}>
                     <p style={bottomBoxText}>
                         <br />
-                        Ended since:{' '}
-                        {duration(
-                            Date.parse(this.props.endeddAt || '') -
-                                Date.now().valueOf(),
-                            {
-                                largest: 1,
-                                maxDecimalPoints: 0,
-                                units: ['y', 'mo', 'w', 'd', 'h', 'm'],
-                            }
-                        )}
+                        Ended since: {this.state.endedSince}
                         <br />
                         Nb of cracked passwords:{' '}
                         {this.props.hashlistId.numberOfCrackedPasswords}
@@ -112,8 +112,29 @@ export default class EndedTaskCard extends Component<
                     </div>
                 </div>
                 {this.state.moreDetailsClicked ? <p>Bonjour</p> : ''}
+                <BackgroundBlur
+                    isToggled={this.state.toggledResults}
+                    toggleFn={this.displayResults}
+                >
+                    <ResultsCard
+                        fileName={`${this.props.hashlistId.name}-${this.props.hashlistId.id}`}
+                    />
+                </BackgroundBlur>
             </div>
         );
+    }
+
+    private setNewDurationTime(): void {
+        this.setState({
+            endedSince: duration(
+                Date.parse(this.props.endeddAt || '') - Date.now().valueOf(),
+                {
+                    largest: 1,
+                    maxDecimalPoints: 0,
+                    units: ['y', 'mo', 'w', 'd', 'h', 'm'],
+                }
+            ),
+        });
     }
 
     private displayErrorMessageOnDeleteTask(): void {
@@ -137,6 +158,13 @@ export default class EndedTaskCard extends Component<
                 });
         }
     }
+
+    private displayResults = () => {
+        this.props.toggleDisplayResults();
+        this.setState({
+            toggledResults: !this.state.toggledResults,
+        });
+    };
 
     private onClickDeleteTask: () => void = () => {
         this.fetchDeleteTask(!this.state.clickedRunTask);
