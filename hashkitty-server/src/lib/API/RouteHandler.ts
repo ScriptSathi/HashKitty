@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import path = require('path');
+import * as fs from 'fs-extra';
 
 import { Hashcat } from '../hashcat/Hashcat';
 import { Constants } from '../Constants';
@@ -16,7 +18,7 @@ import { TTask, TUploadReqBody } from '../types/TApi';
 import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
 import { UploadedFile } from 'express-fileupload';
-import path = require('path');
+
 
 export class RouteHandler {
     public hashcat: Hashcat;
@@ -223,6 +225,37 @@ export class RouteHandler {
         res.status(200).json({
             success: `File ${body.filename} uploaded!`,
         });
+    };
+
+    public taskResults = (
+        req: Request<{ filename: string }>,
+        res: Response
+    ): void => {
+        if (!req.body.filename) {
+            res.status(400).json({
+                passwds: [],
+                error: 'You need to submit the filename',
+            });
+            return;
+        }
+        try {
+            const taskResults = fs
+                .readFileSync(
+                    path.join(Constants.outputFilePath, req.body.filename)
+                )
+                .toString('utf-8')
+                .split('\n')
+                .filter(line => line);
+            res.status(200).json({
+                passwds: taskResults,
+            });
+        } catch (err) {
+            logger.debug(err);
+            res.status(400).json({
+                passwds: [],
+                error: `file ${req.body.filename} does not exist`,
+            });
+        }
     };
 
     public deleteFile = (_: Request, res: Response): void => {

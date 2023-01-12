@@ -47,5 +47,6 @@ export class ApiRouter {
         this.router.post('/files', this.routeHandler.addFile);
         this.router.post('/files/:id', this.routeHandler.deleteFile);
         this.router.post('/files/update/:id', this.routeHandler.updateFile);
+        this.router.post('/results', this.routeHandler.taskResults);
     }
 }
