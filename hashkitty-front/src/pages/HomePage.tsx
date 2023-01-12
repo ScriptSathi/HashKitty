@@ -19,6 +19,7 @@ import {
 import { Constants } from '../Constants';
 import CreateTask from '../components/CreateTask/CreateTask';
 import BackgroundBlur from '../components/BackgroundBlur/BackGroundBlur';
+import ResultsCard from '../components/ResultsCard/ResultsCard';
 
 type HomePageState = {
     newTaskToogle: boolean;
@@ -92,12 +93,6 @@ export default class HomePage extends Component<{}, HomePageState> {
                     </div>
                 </div>
                 <div>
-                    <BackgroundBlur
-                        isToggled={this.state.taskResultsToggle}
-                        toggleFn={this.toggleTaskResults}
-                    >
-                        <p>fafeafafafajfajfjafjaf</p>
-                    </BackgroundBlur>
                     <BackgroundBlur
                         isToggled={this.state.newTaskToogle}
                         toggleFn={this.toggleNewTask}
