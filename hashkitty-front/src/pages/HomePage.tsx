@@ -19,7 +19,6 @@ import {
 import { Constants } from '../Constants';
 import CreateTask from '../components/CreateTask/CreateTask';
 import BackgroundBlur from '../components/BackgroundBlur/BackGroundBlur';
-import ResultsCard from '../components/ResultsCard/ResultsCard';
 
 type HomePageState = {
     newTaskToogle: boolean;
@@ -50,7 +49,13 @@ export default class HomePage extends Component<{}, HomePageState> {
 
     public render() {
         return (
-            <div style={this.state.newTaskToogle ? { overflow: 'hidden' } : {}}>
+            <div
+                style={
+                    this.state.newTaskToogle || this.state.taskResultsToggle
+                        ? { overflow: 'hidden', userSelect: 'none' }
+                        : {}
+                }
+            >
                 <Navbar />
                 <this.renderCreationTaskStatus />
                 <div style={mainBox}>
@@ -96,6 +101,7 @@ export default class HomePage extends Component<{}, HomePageState> {
                     <BackgroundBlur
                         isToggled={this.state.newTaskToogle}
                         toggleFn={this.toggleNewTask}
+                        centerContent={false}
                     >
                         <CreateTask
                             handleTaskCreationAdded={
@@ -155,30 +161,6 @@ export default class HomePage extends Component<{}, HomePageState> {
         this.state.taskResultsToggle
             ? (document.body.style.overflow = 'visible')
             : (document.body.style.overflow = 'hidden');
-    };
-
-    private onMouseEnterNewTaskCantClick: () => void = () => {
-        this.setState({
-            isMouseOverNewTask: true,
-        });
-    };
-
-    private onMouseLeaveNewTaskCanClick: () => void = () => {
-        this.setState({
-            isMouseOverNewTask: false,
-        });
-    };
-
-    private onMouseEnterShowResultsCantClick: () => void = () => {
-        this.setState({
-            isMouseOvershowResultsCard: true,
-        });
-    };
-
-    private onMouseLeaveShowResultsCanClick: () => void = () => {
-        this.setState({
-            isMouseOvershowResultsCard: false,
-        });
     };
 
     private handleTaskCreationAdded = () => {

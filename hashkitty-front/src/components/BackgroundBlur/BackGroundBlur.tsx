@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 interface BackgroundBlurProps {
     children: React.ReactNode;
     isToggled: boolean;
+    centerContent: boolean;
     toggleFn: () => void | Promise<void>;
 }
 
@@ -30,6 +31,7 @@ export default class BackgroundBlur extends Component<
                               width: '100%',
                               top: 0,
                               left: 0,
+                              userSelect: 'text',
                           }
                         : {}
                 }
@@ -39,12 +41,17 @@ export default class BackgroundBlur extends Component<
             >
                 {this.props.isToggled ? (
                     <div
-                        style={{
-                            position: 'absolute',
-                            top: '10%',
-                            left: '27.5%',
-                            width: '45%',
-                        }}
+                        style={
+                            this.props.centerContent
+                                ? {
+                                      position: 'absolute',
+                                      top: '50%',
+                                      left: '50%',
+                                      marginRight: '-50%',
+                                      transform: 'translate(-50%, -50%)',
+                                  }
+                                : {}
+                        }
                         onMouseEnter={this.onMouseEnterCantClick}
                         onMouseLeave={this.onMouseLeaveCanClick}
                     >

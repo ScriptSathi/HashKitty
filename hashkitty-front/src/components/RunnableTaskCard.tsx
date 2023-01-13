@@ -276,7 +276,7 @@ export default class RunnableTaskCard extends Component<
         });
         this.cardBody = {
             ...cardBodyGeneric,
-            boxShadow: '0px 12px 5px 0px #FC6F6F',
+            boxShadow: '0px 5px 5px 0px #FC6F6F',
         };
     };
 
