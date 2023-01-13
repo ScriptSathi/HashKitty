@@ -48,7 +48,7 @@ export const formBody: CSSProperties = {
 
 export const mandatoryBody: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: '1.5fr 1fr',
+    gridTemplateColumns: '1.2fr 1fr',
 };
 
 export const labels: CSSProperties = {

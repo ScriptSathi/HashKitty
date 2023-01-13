@@ -17,6 +17,7 @@ import {
 } from '../styles/EndedTaskCard';
 import '../assets/styles/main.scss';
 import trash from '../assets/images/trash.svg';
+import resultsLogo from '../assets/images/results.png';
 import { Constants } from '../Constants';
 import BackgroundBlur from './BackgroundBlur/BackGroundBlur';
 import ResultsCard from './ResultsCard/ResultsCard';
@@ -28,6 +29,7 @@ type EndedTaskCardState = {
     clickedRunTask: boolean;
     onErrorStart: string;
     isRunning: boolean;
+    isMouseOverResultBtn: boolean;
     toggledResults: boolean;
     endedSince: string;
 };
@@ -50,6 +52,7 @@ export default class EndedTaskCard extends Component<
         isRunning: this.props.isRunning,
         onErrorStart: '',
         endedSince: 'Unknown',
+        isMouseOverResultBtn: false,
     };
 
     private interval: number;
@@ -80,12 +83,21 @@ export default class EndedTaskCard extends Component<
                         </div>
                     </div>
                     <div style={moreDetails}>
-                        <button
-                            style={resultsButton}
+                        <img
+                            style={
+                                this.state.isMouseOverResultBtn
+                                    ? {
+                                          ...resultsButton,
+                                          filter: 'invert(55%) sepia(6%) saturate(5000%) hue-rotate(314deg) brightness(100%) contrast(200%)',
+                                      }
+                                    : resultsButton
+                            }
                             onClick={this.displayResults}
-                        >
-                            Show results
-                        </button>
+                            onMouseEnter={this.mouseOverResBtn}
+                            onMouseLeave={this.mouseOverResBtn}
+                            src={resultsLogo}
+                            alt="Displaying results"
+                        ></img>
                         <p style={cardOnStartError}>
                             {this.state.onErrorStart}
                         </p>
@@ -121,7 +133,8 @@ export default class EndedTaskCard extends Component<
                     centerContent={true}
                 >
                     <ResultsCard
-                        fileName={`${this.props.hashlistId.name}-${this.props.hashlistId.id}`}
+                        hashlistName={this.props.hashlistId.name}
+                        hashlistId={this.props.hashlistId.id}
                     />
                 </BackgroundBlur>
             </div>
@@ -145,6 +158,12 @@ export default class EndedTaskCard extends Component<
         this.setState({ onErrorStart: 'An error occured' });
         setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
     }
+
+    private mouseOverResBtn = (): void => {
+        this.setState({
+            isMouseOverResultBtn: !this.state.isMouseOverResultBtn,
+        });
+    };
 
     private fetchDeleteTask(isClicked: boolean): void {
         if (isClicked) {

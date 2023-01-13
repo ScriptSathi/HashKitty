@@ -139,7 +139,7 @@ export default class CreateTask extends Component<
             <div style={cardBody}>
                 <div
                     style={{
-                        height: this.state.createOptionsToggle ? 800 : 400,
+                        height: this.state.createOptionsToggle ? 750 : 350,
                     }}
                 >
                     <div style={contentBody}>
@@ -175,10 +175,10 @@ export default class CreateTask extends Component<
                                     <br />
                                     <this.renderLabelWordlist />
                                     <br />
+                                    <br />
                                     <this.renderLabelWorkloadProfiles />
                                     <br />
                                     <this.renderLabelCPUOnly />
-                                    <br />
                                     <br />
                                     <this.renderLabelKernelOpti />
                                 </div>
@@ -669,7 +669,6 @@ export default class CreateTask extends Component<
     private renderLabelKernelOpti = () => {
         return (
             <label style={labels}>
-                Kernel optimization (default: No)
                 <input
                     type="checkbox"
                     value="true"
@@ -678,6 +677,7 @@ export default class CreateTask extends Component<
                     style={{ marginLeft: 10, width: 20, height: 20 }}
                     onChange={event => this.handleInputChange(event)}
                 ></input>
+                Kernel optimization (default: No)
             </label>
         );
     };
@@ -685,7 +685,6 @@ export default class CreateTask extends Component<
     private renderLabelCPUOnly = () => {
         return (
             <label style={labels}>
-                CPU Only (default: No)
                 <input
                     type="checkbox"
                     value="true"
@@ -694,6 +693,7 @@ export default class CreateTask extends Component<
                     style={{ marginLeft: 10, width: 20, height: 20 }}
                     onChange={event => this.handleInputChange(event)}
                 ></input>
+                CPU Only (default: No)
             </label>
         );
     };
