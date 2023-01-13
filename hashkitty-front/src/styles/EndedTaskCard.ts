@@ -73,3 +73,12 @@ export const cardOnStartError: CSSProperties = {
     fontSize: '20px',
     color: 'red',
 };
+
+export const resultsButton: CSSProperties = {
+    color: 'white',
+    backgroundColor: '#FC6F6F',
+    borderRadius: '8%',
+    border: '2px solid',
+    marginTop: 20,
+    height: 40,
+};

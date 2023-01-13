@@ -50,6 +50,7 @@ export default class ResultsCard extends Component<
             Constants.apiPOSTTaskResults,
             data,
             res => {
+                console.log(res);
                 this.setState({
                     crackedPasswd: res.passwds,
                 });

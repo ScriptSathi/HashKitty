@@ -19,8 +19,9 @@ export const inputName: CSSProperties = {
 export const cardBody: CSSProperties = {
     backgroundColor: 'white',
     position: 'absolute',
-    width: '100%',
-    height: '100%',
+    top: '10%',
+    left: '27.5%',
+    width: 800,
     border: '2px solid',
     borderRadius: '50px',
 };
