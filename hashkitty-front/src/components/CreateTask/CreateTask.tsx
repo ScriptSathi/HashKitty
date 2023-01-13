@@ -136,12 +136,12 @@ export default class CreateTask extends Component<
 
     public render() {
         return (
-            <div
-                style={{
-                    height: this.state.createOptionsToggle ? 800 : 400,
-                }}
-            >
-                <div style={cardBody}>
+            <div style={cardBody}>
+                <div
+                    style={{
+                        height: this.state.createOptionsToggle ? 800 : 400,
+                    }}
+                >
                     <div style={contentBody}>
                         <p style={title}>New Task</p>
                         <form

@@ -13,6 +13,7 @@ import {
     taskSoftInfos,
     topLeftPart,
     topPart,
+    resultsButton,
 } from '../styles/EndedTaskCard';
 import '../assets/styles/main.scss';
 import trash from '../assets/images/trash.svg';
@@ -79,10 +80,12 @@ export default class EndedTaskCard extends Component<
                         </div>
                     </div>
                     <div style={moreDetails}>
-                        <button onClick={this.displayResults}>Results</button>
-                        <p onClick={() => alert(1)} className="moreDetails">
-                            More details
-                        </p>
+                        <button
+                            style={resultsButton}
+                            onClick={this.displayResults}
+                        >
+                            Show results
+                        </button>
                         <p style={cardOnStartError}>
                             {this.state.onErrorStart}
                         </p>
@@ -115,6 +118,7 @@ export default class EndedTaskCard extends Component<
                 <BackgroundBlur
                     isToggled={this.state.toggledResults}
                     toggleFn={this.displayResults}
+                    centerContent={true}
                 >
                     <ResultsCard
                         fileName={`${this.props.hashlistId.name}-${this.props.hashlistId.id}`}
@@ -176,7 +180,7 @@ export default class EndedTaskCard extends Component<
         });
         this.cardBody = {
             ...cardBodyGeneric,
-            boxShadow: '0px 12px 5px 0px #FC6F6F',
+            boxShadow: '0px 5px 5px 0px #FC6F6F',
         };
     };
 
