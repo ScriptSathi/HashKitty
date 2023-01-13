@@ -15,7 +15,7 @@ export const contentBody: CSSProperties = {
     color: 'white',
     borderRadius: '50px',
     paddingLeft: '30px',
-    paddingTop: '20px',
+    // paddingTop: '20px',
     maxHeight: '600px',
     overflowY: 'scroll',
 };
@@ -24,4 +24,13 @@ export const passwdsTxt: CSSProperties = {
     lineHeight: 0.3,
     fontSize: 16,
     fontFamily: 'InterMedium',
+};
+
+export const hashListName: CSSProperties = {
+    fontSize: 26,
+    fontFamily: 'InterMedium',
+    marginLeft: 20,
+    marginTop: 0,
+    marginBottom: 0,
+    padding: 0,
 };
