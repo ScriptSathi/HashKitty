@@ -37,17 +37,6 @@ export class FsUtils {
         logger.debug(`Writing hash file at location ${this.filePath}`);
     }
 
-    public async readFromOutputFile(filename: string): Promise<string[]> {
-        try {
-            console.log(
-                fs.readFileSync(path.join(Constants.outputFilePath, filename))
-            );
-            return [];
-        } catch (e) {
-            return [];
-        }
-    }
-
     public async countLineInFile(path: string): Promise<number> {
         //TODO
         const file = await fs.readFile(path, 'utf-8');

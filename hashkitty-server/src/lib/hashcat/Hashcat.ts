@@ -90,10 +90,10 @@ export class Hashcat {
             const cpuOnly = task.options.CPUOnly
                 ? '--opencl-device-types=1'
                 : '';
-            // TODO --progress-only ???
-            // TODO --quiet remove to get ended output ?
+            // TODO --progress-only ??? plus précis
+            //TODO Kernel opti
             const workloadProfiles = task.options.workloadProfileId
-                ? `--workload-profile=${task.options.workloadProfileId.profileId}`
+                ? `--workload-profile=${task.options.workloadProfileId.profileId}` //TODO A virer
                 : '';
             const ruleFile = task.options.ruleName
                 ? `--rule=${Constants.rulesPath}/${task.options.ruleName}`
