@@ -19,7 +19,6 @@ import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
 import { UploadedFile } from 'express-fileupload';
 
-
 export class RouteHandler {
     public hashcat: Hashcat;
     private dao: Dao;

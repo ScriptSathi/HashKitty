@@ -10,6 +10,7 @@ export type ThashcatAllowedFlags =
     | 'left'
     | 'potfilePath'
     | 'speedOnly'
+    | 'cpuOnly'
     | 'progressOnly'
     | 'kernelOptimisation'
     | 'workloadProfile'
@@ -19,6 +20,8 @@ export type ThashcatAllowedFlags =
     | 'temperatureAbort'
     | 'rulesFiles'
     | 'statusJson'
+    | 'statusTimer'
+    | 'status'
     | 'quiet'
     | 'restoreDisable';
 
