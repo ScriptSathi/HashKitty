@@ -31,7 +31,9 @@ type HomePageState = {
     endedTasks: TTask[];
 };
 
-export default class HomePage extends Component<{}, HomePageState> {
+type HomePageProps = {};
+
+export default class HomePage extends Component<HomePageProps, HomePageState> {
     public state: HomePageState = {
         taskCreationAdded: false,
         isMouseOvershowResultsCard: false,
