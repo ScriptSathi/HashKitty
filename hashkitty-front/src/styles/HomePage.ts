@@ -16,7 +16,7 @@ export const LeftBox: CSSProperties = {
 };
 export const runningTasks: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'minmax(auto, 36%) auto',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))',
     gap: '45px 20px',
     paddingBottom: 150,
     maxHeight: 800,

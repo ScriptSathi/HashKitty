@@ -155,60 +155,72 @@ export default class RunnableTaskCard extends Component<
     };
 
     private async fetchStatus(retryFetch = 0): Promise<void> {
-        const reqJson = await fetch(
-            Constants.apiGetStatus,
-            Constants.mandatoryFetchOptions
-        );
-        const req = await reqJson.json();
-        if (retryFetch < 5) {
-            if (
-                req.status.status !== undefined &&
-                Object.keys(req.status.status).length !== 0 &&
-                req.status.status.session ===
-                    `${this.props.name}-${this.props.id}`
-            ) {
-                const status = req.status.status as THashcatStatus;
-                const runningProgress = `${
-                    (status.progress[0] / status.progress[1]) * 100
-                }%`;
-                const timeLeft =
-                    status.estimated_stop * 1000 - Date.now().valueOf();
-                const estimatedStop =
-                    timeLeft > 0
-                        ? duration(
-                              status.estimated_stop * 1000 -
-                                  Date.now().valueOf(),
-                              {
-                                  largest: 2,
-                                  maxDecimalPoints: 0,
-                                  units: ['y', 'mo', 'w', 'd', 'h', 'm'],
-                              }
-                          )
-                        : '0 minutes';
-                this.setState({
-                    taskIsFinnished: req.status.ended,
-                    estimatedStop,
-                    runningProgress,
-                    speed: `${status.devices[0].speed}`,
-                });
-                this.state.isRunning = req.status.isRunning;
-                this.state.isLoading = false;
-                this.updateStopButton();
+        try {
+            const reqJson = await fetch(
+                Constants.apiGetStatus,
+                Constants.mandatoryFetchOptions
+            );
+            const req = await reqJson.json();
+            if (retryFetch < 5) {
+                if (
+                    req.status.status !== undefined &&
+                    Object.keys(req.status.status).length !== 0 &&
+                    req.status.status.session ===
+                        `${this.props.name}-${this.props.id}`
+                ) {
+                    const status = req.status.status as THashcatStatus;
+                    const runningProgress = `${
+                        (status.progress[0] / status.progress[1]) * 100
+                    }%`;
+                    const timeLeft =
+                        status.estimated_stop * 1000 - Date.now().valueOf();
+                    const estimatedStop =
+                        timeLeft > 0
+                            ? duration(
+                                  status.estimated_stop * 1000 -
+                                      Date.now().valueOf(),
+                                  {
+                                      largest: 2,
+                                      maxDecimalPoints: 0,
+                                      units: ['y', 'mo', 'w', 'd', 'h', 'm'],
+                                  }
+                              )
+                            : '0 minutes';
+                    this.setState({
+                        taskIsFinnished: req.status.ended,
+                        estimatedStop,
+                        runningProgress,
+                        speed: `${status.devices[0].speed}`,
+                    });
+                    this.state.isRunning = req.status.isRunning;
+                    this.state.isLoading = false;
+                    this.updateStopButton();
+                } else {
+                    setTimeout(() => {
+                        this.fetchStatus((retryFetch += 1));
+                    }, 500);
+                }
             } else {
-                setTimeout(() => {
-                    this.fetchStatus((retryFetch += 1));
-                }, 500);
+                this.state.isRunning = false;
+                this.state.isLoading = false;
+                this.updateStartButton();
+                this.displayErrorMessageOnHashcatStart();
             }
-        } else {
+        } catch (e) {
             this.state.isRunning = false;
             this.state.isLoading = false;
             this.updateStartButton();
-            this.displayErrorMessageOnHashcatStart();
+            this.displayUnreachableOnHashcatStart();
         }
     }
 
     private displayErrorMessageOnHashcatStart(): void {
         this.setState({ onErrorStart: 'An error occured' });
+        setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
+    }
+
+    private displayUnreachableOnHashcatStart(): void {
+        this.setState({ onErrorStart: 'Server is unreachable' });
         setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
     }
 

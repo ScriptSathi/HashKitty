@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import path = require('path');
 import * as fs from 'fs-extra';
 
@@ -7,17 +6,17 @@ import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { Dao } from './DAOs/Dao';
-import {
-    TDaoById,
-    ApiTaskDelete,
-    ApiTemplateTaskDelete,
-    ApiTaskUpdate,
-    ApiTemplateTaskUpdate,
-} from '../types/TDAOs';
+import { ApiTaskUpdate, ApiTemplateTaskUpdate } from '../types/TDAOs';
 import { TTask, TUploadReqBody } from '../types/TApi';
 import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
 import { UploadedFile } from 'express-fileupload';
+import {
+    ReceivedRequest,
+    ReqFileResults,
+    ReqID,
+    ResponseSend,
+} from '../types/TRoutes';
 
 export class RouteHandler {
     public hashcat: Hashcat;
@@ -28,8 +27,11 @@ export class RouteHandler {
         this.hashcat = new Hashcat(this.dao);
     }
 
-    public execHashcat = async (req: Request, res: Response): Promise<void> => {
-        const id = parseInt(req.body.id) as TDaoById['id'];
+    public execHashcat = async (
+        req: ReceivedRequest<ReqID>,
+        res: ResponseSend
+    ): Promise<void> => {
+        const id = (req.body.id && parseInt(req.body.id)) || undefined;
         if (this.hashcat.state.isRunning) {
             this.responseFail(res, 'Hashcat is already running', 'start');
             return;
@@ -55,10 +57,10 @@ export class RouteHandler {
     };
 
     public restoreHashcat = async (
-        req: Request,
-        res: Response
+        req: ReceivedRequest<ReqID>,
+        res: ResponseSend
     ): Promise<void> => {
-        const id = parseInt(req.body.id) as TDaoById['id'];
+        const id = (req.body.id && parseInt(req.body.id)) || undefined;
         if (!this.hashcat.state.isRunning) {
             if (id && (await this.dao.taskExistById(id))) {
                 try {
@@ -89,7 +91,7 @@ export class RouteHandler {
         }
     };
 
-    public getHashcatStatus = (_: Request, res: Response): void => {
+    public getHashcatStatus = (_: ReceivedRequest, res: ResponseSend): void => {
         if (this.hashcat.state.isRunning || this.hashcat.state) {
             res.status(200).json({
                 status: this.hashcat.state,
@@ -102,7 +104,7 @@ export class RouteHandler {
         }
     };
 
-    public stopHashcat = (_: Request, res: Response): void => {
+    public stopHashcat = (_: ReceivedRequest, res: ResponseSend): void => {
         if (this.hashcat.state.isRunning) {
             this.hashcat.stop();
             res.status(200).json({
@@ -116,13 +118,15 @@ export class RouteHandler {
         }
     };
 
-    public deleteTask = async (req: Request, res: Response): Promise<void> => {
-        if (await this.dao.taskExistById((req.body as ApiTaskDelete).id)) {
+    public deleteTask = async (
+        req: ReceivedRequest<ReqID>,
+        res: ResponseSend
+    ): Promise<void> => {
+        const id = (req.body.id && parseInt(req.body.id)) || undefined;
+        if (id && (await this.dao.taskExistById(id))) {
             try {
-                this.dao.task.deleteById((req.body as ApiTaskDelete).id);
-                const respMessage = `Task deleted with id ${
-                    (req.body as ApiTaskDelete).id
-                } deleted successfully`;
+                this.dao.task.deleteById(id);
+                const respMessage = `Task deleted with id ${id} deleted successfully`;
                 res.status(200).json({
                     success: respMessage,
                 });
@@ -139,16 +143,19 @@ export class RouteHandler {
         } else {
             this.responseFail(
                 res,
-                `There is no tasks with id ${(req.body as ApiTaskDelete).id}`,
+                `There is no tasks with id ${id || 'undefined'}`,
                 'delete'
             );
         }
     };
 
-    public updateTask = async (req: Request, res: Response): Promise<void> => {
+    public updateTask = async (
+        req: ReceivedRequest<ApiTaskUpdate>,
+        res: ResponseSend
+    ): Promise<void> => {
         try {
             const sanitizer = new Sanitizer(this.dao);
-            await sanitizer.analyseTask(req.body as ApiTaskUpdate);
+            await sanitizer.analyseTask(req.body);
             if (sanitizer.hasSucceded) {
                 res.status(200).json({
                     success: await this.dao.task.create(sanitizer.getTask()),
@@ -176,8 +183,11 @@ export class RouteHandler {
         }
     };
 
-    public addFile = (req: Request, res: Response): void => {
-        const body: TUploadReqBody = req.body;
+    public addFile = (
+        req: ReceivedRequest<TUploadReqBody>,
+        res: ResponseSend
+    ): void => {
+        const body = req.body;
         if (!req.files || Object.keys(req.files).length === 0) {
             res.status(400).json({
                 error: 'No files were uploaded.',
@@ -227,8 +237,8 @@ export class RouteHandler {
     };
 
     public taskResults = (
-        req: Request<{ filename: string }>,
-        res: Response
+        req: ReceivedRequest<ReqFileResults>,
+        res: ResponseSend
     ): void => {
         if (!req.body.filename) {
             res.status(400).json({
@@ -257,20 +267,23 @@ export class RouteHandler {
         }
     };
 
-    public deleteFile = (_: Request, res: Response): void => {
+    public deleteFile = (_: ReceivedRequest, res: ResponseSend): void => {
         throw new Error('PAS ENCORE FAIT'); //TODO
     };
 
-    public updateFile = async (req: Request, res: Response): Promise<void> => {
+    public updateFile = async (
+        req: ReceivedRequest,
+        res: ResponseSend
+    ): Promise<void> => {
         console.dir(req.files); //TODO
     };
 
     public deleteTemplateTask = async (
-        req: Request,
-        res: Response
+        req: ReceivedRequest,
+        res: ResponseSend
     ): Promise<void> => {
-        const id = (req.body as ApiTemplateTaskDelete).id;
-        if (await this.dao.taskExistById(id)) {
+        const id = (req.body.id && parseInt(req.body.id)) || undefined;
+        if (id && (await this.dao.taskExistById(id))) {
             try {
                 res.status(200).json({
                     success: this.dao.templateTask.deleteById(id),
@@ -286,13 +299,17 @@ export class RouteHandler {
                 });
             }
         } else {
-            this.responseFail(res, `There is no tasks with id ${id}`, 'delete');
+            this.responseFail(
+                res,
+                `There is no tasks with id ${id || 'undefined'}`,
+                'delete'
+            );
         }
     };
 
     public updateTemplateTask = async (
-        req: Request,
-        res: Response
+        req: ReceivedRequest,
+        res: ResponseSend
     ): Promise<void> => {
         try {
             const sanitizer = new Sanitizer(this.dao);
@@ -329,8 +346,8 @@ export class RouteHandler {
     };
 
     public getTemplateTasks = async (
-        _: Request,
-        res: Response
+        _: ReceivedRequest,
+        res: ResponseSend
     ): Promise<void> => {
         try {
             res.status(200).json({
@@ -346,10 +363,10 @@ export class RouteHandler {
     };
 
     public getTemplateTaskById = async (
-        req: Request,
-        res: Response
+        req: ReceivedRequest<ReqID>,
+        res: ResponseSend
     ): Promise<void> => {
-        const id = parseInt(req.params.id) as TDaoById['id'];
+        const id = (req.body.id && parseInt(req.body.id)) || undefined;
         if (!id || (id && !(await this.dao.templateTaskExistById(id)))) {
             this.responseFail(
                 res,
@@ -372,7 +389,10 @@ export class RouteHandler {
         }
     };
 
-    public getTasks = async (_: Request, res: Response): Promise<void> => {
+    public getTasks = async (
+        _: ReceivedRequest,
+        res: ResponseSend
+    ): Promise<void> => {
         try {
             res.status(200).json({
                 success: await this.dao.task.getAll(),
@@ -386,8 +406,11 @@ export class RouteHandler {
         }
     };
 
-    public getTaskById = async (req: Request, res: Response): Promise<void> => {
-        const id = parseInt(req.params.id) as TDaoById['id'];
+    public getTaskById = async (
+        req: ReceivedRequest,
+        res: ResponseSend
+    ): Promise<void> => {
+        const id = (req.body.id && parseInt(req.body.id)) || undefined;
         if (id && (await this.dao.taskExistById(id))) {
             try {
                 res.status(200).json({
@@ -405,7 +428,10 @@ export class RouteHandler {
         }
     };
 
-    public getHashlists = async (_: Request, res: Response): Promise<void> => {
+    public getHashlists = async (
+        _: ReceivedRequest,
+        res: ResponseSend
+    ): Promise<void> => {
         try {
             res.status(200).json({
                 success: await this.dao.hashlist.getAll(),
@@ -420,8 +446,8 @@ export class RouteHandler {
     };
 
     public getAttackModes = async (
-        _: Request,
-        res: Response
+        _: ReceivedRequest,
+        res: ResponseSend
     ): Promise<void> => {
         try {
             res.status(200).json({
@@ -436,7 +462,10 @@ export class RouteHandler {
         }
     };
 
-    public getHashTypes = async (_: Request, res: Response): Promise<void> => {
+    public getHashTypes = async (
+        _: ReceivedRequest,
+        res: ResponseSend
+    ): Promise<void> => {
         try {
             res.status(200).json({
                 success: await this.dao.hashType.getAll(),
@@ -451,8 +480,8 @@ export class RouteHandler {
     };
 
     public reloadWordlists = async (
-        _: Request,
-        res: Response
+        _: ReceivedRequest,
+        res: ResponseSend
     ): Promise<void> => {
         try {
             await this.dao.reloadWordlistInDB();
@@ -469,19 +498,28 @@ export class RouteHandler {
         }
     };
 
-    public getFilesInWordlistDir = (_: Request, res: Response): void => {
+    public getFilesInWordlistDir = (
+        _: ReceivedRequest,
+        res: ResponseSend
+    ): void => {
         this.getFileInDir(res, Constants.wordlistPath);
     };
 
-    public getFilesInPotfileDir = (_: Request, res: Response): void => {
+    public getFilesInPotfileDir = (
+        _: ReceivedRequest,
+        res: ResponseSend
+    ): void => {
         this.getFileInDir(res, Constants.potfilesPath);
     };
 
-    public getFilesInRulesDir = (_: Request, res: Response): void => {
+    public getFilesInRulesDir = (
+        _: ReceivedRequest,
+        res: ResponseSend
+    ): void => {
         this.getFileInDir(res, Constants.rulesPath);
     };
 
-    private getFileInDir(res: Response, dirPath: string): void {
+    private getFileInDir(res: ResponseSend, dirPath: string): void {
         try {
             const files = FsUtils.listFileInDir(dirPath);
             res.json({
@@ -501,7 +539,7 @@ export class RouteHandler {
     }
 
     private responseFail(
-        res: Response,
+        res: ResponseSend,
         message: string,
         job: string,
         entity = 'task'

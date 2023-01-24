@@ -8,14 +8,22 @@ export type inputItem = { name: string; id: number };
 interface InputDropdownProps {
     list: inputItem[];
     formName: string;
-    handleInputChange: (event: unknown) => void;
+    handleInputChange: (event: ChangeEvent<HTMLInputElement> | React.MouseEvent<
+        HTMLInputElement,
+        MouseEvent
+    > &
+        ChangeEvent<HTMLInputElement>) => void;
 }
 
 interface InputDropdownState {
     openDropdown: boolean;
     inputData: string;
     sortedDropdownList: inputItem[];
-    handleInputChange: (event: unknown) => void;
+    handleInputChange: (event: ChangeEvent<HTMLInputElement> | React.MouseEvent<
+        HTMLInputElement,
+        MouseEvent
+    > &
+        ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default class InputDropdown extends Component<
