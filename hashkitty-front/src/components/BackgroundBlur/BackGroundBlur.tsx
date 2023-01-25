@@ -45,10 +45,12 @@ export default class BackgroundBlur extends Component<
                             this.props.centerContent
                                 ? {
                                       position: 'absolute',
-                                      top: '50%',
-                                      left: '50%',
+                                      top: '27.5%',
+                                      left: '27.5%',
                                       marginRight: '-50%',
-                                      transform: 'translate(-50%, -50%)',
+                                      //   top: '50%',
+                                      //   left: '50%',
+                                      //   transform: 'translate(-50%, -50%)',
                                   }
                                 : {}
                         }
