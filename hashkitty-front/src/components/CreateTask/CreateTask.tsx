@@ -133,7 +133,9 @@ export default class CreateTask extends Component<
                                         handleInputChange={
                                             this.handleInputChange
                                         }
-                                        buttonClick={() => {}}
+                                        buttonClick={
+                                            this.props.toggleImportHashlist
+                                        }
                                     />
                                     <RenderAdvancedConfigButton
                                         toggleOptionCreation={
@@ -417,11 +419,5 @@ export default class CreateTask extends Component<
         this.toggleIcon = this.state.createOptionsToggle
             ? toggleClose
             : toggleOpen;
-    };
-
-    private toggleHashlistCreation = () => {
-        this.setState({
-            hashlistCreationToggle: !this.state.hashlistCreationToggle,
-        });
     };
 }

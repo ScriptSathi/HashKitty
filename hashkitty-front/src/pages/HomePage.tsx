@@ -19,6 +19,7 @@ import {
 import { Constants } from '../Constants';
 import CreateTask from '../components/CreateTask/CreateTask';
 import BackgroundBlur from '../components/BackgroundBlur/BackGroundBlur';
+import ImportHashlist from '../components/ImportHashlist/ImportHashlist';
 
 type HomePageState = {
     newTaskToogle: boolean;
@@ -27,6 +28,7 @@ type HomePageState = {
     taskCreationError: boolean;
     taskResultsToggle: boolean;
     isMouseOverNewTask: boolean;
+    hashlistCreationToggle: boolean;
     tasks: TTask[];
     endedTasks: TTask[];
 };
@@ -37,6 +39,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
     public state: HomePageState = {
         taskCreationAdded: false,
         isMouseOvershowResultsCard: false,
+        hashlistCreationToggle: false,
         taskResultsToggle: false,
         taskCreationError: false,
         newTaskToogle: false,
@@ -55,7 +58,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                 style={
                     this.state.newTaskToogle || this.state.taskResultsToggle
                         ? { overflow: 'hidden', userSelect: 'none' }
-                        : {}
+                        : { position: 'relative' }
                 }
             >
                 <Navbar />
@@ -113,8 +116,13 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                                 this.handleTaskCreationError
                             }
                             toggleNewTask={this.toggleNewTask}
+                            toggleImportHashlist={this.toggleHashlistCreation}
                         />
                     </BackgroundBlur>
+                    <ImportHashlist
+                        isToggled={this.state.hashlistCreationToggle}
+                        toggleFn={this.toggleHashlistCreation}
+                    />
                 </div>
             </div>
         );
@@ -186,6 +194,15 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                 taskCreationError: false,
             });
         }, 5000);
+    };
+
+    private toggleHashlistCreation = () => {
+        this.setState({
+            hashlistCreationToggle: !this.state.hashlistCreationToggle,
+        });
+        this.state.hashlistCreationToggle
+            ? (document.body.style.overflow = 'visible')
+            : (document.body.style.overflow = 'hidden');
     };
 
     private renderCreationTaskStatus = () => {

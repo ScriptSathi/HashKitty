@@ -26,6 +26,7 @@ export interface CreateTaskProps {
     handleTaskCreationAdded: () => void;
     handleTaskCreationError: () => void;
     toggleNewTask: () => void;
+    toggleImportHashlist: () => void;
 }
 
 export type inputDatalist = {
