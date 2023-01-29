@@ -1,10 +1,3 @@
-.importHashlist {
-    border: 3px solid;
-    border-radius: 10px;
-    height: 25px;
-    width: 90px;
-    font-family: 'InterMedium';
-}
 
 .divGridSplit {
     display: grid;
@@ -17,7 +10,7 @@
     top: 10%;
     left: 27.5%;
     width: 800px;
-    border: 2px solid;
+    border: 4px solid;
     border-radius: 50px;
 }
 
@@ -46,25 +39,9 @@
 
 .submitInputCreateTask {
     padding: 0px 10px;
-    height: 30px;
     position: absolute;
     bottom: 50px;
     right: 10%;
-}
-
-.divCheckbox {
-    margin-top: 10px;
-    max-height: 180;
-    max-width: 100%;
-    display: grid;
-}
-
-.divRadio {
-    margin-top: 5;
-    overflow-y: scroll;
-    max-height: 120;
-    max-width: 100%;
-    display: grid;
 }
 
 .advancedConfigs {
@@ -86,11 +63,6 @@
     font-family: 'InterMedium';
 }
 
-.inputCheckboxes { 
-    margin-top: 5px;
-    margin-right: 5px
-}
-
 .advancedConfigsDivMain {
     display: grid;
     grid-template-columns: minmax(auto, 50%) auto;
@@ -109,14 +81,4 @@
 
 .noMargin {
     margin: 0px;
-}
-
-.templateInputCheckbox { 
-    margin-top: 5px;
-    margin-right: 5px;
-}
-
-.inputCheckbox { 
-    width: 20px;
-    height: 20px;
 }

@@ -16,16 +16,14 @@
 }
 .mainStyle {
     height: 60px;
-    padding: 5px;
+    margin: 20px 60px;
     font-size: 24px;
-    display: grid;
-    grid-template-columns: minmax(auto, 55%) auto;
+    display: flex;
+    justify-content: space-between
 };
 .leftBlock {
-    display: grid;
-    gap: 0;
-    grid-template-columns: minmax(auto, 7%) 10%;
-    grid-auto-flow: column;
+    display: flex;
+    
 };
 
 .logoStyle {
@@ -34,7 +32,7 @@
 
 .hashKitty {
     height: 50px;
-    display: inline-block;
+    margin-left: 15px
 };
 
 .hashKittyText {
@@ -43,9 +41,8 @@
 };
 
 .rightBlock {
-    display: grid;
-    grid-auto-flow: column;
-    margin: 0;
-    padding-top: 17px;
-    gap: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 40vw
 };
