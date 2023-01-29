@@ -9,6 +9,12 @@
         color: $text-color;
     }
 }
+@font-face {
+    font-family: "InterBlack";
+    src: local("InterBlack"),
+        url("../fonts/Inter-Black.ttf") format("truetype");
+    font-weight: 900;
+}
 
 @font-face {
     font-family: "InterBold";
