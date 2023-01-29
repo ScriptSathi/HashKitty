@@ -60,11 +60,7 @@ export default class RunnableTaskCard extends Component<
 
     public render() {
         return (
-            <div
-                onMouseEnter={this.onMouseEnterCard}
-                onMouseLeave={this.onMouseLeaveCard}
-                className="cardBodyGeneric"
-            >
+            <div className="cardBodyGeneric">
                 <div className="topPart">
                     <div className="topLeftPart">
                         <p className="taskName">{this.props.name}</p>
@@ -270,18 +266,6 @@ export default class RunnableTaskCard extends Component<
             ? this.logoHover
             : this.logo;
     }
-
-    private onMouseEnterCard: () => void = () => {
-        this.setState({
-            mouseIsEnterTaskCard: true,
-        });
-    };
-
-    private onMouseLeaveCard: () => void = () => {
-        this.setState({
-            mouseIsEnterTaskCard: false,
-        });
-    };
 
     private onMouseEnterRunTask: () => void = () => {
         this.setState({

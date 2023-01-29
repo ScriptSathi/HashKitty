@@ -1,0 +1,85 @@
+.topPart {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    grid-area: 1 / 1 / 2 / 6;
+    gap: 0px;
+    margin: 0;
+    padding: 0;
+};
+
+.taskName {
+    font-family: InterBold;
+    font-size: 24px;
+    margin-bottom: 0;
+};
+
+.moreDetails {
+    margin: 0;
+    padding-top: 10px;
+    text-align: left;
+    grid-area: 1 / 2 / 2 / 3;
+};
+
+.topLeftPart {
+    grid-area: 1 / 1 / 2 / 2;
+    padding-left: 40px;
+};
+
+.taskSoftInfos {
+    color: #606060;
+    margin-top: 0;
+    font-family: InterMedium;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19.5px;
+};
+
+.bottomBox {
+    padding-left: 40px;
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    margin-top: 20px;
+};
+
+.deleteButton {
+    cursor: pointer;
+    margin-top: 20px;
+    padding-left: 10px;
+};
+
+.bottomBoxText {
+    font-family: InterMedium;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+    margin-top: 0;
+};
+
+.cardOnStartError {
+    margin-left: -3%;
+    margin-top: 5%;
+    position: absolute;
+    font-size: 20px;
+    color: red;
+};
+
+.resultsButton {
+    margin-top: 20px;
+    margin-left: 15px;
+    height: 70px;
+    cursor: pointer;
+};
+
+.resultsButton:hover {
+    filter: invert(55%) sepia(6%) saturate(5000%) hue-rotate(314deg) brightness(100%) contrast(200%);
+};
+
+.deleteTask {
+    cursor: pointer;
+}
+
+.deleteTask:hover {
+    filter: invert(55%) sepia(6%) saturate(5446%) hue-rotate(314deg) brightness(0%) contrast(98%);
+}
