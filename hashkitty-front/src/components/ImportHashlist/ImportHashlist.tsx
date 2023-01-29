@@ -11,6 +11,7 @@ import { InputHashtypes, InputName } from '../Inputs/Inputs';
 import { TDBData, THashType } from '../../types/TypesORM';
 import { Constants } from '../../Constants';
 import DragNDrop from '../DragNDrop/DragNDrop';
+import Button from '../Button/Button';
 
 type ImportHashlistProps = {
     isToggled: boolean;
@@ -100,11 +101,12 @@ export default class ImportHashlist extends Component<
                             </div>
                         </div>
                         <div className="hashlistSubmitDivButton">
-                            <input
-                                className="inputs submitInputHashlist"
+                            <Button
                                 type="submit"
-                                value="Import Hashlist"
-                            ></input>
+                                className="submitInputHashlist"
+                            >
+                                Import Hashlist
+                            </Button>
                         </div>
                     </form>
                 </div>

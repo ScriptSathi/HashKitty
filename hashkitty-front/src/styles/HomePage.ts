@@ -24,12 +24,12 @@ export const runningTasks: CSSProperties = {
 };
 export const RightBox: CSSProperties = {
     display: 'block',
-    marginLeft: 50,
+    marginLeft: 60,
 };
 export const tasksTitle: CSSProperties = {
     fontFamily: 'InterBold',
     fontSize: 24,
-    paddingLeft: 50,
+    paddingLeft: 5,
 };
 export const cardBody: CSSProperties = {
     display: 'grid',
