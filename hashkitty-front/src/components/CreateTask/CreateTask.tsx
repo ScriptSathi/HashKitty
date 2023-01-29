@@ -29,6 +29,7 @@ import {
 import toggleClose from '../../assets/images/toggleClose.svg';
 import toggleOpen from '../../assets/images/toggleOpen.svg';
 import { CreateTaskProps, CreateTaskState } from './TCreateTask';
+import Button from '../Button/Button';
 
 const defaultFormData = {
     formAttackModeId: -1,
@@ -221,11 +222,12 @@ export default class CreateTask extends Component<
                                     />
                                 </div>
                             </div>
-                            <input
-                                className="inputs submitInputCreateTask"
+                            <Button
                                 type="submit"
-                                value="Create task"
-                            ></input>
+                                className="submitInputCreateTask"
+                            >
+                                Create task
+                            </Button>
                         </form>
                     </div>
                 </div>
