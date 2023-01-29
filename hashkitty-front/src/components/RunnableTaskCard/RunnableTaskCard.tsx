@@ -1,27 +1,17 @@
 import React, { Component } from 'react';
 import duration from 'humanize-duration';
 
-import { TTask } from '../types/TypesORM';
-import {
-    bottomBox,
-    bottomBoxText,
-    cardBodyGeneric,
-    cardOnStartError,
-    moreDetails,
-    runButton,
-    taskName,
-    taskSoftInfos,
-    topLeftPart,
-    topPart,
-} from '../styles/RunnableTaskCard';
-import '../assets/styles/main.scss';
-import loader from '../assets/images/loader.svg';
-import stopTask from '../assets/images/stopTask.svg';
-import stopTaskHover from '../assets/images/stopTaskHover.svg';
-import startTaskHover from '../assets/images/playTaskHover.svg';
-import startTask from '../assets/images/playTask.svg';
-import { Constants } from '../Constants';
-import { THashcatStatus } from '../types/TServer';
+import { TTask } from '../../types/TypesORM';
+
+import '../../assets/styles/main.scss';
+import './RunnableTaskCard.scss';
+import loader from '../../assets/images/loader.svg';
+import stopTask from '../../assets/images/stopTask.svg';
+import stopTaskHover from '../../assets/images/stopTaskHover.svg';
+import startTaskHover from '../../assets/images/playTaskHover.svg';
+import startTask from '../../assets/images/playTask.svg';
+import { Constants } from '../../Constants';
+import { THashcatStatus } from '../../types/TServer';
 
 type RunnableTaskCardState = {
     mouseIsEnterTaskCard: boolean;
@@ -63,7 +53,6 @@ export default class RunnableTaskCard extends Component<
         ? stopTaskHover
         : startTaskHover;
     private displayedLogo = this.logo;
-    private cardBody = cardBodyGeneric;
 
     public componentDidMount(): void {
         this.refreshStatus();
@@ -74,27 +63,32 @@ export default class RunnableTaskCard extends Component<
             <div
                 onMouseEnter={this.onMouseEnterCard}
                 onMouseLeave={this.onMouseLeaveCard}
-                style={this.cardBody}
+                className="cardBodyGeneric"
+                style={
+                    this.state.mouseIsEnterTaskCard
+                        ? { boxShadow: '0px 5px 5px 0px #FC6F6F' }
+                        : {}
+                }
             >
-                <div style={topPart}>
-                    <div style={topLeftPart}>
-                        <p style={taskName}>{this.props.name}</p>
-                        <div style={taskSoftInfos}>
+                <div className="topPart">
+                    <div className="topLeftPart">
+                        <p className="taskName">{this.props.name}</p>
+                        <div className="taskSoftInfos">
                             <this.renderTaskInfo />
                         </div>
                     </div>
-                    <div style={moreDetails}>
+                    <div className="moreDetails">
                         <p onClick={() => alert(1)} className="moreDetails">
                             More details
                         </p>
-                        <p style={cardOnStartError}>
+                        <p className="cardOnStartError">
                             {this.state.onErrorStart}
                         </p>
                     </div>
                 </div>
-                <div style={bottomBox}>
+                <div className="bottomBox">
                     <div>
-                        <p style={bottomBoxText}>
+                        <p className="bottomBoxText">
                             Speed: {this.state.speed} H/s
                             <br />
                             Progress: {this.state.runningProgress}
@@ -102,7 +96,7 @@ export default class RunnableTaskCard extends Component<
                             Time left: {this.state.estimatedStop}
                         </p>
                     </div>
-                    <div style={runButton}>
+                    <div className="runButton">
                         {!this.state.isLoading ? (
                             <img
                                 onMouseEnter={this.onMouseEnterRunTask}
@@ -286,17 +280,12 @@ export default class RunnableTaskCard extends Component<
         this.setState({
             mouseIsEnterTaskCard: true,
         });
-        this.cardBody = {
-            ...cardBodyGeneric,
-            boxShadow: '0px 5px 5px 0px #FC6F6F',
-        };
     };
 
     private onMouseLeaveCard: () => void = () => {
         this.setState({
             mouseIsEnterTaskCard: false,
         });
-        this.cardBody = cardBodyGeneric;
     };
 
     private onMouseEnterRunTask: () => void = () => {
