@@ -21,8 +21,8 @@ export class HttpServer implements IHttpServer {
         this.app = express();
 
         this.enableCORS();
-        this.registerRoutes(new ApiRouter(db).router);
         this.enableFileUpload();
+        this.registerRoutes(new ApiRouter(db).router);
         //TODO Add MiddleWare to prevent remote user communicate with the API (check preflight cors)
         //TODO Check bellow
         // const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
