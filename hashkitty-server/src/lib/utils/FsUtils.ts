@@ -2,6 +2,8 @@ import * as fs from 'fs-extra';
 import { logger } from './Logger';
 import { Constants } from '../Constants';
 import path = require('path');
+import { UploadedFile } from 'express-fileupload';
+import { TUploadFileName } from '../types/TApi';
 
 export class FsUtils {
     public static listFileInDir(path: string): string[] {
@@ -16,6 +18,41 @@ export class FsUtils {
             }
         }
         return [];
+    }
+
+    public static async uploadFile(
+        file: UploadedFile,
+        fileName: string,
+        fileType: TUploadFileName
+    ): Promise<void> {
+        let baseDir = '';
+        switch (fileType) {
+            case 'hashlist':
+                baseDir = Constants.hashlistsPath;
+                break;
+            case 'wordlist':
+                baseDir = Constants.wordlistPath;
+                break;
+            case 'rule':
+                baseDir = Constants.rulesPath;
+                break;
+            case 'potfile':
+                baseDir = Constants.potfilesPath;
+                break;
+            default:
+                throw new Error('Wrong data submitted');
+        }
+        const uploadPath = path.join(baseDir, fileName);
+
+        return new Promise((resolve, reject) => {
+            file.mv(uploadPath, (err: Error) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+            });
+            resolve();
+        });
     }
 
     public directoryWhereToSavedFile: string;

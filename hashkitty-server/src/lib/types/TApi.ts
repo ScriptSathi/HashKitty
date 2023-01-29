@@ -1,4 +1,4 @@
-import { ThashcatAllowedFlags, THashcatStatus } from './THashcat';
+import { ThashcatAllowedFlags } from './THashcat';
 
 export type TEndpoint = 'exec' | 'restore';
 
@@ -26,49 +26,49 @@ export interface IHttpServer {
     checkHealth(): void;
 }
 
-type TMessage<ResponseFormat extends AllowedResponseFormat> = Partial<
-    Record<TresponsesMessagesObjectKeys | 'error', ResponseFormat>
->;
+// type TMessage<ResponseFormat extends AllowedResponseFormat> = Partial<
+//     Record<TresponsesMessagesObjectKeys | 'error', ResponseFormat>
+// >;
 
-type TresponsesErrorMessageObjects = {
-    httpCode: number;
-    message: TMessage<string>;
-};
+// type TresponsesErrorMessageObjects = {
+//     httpCode: number;
+//     message: TMessage<string>;
+// };
 
-export type TresponseMessage<ResponseFormat extends AllowedResponseFormat> = {
-    httpCode: number;
-    message: TMessage<ResponseFormat>;
-};
+// export type TresponseMessage<ResponseFormat extends AllowedResponseFormat> = {
+//     httpCode: number;
+//     message: TMessage<ResponseFormat>;
+// };
 
-type TresponseMessageObject<ResponseFormat extends AllowedResponseFormat> = {
-    httpCode: number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    message: (data: any) => TMessage<ResponseFormat>;
-};
+// type TresponseMessageObject<ResponseFormat extends AllowedResponseFormat> = {
+//     httpCode: number;
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     message: (data: any) => TMessage<ResponseFormat>;
+// };
 
-export type TresponsesErrorMessagesNames =
-    | 'DBrelationNotFound'
-    | 'unexpectedError';
+// export type TresponsesErrorMessagesNames =
+//     | 'DBrelationNotFound'
+//     | 'unexpectedError';
 
-export type TresponsesMessagesObjectKeys = 'success' | 'fail';
+// export type TresponsesMessagesObjectKeys = 'success' | 'fail';
 
-export type TresponseErrorMessages = {
-    [key in TresponsesErrorMessagesNames]: TresponsesErrorMessageObjects;
-};
+// export type TresponseErrorMessages = {
+//     [key in TresponsesErrorMessagesNames]: TresponsesErrorMessageObjects;
+// };
 
-export type TresponsesNamesMessagesObjectKeys<
-    ResponseFormat extends AllowedResponseFormat
-> = {
-    success: TresponseMessageObject<ResponseFormat>;
-    fail: TresponseMessageObject<string>;
-};
+// export type TresponsesNamesMessagesObjectKeys<
+//     ResponseFormat extends AllowedResponseFormat
+// > = {
+//     success: TresponseMessageObject<ResponseFormat>;
+//     fail: TresponseMessageObject<string>;
+// };
 
-export type AllowedResponseFormat = string | THashcatStatus;
+// export type AllowedResponseFormat = string | THashcatStatus;
 
-export type TresponseMessagesTypesAgregator =
-    | AllowedResponseFormat
-    | number
-    | void;
+// export type TresponseMessagesTypesAgregator =
+//     | AllowedResponseFormat
+//     | number
+//     | void;
 
 // Is the same as ORM Task but with all relations inside instead of foreign keys
 export type TTask = {
@@ -143,11 +143,6 @@ export type TWorkloadProfile = {
     profileId: number;
     desktopImpact: string;
     powerConsumation: string;
-};
-
-export type TUploadReqBody = {
-    filetype: TUploadFileName;
-    filename: string;
 };
 
 export type TUploadFileName = 'rule' | 'potfile' | 'wordlist' | 'hashlist';
