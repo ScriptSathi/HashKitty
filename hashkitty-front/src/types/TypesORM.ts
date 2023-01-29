@@ -1,3 +1,5 @@
+import { itemBase } from './TComponents';
+
 export type TTask = {
     id: number;
     name: string;
@@ -72,3 +74,20 @@ export type TWorkloadProfile = {
     desktopImpact: string;
     powerConsumation: string;
 };
+
+export type TDBData = {
+    hashtypes: THashType[];
+    hashlist: THashlist[];
+    wordlists: itemBase[];
+    templateTasks: TemplateTask[];
+    rules: itemBase[];
+    attackModes: TAttackMode[];
+    potfiles: itemBase[];
+};
+
+export type allListsItems =
+    | TAttackMode
+    | TWordlist
+    | THashlist
+    | TemplateTask
+    | TTask;

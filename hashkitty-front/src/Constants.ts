@@ -19,4 +19,5 @@ export class Constants {
     public static readonly apiGetAttackModes: string = `${this.apiUrl}/attackmodes`;
     public static readonly apiGetHashTypes: string = `${this.apiUrl}/hashtypes`;
     public static readonly apiPOSTTaskResults: string = `${this.apiUrl}/results`;
+    public static readonly apiPOSTAddHashlist: string = `${this.apiUrl}/hashlist`;
 }

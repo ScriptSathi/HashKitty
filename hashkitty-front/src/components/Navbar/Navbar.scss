@@ -1,0 +1,51 @@
+@import '../../assets/styles/main.scss';
+@import '../../assets/styles/variables.scss';
+
+.Navbar {
+    font-family: InterBold;
+}
+
+.pages:hover{
+    color: $hover-color;
+}
+
+
+.links{
+    color: $text-color;
+    text-decoration: none;
+}
+.mainStyle {
+    height: 60px;
+    padding: 5px;
+    font-size: 24px;
+    display: grid;
+    grid-template-columns: minmax(auto, 55%) auto;
+};
+.leftBlock {
+    display: grid;
+    gap: 0;
+    grid-template-columns: minmax(auto, 7%) 10%;
+    grid-auto-flow: column;
+};
+
+.logoStyle {
+    width: 50px;
+};
+
+.hashKitty {
+    height: 50px;
+    display: inline-block;
+};
+
+.hashKittyText {
+    padding-top: 17px;
+    margin: 0;
+};
+
+.rightBlock {
+    display: grid;
+    grid-auto-flow: column;
+    margin: 0;
+    padding-top: 17px;
+    gap: 20px;
+};
