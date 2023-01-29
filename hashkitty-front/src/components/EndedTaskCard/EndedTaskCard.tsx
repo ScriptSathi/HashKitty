@@ -61,7 +61,7 @@ export default class EndedTaskCard extends Component<
                             <this.renderTaskInfo />
                         </div>
                     </div>
-                    <div className="moreDetails">
+                    <div className="showResults">
                         <img
                             onClick={this.displayResults}
                             src={resultsLogo}

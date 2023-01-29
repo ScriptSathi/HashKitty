@@ -1,0 +1,48 @@
+*{
+    overflow-y: hidden;
+}
+
+.DivFlex{
+    display: flex;
+    height: auto;
+}
+
+.cryingCat{
+    display: flex;
+    align-items: flex-end;
+    height: 125vh;
+}
+
+.LeftBox{
+    width: 60vw;
+    height: 135vh;
+    display: flex;
+    justify-content: flex-end;
+    align-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.RightBox{
+    width: 40vw;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.errorText {
+    font-family: 'InterBold';
+    font-size: 24px;
+    margin:1vw 0 1vw 0.5vw;
+};
+.errorTitle {
+    font-family: 'InterBlack';
+    font-weight: 900;
+    font-size: 8rem;
+    margin:0;
+    line-height: 80%
+};
+
+.button404 {
+    margin:3vw 0 0 0.5vw;
+};
