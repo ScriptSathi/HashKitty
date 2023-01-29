@@ -98,3 +98,18 @@
     margin-top: -5px;
     margin-left: 33px;
 }
+
+.hideBlock { 
+    visibility: hidden;
+}
+
+.isError { 
+    display: grid;
+    color: red;
+    font-size: 15px;
+    font-family: 'InterMedium', Courier, monospace;
+}
+
+.noMargin {
+    margin: 0px;
+}
