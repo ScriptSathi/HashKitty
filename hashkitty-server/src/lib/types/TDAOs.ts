@@ -32,18 +32,6 @@ export type ApiOptionsFormData = {
     maskFilename?: string;
 };
 
-export type ApiTemplateTaskUpdate = TDaoCreate &
-    Partial<TDaoById> & {
-        options: ApiOptionsFormData;
-    };
-
-export type ApiTaskUpdate = TDaoCreate &
-    Partial<TDaoById> & {
-        hashlistId: number;
-        options: ApiOptionsFormData;
-        templateTaskId?: number;
-    };
-
 export type ApiTaskDelete = TDaoById;
 
 export type ApiTemplateTaskDelete = TDaoById;

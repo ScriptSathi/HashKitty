@@ -1,8 +1,5 @@
-import {
-    ApiOptionsFormData,
-    ApiTaskUpdate,
-    ApiTemplateTaskUpdate,
-} from '../types/TDAOs';
+import { ApiOptionsFormData } from '../types/TDAOs';
+import { AddHashlist, TaskUpdate, TemplateTaskUpdate } from '../types/TRoutes';
 import { Options } from '../ORM/entity/Options';
 import { Dao } from './DAOs/Dao';
 import { TemplateTask } from '../ORM/entity/TemplateTask';
@@ -10,6 +7,8 @@ import { Task } from '../ORM/entity/Task';
 import { logger } from '../utils/Logger';
 import { FsUtils } from '../utils/FsUtils';
 import { Constants } from '../Constants';
+import { Hashlist } from '../ORM/entity/Hashlist';
+import { HashType } from '../ORM/entity/HashType';
 
 export class Sanitizer {
     public hasSucceded: boolean;
@@ -19,18 +18,20 @@ export class Sanitizer {
     private options: Options;
     private task: Task;
     private templateTask: TemplateTask;
+    private hashlist: Hashlist;
 
     constructor(dao: Dao) {
         this.dao = dao;
         this.options = new Options();
         this.task = new Task();
         this.templateTask = new TemplateTask();
+        this.hashlist = new Hashlist();
         this.hasSucceded = true;
         this.isAnUpdate = false;
         this.errorMessage = '';
     }
 
-    public async analyseTask(form: ApiTaskUpdate): Promise<void> {
+    public async analyseTask(form: TaskUpdate): Promise<void> {
         if (form.id) {
             if (await this.dao.taskExistById(form.id)) {
                 this.task = await this.dao.task.getById(form.id);
@@ -40,21 +41,17 @@ export class Sanitizer {
                 this.responsesForFailId('task', form.id);
             }
         }
-        this.task.name = this.shortenStringByLength(
-            50,
-            this.removeSpecialCharInString(form.name)
-        );
-        this.task.description = this.shortenStringByLength(
-            255,
-            form.description
+        this.task.name = this.sanitizeText(form.name, 'name', 50);
+        this.task.description = this.sanitizeText(
+            form.description,
+            'description',
+            255
         );
         await this.prepareOptions(form.options);
         await this.checkHashlist(form.hashlistId);
     }
 
-    public async analyseTemplateTask(
-        form: ApiTemplateTaskUpdate
-    ): Promise<void> {
+    public async analyseTemplateTask(form: TemplateTaskUpdate): Promise<void> {
         if (form.id) {
             if (await this.dao.templateTaskExistById(form.id)) {
                 this.templateTask = await this.dao.templateTask.getById(
@@ -66,23 +63,34 @@ export class Sanitizer {
                 this.responsesForFailId('template task', form.id);
             }
         }
-        this.templateTask.name = this.shortenStringByLength(
-            50,
-            this.removeSpecialCharInString(form.name)
-        );
-        this.templateTask.description = this.shortenStringByLength(
-            255,
-            form.description
+        this.templateTask.name = this.sanitizeText(form.name, 'name', 50);
+        this.templateTask.description = this.sanitizeText(
+            form.description,
+            'description',
+            255
         );
         await this.prepareOptions(form.options);
+    }
+
+    public async analyseHashlist(form: AddHashlist): Promise<void> {
+        this.hashlist.name = this.sanitizeText(form.fileName, 'fileName');
+        await this.checkHashType(form.hashTypeId);
     }
 
     public getTask(): Task {
         return this.task;
     }
 
+    public getHashlist(): Hashlist {
+        return this.hashlist;
+    }
+
     public getTemplateTask(): TemplateTask {
         return this.templateTask;
+    }
+
+    public removeSpecialCharInString(input: string): string {
+        return input.replace(/[^\w._-]/gi, '');
     }
 
     private async prepareOptions(options: ApiOptionsFormData): Promise<void> {
@@ -96,10 +104,6 @@ export class Sanitizer {
         this.checkPotfiles(options.potfileName || '');
         this.task.options = this.options;
         this.templateTask.options = this.options;
-    }
-
-    private removeSpecialCharInString(input: string): string {
-        return input.replace(/[^\w._-]/gi, '');
     }
 
     public shortenStringByLength(length: number, str: string): string {
@@ -127,13 +131,33 @@ export class Sanitizer {
                 if (hashlist !== null) {
                     this.task.hashlistId = hashlist.id;
                 } else {
-                    this.incorrectDataSubmitted('wordlist');
+                    this.incorrectDataSubmitted('hashlist');
                 }
             } else {
                 throw 'Wrong data provided for hashlistId';
             }
         } catch (error) {
-            this.unexpectedError('workload profile');
+            this.unexpectedError('hash list');
+            logger.debug(error);
+        }
+    }
+
+    private async checkHashType(id: number): Promise<void> {
+        try {
+            if (await this.dao.findHashTypeExistById(id)) {
+                const hashtype = await this.dao.db
+                    .getRepository(HashType)
+                    .findOne({ where: { id } });
+                if (hashtype !== null) {
+                    this.hashlist.hashTypeId = hashtype.id;
+                } else {
+                    this.incorrectDataSubmitted('hashtype');
+                }
+            } else {
+                throw 'Wrong data provided for hashTypeId';
+            }
+        } catch (error) {
+            this.unexpectedError('hashtype');
             logger.debug(error);
         }
     }
@@ -253,6 +277,24 @@ export class Sanitizer {
         }
     }
 
+    private sanitizeText(
+        text: string,
+        param: string,
+        expectedLength = -1
+    ): string {
+        if (text.length > 0) {
+            return expectedLength < 0
+                ? this.removeSpecialCharInString(text)
+                : this.shortenStringByLength(
+                      expectedLength,
+                      this.removeSpecialCharInString(text)
+                  );
+        } else {
+            this.emptyString(param);
+            return 'unknown';
+        }
+    }
+
     private isExpectedType(
         value: string | number | boolean,
         expectedType: string
@@ -277,6 +319,11 @@ export class Sanitizer {
 
     private unexpectedError(failParam: string): void {
         this.errorMessage = `An unexpected error occurred with param ${failParam}`;
+        this.hasSucceded = false;
+    }
+
+    private emptyString(failParam: string): void {
+        this.errorMessage = `The provided string for ${failParam} is empty`;
         this.hasSucceded = false;
     }
 }

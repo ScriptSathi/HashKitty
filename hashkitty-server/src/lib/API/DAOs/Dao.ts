@@ -182,4 +182,8 @@ export class Dao {
     public async findHashlistExistById(id: number): Promise<boolean> {
         return await this.db.getRepository(Hashlist).exist({ where: { id } });
     }
+
+    public async findHashTypeExistById(id: number): Promise<boolean> {
+        return await this.db.getRepository(HashType).exist({ where: { id } });
+    }
 }
