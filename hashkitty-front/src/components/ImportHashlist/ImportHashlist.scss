@@ -1,5 +1,33 @@
-.cardBody {
+.HashlistCardBody {
     background-color: white;
     border: 2px solid;
     border-radius: 50px;
+    width: 800px;
+    height: auto;
+}
+
+.HashlistFormBody {
+    width: 80%;
+    margin: 50px 9%;
+}
+
+.marginLeft30 {
+    margin-left: 30px;
+}
+
+.marginMinus5Up {
+    margin-top: -8px;
+}
+
+.widthFull {
+    width: 100%;
+}
+
+.submitInputHashlist {
+    margin-top: 25px;
+    height: 30px;
+    float: right;
+}
+.hashlistSubmitDivButton {
+    height: 40px;
 }

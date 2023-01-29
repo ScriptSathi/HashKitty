@@ -2,12 +2,14 @@
 import React, { CSSProperties, ChangeEvent, Component } from 'react';
 
 import { frame, inputText, listFrame, inputDatalists, inputs } from './StyleInputDropdown';
-
-export type inputItem = { name: string; id: number };
+import { itemBase } from '../../types/TComponents';
+import { THashType } from '../../types/TypesORM';
 
 interface InputDropdownProps {
-    list: inputItem[];
+    list: itemBase[];
     formName: string;
+    placeholder?: string;
+    hashTypeFormat?: boolean;
     handleInputChange: (event: ChangeEvent<HTMLInputElement> | React.MouseEvent<
         HTMLInputElement,
         MouseEvent
@@ -18,12 +20,7 @@ interface InputDropdownProps {
 interface InputDropdownState {
     openDropdown: boolean;
     inputData: string;
-    sortedDropdownList: inputItem[];
-    handleInputChange: (event: ChangeEvent<HTMLInputElement> | React.MouseEvent<
-        HTMLInputElement,
-        MouseEvent
-    > &
-        ChangeEvent<HTMLInputElement>) => void;
+    sortedDropdownList: itemBase[];
 }
 
 export default class InputDropdown extends Component<
@@ -40,7 +37,6 @@ export default class InputDropdown extends Component<
         this.state = {
             openDropdown: false,
             inputData: '',
-            handleInputChange: props.handleInputChange,
             sortedDropdownList: [],
         };
     }
@@ -72,7 +68,7 @@ export default class InputDropdown extends Component<
                         )
                     }
                     onChange={event => this.handleInputChange(event)}
-                    placeholder="Name of the list"
+                    placeholder={this.props.placeholder || 'Name of the list'}
                     style={{ ...inputs, ...inputDatalists }}
                     value={this.state.inputData}
                     name={this.formName}
@@ -104,8 +100,10 @@ export default class InputDropdown extends Component<
         });
     };
 
-    private sortDropdownList(input: string): inputItem[] {
-        return this.props.list.filter(item => {
+    private sortDropdownList(input: string): itemBase[] {
+        return this.props.hashTypeFormat ? (this.props.list as THashType[]).filter(item => {
+            return input.length > 0 ? `${item.typeNumber}-${item.name}`.includes(input) : item;
+        }) : this.props.list.filter(item => {
             return input.length > 0 ? item.name.includes(input) : item;
         });
     }
@@ -125,6 +123,22 @@ export default class InputDropdown extends Component<
               };
         return this.state.sortedDropdownList.length > 0 ? (
             <div style={{ ...listFrame, ...visibility }}>
+                {this.props.hashTypeFormat ? <this.listHashtypeFormat /> : <this.listStandard />}
+            </div>
+        ) : (
+            <div style={{ ...listFrame, ...visibility }}>
+                <input
+                    readOnly
+                    style={inputText}
+                    value="No element found"
+                ></input>
+            </div>
+        );
+    };
+
+    private listStandard = () => {
+        return (
+            <>
                 {this.state.sortedDropdownList.map(elem => {
                     return (
                         <input
@@ -153,15 +167,42 @@ export default class InputDropdown extends Component<
                         ></input>
                     );
                 })}
-            </div>
-        ) : (
-            <div style={{ ...listFrame, ...visibility }}>
-                <input
-                    readOnly
-                    style={inputText}
-                    value="No element found"
-                ></input>
-            </div>
-        );
+            </>
+        )
+    };
+
+    private listHashtypeFormat = () => {
+        return (
+            <>
+                {(this.state.sortedDropdownList as THashType[]).map(elem => {
+                    return (
+                        <input
+                            className="mainHover"
+                            onClick={event => {
+                                this.handleInputChange(
+                                    event as React.MouseEvent<
+                                        HTMLInputElement,
+                                        MouseEvent
+                                    > &
+                                        ChangeEvent<HTMLInputElement>
+                                );
+                                this.toggleDropdown(
+                                    event as React.MouseEvent<
+                                        HTMLInputElement,
+                                        MouseEvent
+                                    > &
+                                        ChangeEvent<HTMLInputElement>
+                                );
+                            }}
+                            key={elem.id}
+                            value={`${elem.typeNumber}-${elem.name}`}
+                            name={this.formName}
+                            style={inputText}
+                            readOnly
+                        ></input>
+                    );
+                })}
+            </>
+        )
     };
 }

@@ -1,28 +1,20 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import logo from '../assets/images/logo.svg';
-import {
-    hashKitty,
-    hashKittyText,
-    leftBlock,
-    rightBlock,
-    mainStyle,
-    logoStyle,
-} from '../styles/Navbar';
-import '../assets/styles/Navbar.scss';
+import logo from '../../assets/images/logo.svg';
+import './Navbar.scss';
 
 export default class Navbar extends Component {
     public render() {
         return (
-            <header className="Navbar" style={mainStyle}>
-                <Link to="/home" className="links" style={leftBlock}>
-                    <img style={logoStyle} src={logo} alt="Logo" />
-                    <div style={hashKitty}>
-                        <p style={hashKittyText}>HashKitty</p>
+            <header className="Navbar mainStyle">
+                <Link to="/home" className="links leftBlock">
+                    <img className="logoclassName" src={logo} alt="Logo" />
+                    <div className="hashKitty">
+                        <p className="hashKittyText">HashKitty</p>
                     </div>
                 </Link>
-                <div style={rightBlock}>
+                <div className="rightBlock">
                     <Link to="/home" className="links pages">
                         Home
                     </Link>

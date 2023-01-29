@@ -1,18 +1,33 @@
 import React from 'react';
 import { ChangeEvent } from 'react';
-import InputDropdown from '../InputDropDown./InputDropdown';
-import { CreateTaskState, inputDatalist } from './TCreateTask';
 
-export const RenderLabelAttackModes = ({
+import './Inputs.scss';
+import InputDropdown from '../InputDropDown/InputDropdown';
+import { inputDatalist } from '../CreateTask/TCreateTask';
+import { GenericForm } from '../../types/TForm';
+import { fieldError } from '../../types/TErrorHandling';
+import { TDBData } from '../../types/TypesORM';
+import { newTHashlistFormData, newTaskFormData } from '../../types/TComponents';
+
+type InputsState<
+    formName extends keyof newTaskFormData | keyof newTHashlistFormData,
+    extraData = undefined
+> = extraData &
+    GenericForm<Record<formName, fieldError> & Record<'formName', fieldError>>;
+
+export const InputAttackModes = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<
+        'formAttackModeId',
+        Pick<TDBData, 'attackModes'> & Pick<newTaskFormData, 'formAttackModeId'>
+    >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return state.attackModes.length > 0 ? (
         <div style={{ marginTop: 30 }}>
-            <p className="noMargin">Choose an attack mode</p>
+            <p className="noMargin labelsTitles">Choose an attack mode</p>
             <p
                 className={
                     state.formHasErrors
@@ -42,7 +57,7 @@ export const RenderLabelAttackModes = ({
         </div>
     ) : (
         <div style={{ marginTop: 30 }}>
-            <p className="noMargin">Choose an attack mode</p>
+            <p className="noMargin labelsTitles">Choose an attack mode</p>
             <p>No attack modes loaded</p>
         </div>
     );
@@ -53,11 +68,11 @@ export const RenderTemplateTaskCheckBox = ({
     handleTemplateTaskCheckbox,
     state,
 }: {
-    state: CreateTaskState;
+    state: { templateTaskCheckBoxId: number };
     handleTemplateTaskCheckbox: (e: ChangeEvent<HTMLInputElement>) => void;
 } & Pick<inputDatalist, 'list'>) => {
     return (
-        <label>
+        <label className="labelsTitles">
             Choose a template
             {list.length > 0 ? (
                 <div className="divCheckbox">
@@ -109,15 +124,18 @@ export const RenderAdvancedConfigButton = ({
     );
 };
 
-export const RenderLabelWordlist = ({
+export const InputWordlist = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<
+        'formWordlistName',
+        Pick<TDBData, 'wordlists'> & Pick<newTaskFormData, 'formAttackModeId'>
+    >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="labels">
+        <label className="noMarginBottom labelsTitles">
             Choose a wordlist
             <p
                 className={
@@ -140,15 +158,15 @@ export const RenderLabelWordlist = ({
     );
 };
 
-export const RenderLabelRules = ({
+export const InputRules = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<'formRuleName', Pick<TDBData, 'rules'>>;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="labels">
+        <label className="noMarginBottom labelsTitles">
             Choose a rule
             <p
                 className={
@@ -171,15 +189,15 @@ export const RenderLabelRules = ({
     );
 };
 
-export const RenderLabelPotfiles = ({
+export const InputPotfiles = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<'formPotfileName', Pick<TDBData, 'potfiles'>>;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="labels">
+        <label className="noMarginBottom labelsTitles">
             Choose a potfile
             <p
                 className={
@@ -200,18 +218,18 @@ export const RenderLabelPotfiles = ({
     );
 };
 
-export const RenderLabelHashlist = ({
+export const InputHashlist = ({
     state,
     handleInputChange,
     buttonClick,
 }: {
-    state: CreateTaskState;
+    state: InputsState<'formHashlistName', Pick<TDBData, 'hashlist'>>;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
     buttonClick: () => void;
 }) => {
     return (
-        <label className="labels" style={{ display: 'grid' }}>
-            <div className="divGridSplit">
+        <div>
+            <div className="divGridSplit labelsTitles">
                 Choose a hashlist
                 <input
                     className="importHashlist"
@@ -220,36 +238,41 @@ export const RenderLabelHashlist = ({
                     value="import"
                 ></input>
             </div>
-            <p
-                className={
-                    state.formHasErrors &&
-                    state.inputsErrorCheck.formName.isError
-                        ? 'isError noMargin'
-                        : 'hideBlock noMargin'
-                }
+            <label
+                className="noMarginBottom labelsTitles"
+                style={{ display: 'grid' }}
             >
-                {state.inputsErrorCheck.formHashlistName.message}
-            </p>
-            <InputDropdown
-                list={state.hashlist}
-                formName="formHashlistName"
-                handleInputChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleInputChange(e)
-                }
-            />
-        </label>
+                <p
+                    className={
+                        state.formHasErrors &&
+                        state.inputsErrorCheck.formName.isError
+                            ? 'isError noMargin'
+                            : 'hideBlock noMargin'
+                    }
+                >
+                    {state.inputsErrorCheck.formHashlistName.message}
+                </p>
+                <InputDropdown
+                    list={state.hashlist}
+                    formName="formHashlistName"
+                    handleInputChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(e)
+                    }
+                />
+            </label>
+        </div>
     );
 };
 
-export const RenderLabelName = ({
+export const InputName = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<'formName', Pick<newTaskFormData, 'formName'>>;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="labels">
+        <label className="noMarginBottom labelsTitles">
             Name
             <p
                 className={
@@ -263,7 +286,7 @@ export const RenderLabelName = ({
             </p>
             <input
                 type="text"
-                placeholder="Task name"
+                placeholder="Choose a name"
                 className="inputs inputName"
                 value={state.formName}
                 name="formName"
@@ -273,15 +296,18 @@ export const RenderLabelName = ({
     );
 };
 
-export const RenderLabelWorkloadProfiles = ({
+export const InputWorkloadProfiles = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<
+        'formWorkloadProfile',
+        Pick<newTaskFormData, 'formWorkloadProfile'>
+    >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="labels">
+        <label className="noMarginBottom labelsTitles">
             Workload profile (default: 3)
             <p
                 className={
@@ -310,15 +336,53 @@ export const RenderLabelWorkloadProfiles = ({
     );
 };
 
-export const RenderLabelBreakpointTemp = ({
+export const InputHashtypes = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<
+        'formHashtypeName',
+        Pick<newTHashlistFormData, 'formHashtypeName'> &
+            Pick<TDBData, 'hashtypes'>
+    >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="labels">
+        <label className="noMarginBottom labelsTitles">
+            Type of the hashs
+            <p
+                className={
+                    state.formHasErrors &&
+                    state.inputsErrorCheck.formName.isError
+                        ? 'isError noMargin'
+                        : 'hideBlock noMargin'
+                }
+            >
+                {state.inputsErrorCheck.formHashtypeName.message}
+            </p>
+            <InputDropdown
+                list={state.hashtypes}
+                formName="formHashtypeName"
+                handleInputChange={event => handleInputChange(event)}
+                hashTypeFormat={true}
+                placeholder="Name of the hashs type's"
+            />
+        </label>
+    );
+};
+
+export const InputBreakpointTemp = ({
+    state,
+    handleInputChange,
+}: {
+    state: InputsState<
+        'formBreakpointGPUTemperature',
+        Pick<newTaskFormData, 'formBreakpointGPUTemperature'>
+    >;
+    handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}) => {
+    return (
+        <label className="noMarginBottom labelsTitles">
             Breakpoint Temperature (default: 90)
             <p
                 className={
@@ -347,15 +411,18 @@ export const RenderLabelBreakpointTemp = ({
     );
 };
 
-export const RenderLabelKernelOpti = ({
+export const InputKernelOpti = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<
+        'formKernelOpti',
+        Pick<newTaskFormData, 'formKernelOpti'>
+    >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="labels">
+        <label className="noMarginBottom labelsTitles">
             <input
                 type="checkbox"
                 value="true"
@@ -369,15 +436,15 @@ export const RenderLabelKernelOpti = ({
     );
 };
 
-export const RenderLabelCPUOnly = ({
+export const InputCPUOnly = ({
     state,
     handleInputChange,
 }: {
-    state: CreateTaskState;
+    state: InputsState<'formCpuOnly', Pick<newTaskFormData, 'formCpuOnly'>>;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="labels">
+        <label className="noMarginBottom labelsTitles">
             <input
                 type="checkbox"
                 value="true"
