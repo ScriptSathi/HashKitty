@@ -195,8 +195,6 @@ export class RouteHandler {
         const body: AddHashlist = req.body;
         const sanitizer = new Sanitizer(this.dao);
         await sanitizer.analyseHashlist(body);
-        console.log(body);
-        console.log(req.files);
         if (!req.files || Object.keys(req.files).length === 0) {
             res.status(400).json({
                 error: 'No files were uploaded.',
@@ -218,7 +216,6 @@ export class RouteHandler {
                 'hashlist'
             );
         } catch (err) {
-            console.log(err);
             res.status(500).json({ error: err });
             return;
         }
