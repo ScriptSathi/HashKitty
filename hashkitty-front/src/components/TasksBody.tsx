@@ -4,7 +4,7 @@ import { TTask } from '../types/TypesORM';
 import { THashcatStatus } from '../types/TServer';
 import RunnableTaskCard from './RunnableTaskCard/RunnableTaskCard';
 import { Constants } from '../Constants';
-import EndedTaskCard from './EndedTaskCard';
+import EndedTaskCard from './EndedTaskCard/EndedTaskCard';
 
 type RunningTasksBodyProps = {
     tasks: TTask[];
