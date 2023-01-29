@@ -8,6 +8,7 @@ import { GenericForm } from '../../types/TForm';
 import { fieldError } from '../../types/TErrorHandling';
 import { TDBData } from '../../types/TypesORM';
 import { newTHashlistFormData, newTaskFormData } from '../../types/TComponents';
+import Button from '../Button/Button';
 
 type InputsState<
     formName extends keyof newTaskFormData | keyof newTHashlistFormData,
@@ -42,7 +43,7 @@ export const InputAttackModes = ({
                     return (
                         <label key={elem.id}>
                             <input
-                                className="inputCheckboxes"
+                                className="inputRadio"
                                 type="radio"
                                 name="formAttackModeId"
                                 value={elem.id}
@@ -231,12 +232,9 @@ export const InputHashlist = ({
         <div>
             <div className="divGridSplit labelsTitles">
                 Choose a hashlist
-                <input
-                    className="importHashlist"
-                    onClick={buttonClick}
-                    type="button"
-                    value="import"
-                ></input>
+                <Button onClick={buttonClick} className="importHashlist">
+                    Import
+                </Button>
             </div>
             <label
                 className="noMarginBottom labelsTitles"
@@ -422,13 +420,13 @@ export const InputKernelOpti = ({
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="noMarginBottom labelsTitles">
+        <label className="flexBox noMarginBottom labelsTitles">
             <input
                 type="checkbox"
                 value="true"
                 name="formKernelOpti"
                 checked={state.formKernelOpti}
-                className="inputCheckbox"
+                className="inputCheckbox marginRight5 marginTop2"
                 onChange={event => handleInputChange(event)}
             ></input>
             Kernel optimization (default: No)
@@ -444,13 +442,13 @@ export const InputCPUOnly = ({
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
-        <label className="noMarginBottom labelsTitles">
+        <label className="flexBox noMarginBottom labelsTitles">
             <input
                 type="checkbox"
                 value="true"
                 name="formCpuOnly"
                 checked={state.formCpuOnly}
-                className="inputCheckbox"
+                className="inputCheckbox marginRight5 marginTop2"
                 onChange={event => handleInputChange(event)}
             ></input>
             CPU Only (default: No)

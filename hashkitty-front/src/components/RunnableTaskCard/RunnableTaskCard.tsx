@@ -64,11 +64,6 @@ export default class RunnableTaskCard extends Component<
                 onMouseEnter={this.onMouseEnterCard}
                 onMouseLeave={this.onMouseLeaveCard}
                 className="cardBodyGeneric"
-                style={
-                    this.state.mouseIsEnterTaskCard
-                        ? { boxShadow: '0px 5px 5px 0px #FC6F6F' }
-                        : {}
-                }
             >
                 <div className="topPart">
                     <div className="topLeftPart">

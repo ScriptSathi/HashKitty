@@ -66,7 +66,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                 <div style={mainBox}>
                     <div style={LeftBox}>
                         <div style={tasksTitle}>
-                            <p>Running tasks</p>
+                            <p style={{ marginTop: '0' }}>Running tasks</p>
                         </div>
                         <div style={cardBody}>
                             <div style={runningTasks}>
@@ -89,7 +89,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                     </div>
                     <div style={RightBox}>
                         <div style={tasksTitle}>
-                            <p>Ended tasks</p>
+                            <p style={{ marginTop: '0' }}>Ended tasks</p>
                         </div>
                         <div
                             style={{ display: 'grid', gap: 20, width: '100%' }}

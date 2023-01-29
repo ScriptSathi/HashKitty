@@ -1,3 +1,5 @@
+@import '../../assets/styles/variables.scss';
+
 .inputs {
     border: 3px solid;
     border-radius: 10px;
@@ -21,4 +23,78 @@
 .labelsTitles {
     font-family: InterMedium;
     font-size: 20px;
+}
+
+.inputRadio { 
+    margin-top: 5px;
+    margin-right: 5px
+}
+
+
+.divCheckbox {
+    margin-top: 10px;
+    max-height: 180;
+    max-width: 100%;
+    display: grid;
+}
+
+.divRadio {
+    margin-top: 5;
+    overflow-y: scroll;
+    max-height: 120;
+    max-width: 100%;
+    display: grid;
+}
+
+.templateInputCheckbox { 
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.inputCheckbox {
+    appearance: none;
+    background-color: white;
+    margin: 0;
+    font: inherit;
+    color: $hover-color;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid black;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+    
+}
+
+.inputCheckbox::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 180ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--form-control-color);
+}
+
+.inputCheckbox:checked::before {
+    transform: scale(1);
+    transform-origin: bottom left;
+    background-color: $hover-color;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.flexBox {
+    display: flex;
+}
+
+.marginRight5 {
+    margin-right: 5px;
+}
+.marginTop2 {
+    margin-top: 2px;
+}
+
+.importHashlist {
+    margin-top: -5px;
+    margin-left: 33px;
 }

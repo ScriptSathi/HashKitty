@@ -14,7 +14,7 @@ export default class Navbar extends Component {
                         <p className="hashKittyText">HashKitty</p>
                     </div>
                 </Link>
-                <div className="rightBlock">
+                <nav className="rightBlock">
                     <Link to="/home" className="links pages">
                         Home
                     </Link>
@@ -27,7 +27,7 @@ export default class Navbar extends Component {
                     <Link to="/server-infos" className="links pages">
                         Server infos
                     </Link>
-                </div>
+                </nav>
             </header>
         );
     }
