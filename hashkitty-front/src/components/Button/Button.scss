@@ -1,3 +1,5 @@
+@import '../../assets/styles/variables.scss';
+
 .button {
     background-color: white;
     border: 3px solid;
@@ -10,6 +12,12 @@
 
 .button:hover {
     background-color: black;
+    color: white;
+    border: 3px solid black;
+}
+
+.button:active {
+    background-color: $hover-color;
     color: white;
     border: 3px solid black;
 }

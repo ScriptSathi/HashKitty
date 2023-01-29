@@ -34,7 +34,7 @@ export class ErrorHandling<InputsErrors, keyForm extends string> {
         return {
             isError: true,
             itemId: -1,
-            message: 'This field is required',
+            message: 'Required',
         };
     }
 
@@ -43,7 +43,7 @@ export class ErrorHandling<InputsErrors, keyForm extends string> {
         return {
             isError: true,
             itemId: -1,
-            message: 'A file must be set',
+            message: 'File needed',
         };
     }
 
@@ -52,7 +52,7 @@ export class ErrorHandling<InputsErrors, keyForm extends string> {
         return {
             isError: true,
             itemId: -1,
-            message: 'The submitted data is not correct',
+            message: 'Incorrect data',
         };
     }
 }
