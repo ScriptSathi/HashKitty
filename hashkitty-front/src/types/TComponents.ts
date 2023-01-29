@@ -12,6 +12,12 @@ export type newTaskFormData = {
     formBreakpointGPUTemperature: number;
 };
 
+export type newTHashlistFormData = {
+    formHashlist?: File;
+    formName: string;
+    formHashtypeName: string;
+};
+
 export type ApiTaskFormData = {
     name: string;
     description: string;
@@ -33,3 +39,12 @@ export type ApiOptionsFormData = {
     maskQuery?: string;
     maskFilename?: string;
 };
+
+export type itemBase = { name: string; id: number };
+
+export type TUploadReqBody = {
+    hashlist: File;
+    filename: string;
+};
+
+export type TUploadFileName = 'rule' | 'potfile' | 'wordlist' | 'hashlist';

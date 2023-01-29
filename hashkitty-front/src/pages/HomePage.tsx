@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Navbar from '../components/Navbar';
+import Navbar from '../components/Navbar/Navbar';
 import newTask from '../assets/images/newTask.svg';
 import '../assets/fonts/Inter-Bold.ttf';
 import '../assets/styles/main.scss';
@@ -200,9 +200,9 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
         this.setState({
             hashlistCreationToggle: !this.state.hashlistCreationToggle,
         });
-        this.state.hashlistCreationToggle
-            ? (document.body.style.overflow = 'visible')
-            : (document.body.style.overflow = 'hidden');
+        this.state.newTaskToogle
+            ? (document.body.style.overflow = 'hidden')
+            : (document.body.style.overflow = 'visible');
     };
 
     private renderCreationTaskStatus = () => {

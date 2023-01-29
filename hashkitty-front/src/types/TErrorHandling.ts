@@ -4,7 +4,7 @@ export type fieldError = {
     itemId: number;
 };
 
-export type keyErrors =
+export type CreateTaskKeyErrors =
     | 'formAttackModeId'
     | 'formRuleName'
     | 'formMaskQuery'
@@ -17,6 +17,15 @@ export type keyErrors =
     | 'formHashlistName'
     | 'formName';
 
+export type HashlistKeyErrors =
+    | 'formHashlist'
+    | 'formName'
+    | 'formHashtypeName';
+
 export type newTaskInputsError = {
-    [key in keyErrors]: fieldError;
+    [key in CreateTaskKeyErrors]: fieldError;
+};
+
+export type newHashlistInputsError = {
+    [key in HashlistKeyErrors]: fieldError;
 };

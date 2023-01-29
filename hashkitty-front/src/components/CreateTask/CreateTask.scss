@@ -11,22 +11,6 @@
     grid-template-columns: 1fr 1fr;
 }
 
-.inputs {
-    border: 3px solid;
-    border-radius: 10px;
-    height: 25px;
-    font-size: 16px;
-    font-family: 'InterMedium';
-}
-
-.inputName {
-    width: 300px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    display: block;
-}
-
-
 .cardBody {
     background-color: white;
     position: absolute;
@@ -49,8 +33,6 @@
 }
 
 .formBody {
-    font-family: InterMedium;
-    font-size: 20px;
     display: grid;
     grid-template-columns: auto;
     width: 100%;
@@ -62,11 +44,7 @@
     grid-template-columns: 1.2fr 1fr;
 }
 
-.labels {
-    margin-bottom: 0px;
-}
-
-.submitInput {
+.submitInputCreateTask {
     padding: 0px 10px;
     height: 30px;
     position: absolute;

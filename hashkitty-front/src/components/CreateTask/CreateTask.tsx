@@ -1,33 +1,34 @@
-import React, { Component, FormEvent } from 'react';
+import React, { ChangeEvent, Component, FormEvent } from 'react';
 
 import './CreateTask.scss';
 
 import { Constants } from '../../Constants';
+import { Utils } from '../../Utils';
 import {
     RenderAdvancedConfigButton,
-    RenderLabelAttackModes,
-    RenderLabelCPUOnly,
-    RenderLabelHashlist,
-    RenderLabelKernelOpti,
-    RenderLabelName,
-    RenderLabelPotfiles,
-    RenderLabelRules,
-    RenderLabelWordlist,
-    RenderLabelWorkloadProfiles,
+    InputAttackModes,
+    InputCPUOnly,
+    InputHashlist,
+    InputKernelOpti,
+    InputName,
+    InputPotfiles,
+    InputRules,
+    InputWordlist,
+    InputWorkloadProfiles,
     RenderTemplateTaskCheckBox,
-} from './Render';
-import { ErrorHandling } from '../../ErrorHandling';
+    InputBreakpointTemp,
+} from '../Inputs/Inputs';
+import { ErrorHandlingCreateTask } from '../../ErrorHandlingCreateTask';
 import { THashlist, TemplateTask, TAttackMode } from '../../types/TypesORM';
 import {
     ApiOptionsFormData,
     ApiTaskFormData,
+    itemBase,
     newTaskFormData,
 } from '../../types/TComponents';
-import { inputItem } from '../InputDropDown./InputDropdown';
 import toggleClose from '../../assets/images/toggleClose.svg';
 import toggleOpen from '../../assets/images/toggleOpen.svg';
 import { CreateTaskProps, CreateTaskState } from './TCreateTask';
-import './CreateTask.scss';
 
 const defaultFormData = {
     formAttackModeId: -1,
@@ -46,10 +47,10 @@ export default class CreateTask extends Component<
     CreateTaskState
 > {
     private toggleIcon = toggleClose;
-    private inputsError: ErrorHandling;
+    private inputsError: ErrorHandlingCreateTask;
     constructor(props: CreateTaskProps) {
         super(props);
-        this.inputsError = new ErrorHandling();
+        this.inputsError = new ErrorHandlingCreateTask();
         this.state = {
             inputsErrorCheck: this.inputsError.results,
             handleTaskCreationAdded: props.handleTaskCreationAdded,
@@ -74,22 +75,22 @@ export default class CreateTask extends Component<
     }
 
     public async componentDidMount(): Promise<void> {
-        const hashlist = await this.fetchListWithEndpoint<THashlist>(
+        const hashlist = await Utils.fetchListWithEndpoint<THashlist>(
             Constants.apiGetHashlists
         );
-        const templateTasks = await this.fetchListWithEndpoint<TemplateTask>(
+        const templateTasks = await Utils.fetchListWithEndpoint<TemplateTask>(
             Constants.apiGetTemplateTasks
         );
-        const rules = await this.fetchListWithEndpoint<string>(
+        const rules = await Utils.fetchListWithEndpoint<string>(
             Constants.apiGetRules
         );
-        const potfiles = await this.fetchListWithEndpoint<string>(
+        const potfiles = await Utils.fetchListWithEndpoint<string>(
             Constants.apiGetPotfiles
         );
-        const wordlists = await this.fetchListWithEndpoint<string>(
+        const wordlists = await Utils.fetchListWithEndpoint<string>(
             Constants.apiGetWordlists
         );
-        const attackModes = await this.fetchListWithEndpoint<TAttackMode>(
+        const attackModes = await Utils.fetchListWithEndpoint<TAttackMode>(
             Constants.apiGetAttackModes
         );
 
@@ -121,14 +122,14 @@ export default class CreateTask extends Component<
                         >
                             <div className="mandatoryBody">
                                 <div>
-                                    <RenderLabelName
+                                    <InputName
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
                                         }
                                     />
                                     <br />
-                                    <RenderLabelHashlist
+                                    <InputHashlist
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
@@ -162,14 +163,14 @@ export default class CreateTask extends Component<
                                 }
                             >
                                 <div>
-                                    <RenderLabelRules
+                                    <InputRules
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
                                         }
                                     />
                                     <br />
-                                    <RenderLabelWordlist
+                                    <InputWordlist
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
@@ -177,21 +178,21 @@ export default class CreateTask extends Component<
                                     />
                                     <br />
                                     <br />
-                                    <RenderLabelWorkloadProfiles
+                                    <InputWorkloadProfiles
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
                                         }
                                     />
                                     <br />
-                                    <RenderLabelCPUOnly
+                                    <InputCPUOnly
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
                                         }
                                     />
                                     <br />
-                                    <RenderLabelKernelOpti
+                                    <InputKernelOpti
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
@@ -199,20 +200,20 @@ export default class CreateTask extends Component<
                                     />
                                 </div>
                                 <div className="advancedConfigsDivLeft">
-                                    <RenderLabelPotfiles
+                                    <InputPotfiles
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
                                         }
                                     />
-                                    <RenderLabelAttackModes
+                                    <InputAttackModes
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
                                         }
                                     />
                                     <br />
-                                    <RenderLabelWorkloadProfiles
+                                    <InputBreakpointTemp
                                         state={this.state}
                                         handleInputChange={
                                             this.handleInputChange
@@ -221,7 +222,7 @@ export default class CreateTask extends Component<
                                 </div>
                             </div>
                             <input
-                                className="inputs submitInput"
+                                className="inputs submitInputCreateTask"
                                 type="submit"
                                 value="Create task"
                             ></input>
@@ -232,7 +233,7 @@ export default class CreateTask extends Component<
         );
     }
 
-    private constructInputList(list: string[]): inputItem[] {
+    private constructInputList(list: string[]): itemBase[] {
         return list.map((elem, i) => {
             return {
                 name: elem,
@@ -258,20 +259,22 @@ export default class CreateTask extends Component<
         };
     }
 
-    private handleInputChange = event => {
+    private handleInputChange = (
+        event:
+            | ChangeEvent<HTMLInputElement>
+            | (React.MouseEvent<HTMLInputElement, MouseEvent> &
+                  ChangeEvent<HTMLInputElement>)
+    ) => {
         if (event.target.name !== '' && event.target.name in this.state) {
             const target = event.target;
-            let value =
-                target.type === 'checkbox'
-                    ? target.checked
-                    : target.value.replace(' ', '-').replace(/[^\w._-]/gi, '');
+            let value = Utils.santizeInput(event);
             if (target.name === 'formWorkloadProfile') {
-                value = parseInt(value) || 1;
+                value = parseInt(value as string) || 1;
                 if (value < 1) value = 1;
                 else if (value > 4) value = 4;
             }
             if (target.name === 'formBreakpointGPUTemperature') {
-                value = parseInt(value) || 0;
+                value = parseInt(value as string) || 0;
                 if (value < 0) value = 0;
                 else if (value > 110) value = 110;
             }
@@ -289,18 +292,18 @@ export default class CreateTask extends Component<
                         templateTask?.options.attackModeId.id ||
                         this.state.attackModes[0].id;
                 } else {
-                    value = parseInt(value);
+                    value = parseInt(value as string);
                 }
             }
             this.setState({
                 [target.name]: value,
-            } as Pick<CreateTaskState, keyof CreateTaskState>);
+            } as Pick<newTaskFormData, keyof newTaskFormData>);
         }
     };
 
     private handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        this.inputsError.checkTask(this.form, {
+        this.inputsError.analyse(this.form, {
             attackModes: this.state.attackModes,
             hashlist: this.state.hashlist,
             wordlist: this.state.wordlists,
@@ -367,15 +370,6 @@ export default class CreateTask extends Component<
                 }
                 this.state.toggleNewTask();
             });
-    }
-
-    private async fetchListWithEndpoint<List>(
-        endpoint: string
-    ): Promise<List[]> {
-        const req = await (
-            await fetch(endpoint, Constants.mandatoryFetchOptions)
-        ).json();
-        return req && req.success && req.success.length > 0 ? req.success : [];
     }
 
     private handleTemplateTaskCheckbox(event) {
