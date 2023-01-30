@@ -8,6 +8,7 @@ import Button from '../Button/Button';
 
 export default function ErrorPage() {
     const { statusText } = useRouteError() as TuseRouteError;
+    document.body.style.overflow = 'hidden';
     return (
         <div>
             <div>
@@ -18,7 +19,7 @@ export default function ErrorPage() {
                     <img className="cryingCat" src={logo} alt="Logo" />
                 </div>
                 <div className="RightBox">
-                    <p className="errorText">404</p>
+                    <p className="errorText">404 {statusText}</p>
                     <h1 className="errorTitle">OH NO!</h1>
                     <p className="errorText">The cat is lost</p>
                     <Button className="button404">Back to home</Button>
