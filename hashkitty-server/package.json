@@ -1,6 +1,6 @@
 {
   "name": "hashkitty-server",
-  "version": "1.0.0",
+  "version": "0.1",
   "description": "HashKitty is a simple webui to run Hashcat as a complete newbie.",
   "main": "./build/index.js",
   "dependencies": {
@@ -37,5 +37,5 @@
     "hashkitty"
   ],
   "author": "Tristan d'Audibert",
-  "license": "MIT"
+  "license": "GNU GENERAL PUBLIC LICENSE"
 }
