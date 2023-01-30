@@ -4,6 +4,7 @@ import React, { CSSProperties, ChangeEvent, Component } from 'react';
 import { frame, inputText, listFrame, inputDatalists, inputs } from './StyleInputDropdown';
 import { itemBase } from '../../types/TComponents';
 import { THashType } from '../../types/TypesORM';
+import './InputDropdown.scss';
 
 interface InputDropdownProps {
     list: itemBase[];
@@ -142,7 +143,7 @@ export default class InputDropdown extends Component<
                 {this.state.sortedDropdownList.map(elem => {
                     return (
                         <input
-                            className="mainHover"
+                            className="dropdownInputs"
                             onClick={event => {
                                 this.handleInputChange(
                                     event as React.MouseEvent<
@@ -177,7 +178,7 @@ export default class InputDropdown extends Component<
                 {(this.state.sortedDropdownList as THashType[]).map(elem => {
                     return (
                         <input
-                            className="mainHover"
+                            className="dropdownInputs"
                             onClick={event => {
                                 this.handleInputChange(
                                     event as React.MouseEvent<

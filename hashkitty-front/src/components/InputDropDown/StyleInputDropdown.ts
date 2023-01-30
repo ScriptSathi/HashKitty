@@ -18,7 +18,7 @@ export const listFrame: CSSProperties = {
     maxHeight: '200px',
     zIndex: 2,
     top: 50,
-    border: '1px solid',
+    border: '3px solid',
     borderRadius: '12px',
     fontSize: 16,
     fontFamily: 'InterMedium',
