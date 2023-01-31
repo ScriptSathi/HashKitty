@@ -282,14 +282,19 @@ export class Sanitizer {
         param: string,
         expectedLength = -1
     ): string {
-        if (text.length > 0) {
-            return expectedLength < 0
-                ? this.removeSpecialCharInString(text)
-                : this.shortenStringByLength(
-                      expectedLength,
-                      this.removeSpecialCharInString(text)
-                  );
-        } else {
+        try {
+            if (text.length > 0) {
+                return expectedLength < 0
+                    ? this.removeSpecialCharInString(text)
+                    : this.shortenStringByLength(
+                          expectedLength,
+                          this.removeSpecialCharInString(text)
+                      );
+            } else {
+                throw new Error('Empty string');
+            }
+        } catch (e) {
+            logger.error(e);
             this.emptyString(param);
             return 'unknown';
         }
