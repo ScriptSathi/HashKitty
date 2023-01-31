@@ -30,6 +30,8 @@ import toggleClose from '../../assets/images/toggleClose.svg';
 import toggleOpen from '../../assets/images/toggleOpen.svg';
 import { CreateTaskProps, CreateTaskState } from './TCreateTask';
 import Button from '../Button/Button';
+import ImportList from '../ImportList/ImportList';
+import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
 
 const defaultFormData = {
     formAttackModeId: -1,
@@ -70,167 +72,162 @@ export default class CreateTask extends Component<
             potfiles: [],
             templateTasks: [],
             formName: '',
+            importHashlistSuccessMessage: '',
             formHashlistName: '',
             ...defaultFormData,
         };
     }
 
     public async componentDidMount(): Promise<void> {
-        const hashlist = await Utils.fetchListWithEndpoint<THashlist>(
-            Constants.apiGetHashlists
-        );
-        const templateTasks = await Utils.fetchListWithEndpoint<TemplateTask>(
-            Constants.apiGetTemplateTasks
-        );
-        const rules = await Utils.fetchListWithEndpoint<string>(
-            Constants.apiGetRules
-        );
-        const potfiles = await Utils.fetchListWithEndpoint<string>(
-            Constants.apiGetPotfiles
-        );
-        const wordlists = await Utils.fetchListWithEndpoint<string>(
-            Constants.apiGetWordlists
-        );
-        const attackModes = await Utils.fetchListWithEndpoint<TAttackMode>(
-            Constants.apiGetAttackModes
-        );
-
-        this.setState({
-            hashlist,
-            templateTasks,
-            rules: this.constructInputList(rules),
-            potfiles: this.constructInputList(potfiles),
-            wordlists: this.constructInputList(wordlists),
-            attackModes,
-        });
+        await this.fetchData();
     }
 
     public render() {
         return (
-            <div className="cardBody">
-                <div
-                    style={{
-                        height: this.state.createOptionsToggle ? 750 : 350,
-                    }}
+            <div>
+                <BackgroundBlur
+                    isToggled={this.props.isToggled}
+                    toggleFn={this.props.toggleNewTask}
+                    centerContent={false}
                 >
-                    <div className="contentBody">
-                        <p className="title">New Task</p>
-                        <form
-                            onSubmit={e => {
-                                this.handleSubmit(e);
+                    <div className="cardBody">
+                        <div
+                            style={{
+                                height: this.state.createOptionsToggle
+                                    ? 750
+                                    : 350,
                             }}
-                            className="formBody"
                         >
-                            <div className="mandatoryBody">
-                                <div>
-                                    <InputName
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
+                            <div className="contentBody">
+                                <p className="title">New Task</p>
+                                <form
+                                    onSubmit={e => {
+                                        this.handleSubmit(e);
+                                    }}
+                                    className="formBody"
+                                >
+                                    <div className="mandatoryBody">
+                                        <div>
+                                            <InputName
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                            <br />
+                                            <InputHashlist
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                                buttonClick={
+                                                    this.toggleHashlistCreation
+                                                }
+                                                importMessage={
+                                                    this.state
+                                                        .importHashlistSuccessMessage
+                                                }
+                                            />
+                                            <RenderAdvancedConfigButton
+                                                toggleOptionCreation={
+                                                    this.toggleOptionCreation
+                                                }
+                                                toggleIcon={this.toggleIcon}
+                                            />
+                                        </div>
+                                        <div>
+                                            <RenderTemplateTaskCheckBox
+                                                list={this.state.templateTasks}
+                                                state={this.state}
+                                                handleTemplateTaskCheckbox={
+                                                    this
+                                                        .handleTemplateTaskCheckbox
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div
+                                        className={
+                                            this.state.createOptionsToggle
+                                                ? 'advancedConfigsDivMain'
+                                                : 'hideBlock'
                                         }
-                                    />
-                                    <br />
-                                    <InputHashlist
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                        buttonClick={
-                                            this.props.toggleImportHashlist
-                                        }
-                                    />
-                                    <RenderAdvancedConfigButton
-                                        toggleOptionCreation={
-                                            this.toggleOptionCreation
-                                        }
-                                        toggleIcon={this.toggleIcon}
-                                    />
-                                </div>
-                                <div>
-                                    <RenderTemplateTaskCheckBox
-                                        list={this.state.templateTasks}
-                                        state={this.state}
-                                        handleTemplateTaskCheckbox={
-                                            this.handleTemplateTaskCheckbox
-                                        }
-                                    />
-                                </div>
+                                    >
+                                        <div>
+                                            <InputRules
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                            <br />
+                                            <InputWordlist
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                            <br />
+                                            <br />
+                                            <InputWorkloadProfiles
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                            <br />
+                                            <InputCPUOnly
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                            <br />
+                                            <InputKernelOpti
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                        </div>
+                                        <div className="advancedConfigsDivLeft">
+                                            <InputPotfiles
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                            <InputAttackModes
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                            <br />
+                                            <InputBreakpointTemp
+                                                state={this.state}
+                                                handleInputChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        className="submitInputCreateTask"
+                                    >
+                                        Create task
+                                    </Button>
+                                </form>
                             </div>
-                            <div
-                                className={
-                                    this.state.createOptionsToggle
-                                        ? 'advancedConfigsDivMain'
-                                        : 'hideBlock'
-                                }
-                            >
-                                <div>
-                                    <InputRules
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                    />
-                                    <br />
-                                    <InputWordlist
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                    />
-                                    <br />
-                                    <br />
-                                    <InputWorkloadProfiles
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                    />
-                                    <br />
-                                    <InputCPUOnly
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                    />
-                                    <br />
-                                    <InputKernelOpti
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                    />
-                                </div>
-                                <div className="advancedConfigsDivLeft">
-                                    <InputPotfiles
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                    />
-                                    <InputAttackModes
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                    />
-                                    <br />
-                                    <InputBreakpointTemp
-                                        state={this.state}
-                                        handleInputChange={
-                                            this.handleInputChange
-                                        }
-                                    />
-                                </div>
-                            </div>
-                            <Button
-                                type="submit"
-                                className="submitInputCreateTask"
-                            >
-                                Create task
-                            </Button>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                </BackgroundBlur>
+                <ImportList
+                    isToggled={this.state.hashlistCreationToggle}
+                    toggleFn={this.toggleHashlistCreation}
+                    handleImportHasSucced={this.importHashlistSuccess}
+                />
             </div>
         );
     }
@@ -416,4 +413,51 @@ export default class CreateTask extends Component<
             ? toggleClose
             : toggleOpen;
     };
+
+    private toggleHashlistCreation = () => {
+        this.setState({
+            hashlistCreationToggle: !this.state.hashlistCreationToggle,
+        });
+        this.state.hashlistCreationToggle
+            ? (document.body.style.overflow = 'hidden')
+            : (document.body.style.overflow = 'visible');
+    };
+
+    private importHashlistSuccess = () => {
+        this.setState({
+            importHashlistSuccessMessage: 'Successfull import',
+        });
+        this.fetchData();
+        this.toggleHashlistCreation();
+    };
+
+    private async fetchData(): Promise<void> {
+        const hashlist = await Utils.fetchListWithEndpoint<THashlist>(
+            Constants.apiGetHashlists
+        );
+        const templateTasks = await Utils.fetchListWithEndpoint<TemplateTask>(
+            Constants.apiGetTemplateTasks
+        );
+        const rules = await Utils.fetchListWithEndpoint<string>(
+            Constants.apiGetRules
+        );
+        const potfiles = await Utils.fetchListWithEndpoint<string>(
+            Constants.apiGetPotfiles
+        );
+        const wordlists = await Utils.fetchListWithEndpoint<string>(
+            Constants.apiGetWordlists
+        );
+        const attackModes = await Utils.fetchListWithEndpoint<TAttackMode>(
+            Constants.apiGetAttackModes
+        );
+
+        this.setState({
+            hashlist,
+            templateTasks,
+            rules: this.constructInputList(rules),
+            potfiles: this.constructInputList(potfiles),
+            wordlists: this.constructInputList(wordlists),
+            attackModes,
+        });
+    }
 }

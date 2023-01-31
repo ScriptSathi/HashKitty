@@ -223,10 +223,12 @@ export const InputHashlist = ({
     state,
     handleInputChange,
     buttonClick,
+    importMessage,
 }: {
     state: InputsState<'formHashlistName', Pick<TDBData, 'hashlist'>>;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
     buttonClick: () => void;
+    importMessage: string;
 }) => {
     return (
         <div>
@@ -235,6 +237,7 @@ export const InputHashlist = ({
                 <Button onClick={buttonClick} className="importHashlist">
                     Import
                 </Button>
+                <p className="colorGreen noMargin smallTxt">{importMessage}</p>
             </div>
             <label
                 className="noMarginBottom labelsTitles"

@@ -18,8 +18,6 @@ import {
 } from '../styles/HomePage';
 import { Constants } from '../Constants';
 import CreateTask from '../components/CreateTask/CreateTask';
-import BackgroundBlur from '../components/BackgroundBlur/BackGroundBlur';
-import ImportHashlist from '../components/ImportHashlist/ImportHashlist';
 
 type HomePageState = {
     newTaskToogle: boolean;
@@ -58,7 +56,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                 style={
                     this.state.newTaskToogle || this.state.taskResultsToggle
                         ? { overflow: 'hidden', userSelect: 'none' }
-                        : { position: 'relative' }
+                        : {}
                 }
             >
                 <Navbar />
@@ -102,26 +100,12 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                         </div>
                     </div>
                 </div>
-                <div>
-                    <BackgroundBlur
+                <div id="blur">
+                    <CreateTask
+                        handleTaskCreationAdded={this.handleTaskCreationAdded}
+                        handleTaskCreationError={this.handleTaskCreationError}
+                        toggleNewTask={this.toggleNewTask}
                         isToggled={this.state.newTaskToogle}
-                        toggleFn={this.toggleNewTask}
-                        centerContent={false}
-                    >
-                        <CreateTask
-                            handleTaskCreationAdded={
-                                this.handleTaskCreationAdded
-                            }
-                            handleTaskCreationError={
-                                this.handleTaskCreationError
-                            }
-                            toggleNewTask={this.toggleNewTask}
-                            toggleImportHashlist={this.toggleHashlistCreation}
-                        />
-                    </BackgroundBlur>
-                    <ImportHashlist
-                        isToggled={this.state.hashlistCreationToggle}
-                        toggleFn={this.toggleHashlistCreation}
                     />
                 </div>
             </div>
@@ -194,15 +178,6 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                 taskCreationError: false,
             });
         }, 5000);
-    };
-
-    private toggleHashlistCreation = () => {
-        this.setState({
-            hashlistCreationToggle: !this.state.hashlistCreationToggle,
-        });
-        this.state.newTaskToogle
-            ? (document.body.style.overflow = 'hidden')
-            : (document.body.style.overflow = 'visible');
     };
 
     private renderCreationTaskStatus = () => {
