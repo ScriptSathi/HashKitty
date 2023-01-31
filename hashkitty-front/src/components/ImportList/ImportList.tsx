@@ -1,9 +1,9 @@
 import React, { ChangeEvent, Component, FormEvent } from 'react';
 
 import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
-import './ImportHashlist.scss';
+import './ImportList.scss';
 import { Utils } from '../../Utils';
-import { TUploadReqBody, newTHashlistFormData } from '../../types/TComponents';
+import { newTHashlistFormData } from '../../types/TComponents';
 import { ErrorHandlingCreateHashlist } from '../../ErrorHandlingCreateHashlist';
 import { GenericForm } from '../../types/TForm';
 import { newHashlistInputsError } from '../../types/TErrorHandling';
@@ -13,12 +13,15 @@ import { Constants } from '../../Constants';
 import DragNDrop from '../DragNDrop/DragNDrop';
 import Button from '../Button/Button';
 
-type ImportHashlistProps = {
+type ImportListProps = {
     isToggled: boolean;
     toggleFn: () => void;
+    handleImportHasSucced: () => void;
 };
 
-type ImportHashlistState = {} & newTHashlistFormData &
+type ImportListState = {
+    onErrorImport: string;
+} & newTHashlistFormData &
     GenericForm<newHashlistInputsError> &
     Pick<TDBData, 'hashtypes'>;
 
@@ -28,14 +31,14 @@ const defaultFormData = {
     formHashlist: undefined,
 };
 
-export default class ImportHashlist extends Component<
-    ImportHashlistProps,
-    ImportHashlistState
+export default class ImportList extends Component<
+    ImportListProps,
+    ImportListState
 > {
     private inputsError: ErrorHandlingCreateHashlist;
     private hashTypeId: number;
 
-    constructor(props: ImportHashlistProps) {
+    constructor(props: ImportListProps) {
         super(props);
         this.inputsError = new ErrorHandlingCreateHashlist();
         this.hashTypeId = -1;
@@ -43,11 +46,13 @@ export default class ImportHashlist extends Component<
             hashtypes: [],
             inputsErrorCheck: this.inputsError.results,
             formHasErrors: false,
+            onErrorImport: '',
             ...defaultFormData,
         };
     }
 
     public async componentDidMount(): Promise<void> {
+        this.displayErrorMessageOnImport();
         const hashtypes = await Utils.fetchListWithEndpoint<THashType>(
             Constants.apiGetHashTypes
         );
@@ -63,14 +68,25 @@ export default class ImportHashlist extends Component<
                 toggleFn={this.props.toggleFn}
                 centerContent
             >
-                <div className="HashlistCardBody">
+                <div className="ImportCardBody">
                     <form
                         onSubmit={e => {
                             this.handleSubmit(e);
                         }}
-                        className="HashlistFormBody"
+                        className="ImportFormBody"
                     >
-                        <p className="title">Import a list of hashs</p>
+                        <p
+                            className={
+                                this.state.onErrorImport.length > 0
+                                    ? 'title noMargin'
+                                    : 'title'
+                            }
+                        >
+                            Import a list of hashs
+                        </p>
+                        <p className="title cardOnImportError">
+                            {this.state.onErrorImport}
+                        </p>
                         <div className="mandatoryBody">
                             <div>
                                 <InputName
@@ -100,11 +116,8 @@ export default class ImportHashlist extends Component<
                                 <DragNDrop setFile={this.setFile} />
                             </div>
                         </div>
-                        <div className="hashlistSubmitDivButton">
-                            <Button
-                                type="submit"
-                                className="submitInputHashlist"
-                            >
+                        <div className="ImportSubmitDivButton">
+                            <Button type="submit" className="ImportsubmitInput">
                                 Import Hashlist
                             </Button>
                         </div>
@@ -122,11 +135,6 @@ export default class ImportHashlist extends Component<
             form.append('hashTypeId', `${this.hashTypeId}`);
         }
         return form;
-        // return {
-        //     formName: this.state.formName,
-        //     formHashlist: this.state.formHashlist || undefined,
-        //     formHashtypeName: this.state.formHashtypeName,
-        // };
     }
 
     private setFile = (formHashlist: File): void => {
@@ -165,7 +173,6 @@ export default class ImportHashlist extends Component<
             formHasErrors: this.inputsError.hasErrors,
         });
         if (!this.inputsError.hasErrors) {
-            console.log(this.state.formHashtypeName);
             const hashType = this.state.hashtypes.find(hashType => {
                 return this.state.formHashtypeName.includes(hashType.name);
             });
@@ -181,7 +188,6 @@ export default class ImportHashlist extends Component<
     private submitForm(): void {
         const requestOptions = {
             method: 'POST',
-            // headers: { 'Content-Type': 'multipart/form-data' },
             body: this.form,
             ...Constants.mandatoryFetchOptions,
         };
@@ -190,13 +196,16 @@ export default class ImportHashlist extends Component<
                 return response.json();
             })
             .then(res => {
-                console.log(res);
-                // if (res.success) {
-                //     this.state.handleTaskCreationAdded();
-                // } else {
-                //     this.state.handleTaskCreationError();
-                // }
-                // this.state.toggleNewTask();
+                if (res.success) {
+                    this.props.handleImportHasSucced();
+                } else {
+                    this.displayErrorMessageOnImport();
+                }
             });
+    }
+
+    private displayErrorMessageOnImport(): void {
+        this.setState({ onErrorImport: 'An error occured' });
+        setTimeout(() => this.setState({ onErrorImport: '' }), 3000);
     }
 }

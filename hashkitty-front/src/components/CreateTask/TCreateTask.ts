@@ -12,6 +12,7 @@ export type CreateTaskState = {
     isMouseIn: boolean;
     templateCheckboxIsChecked: boolean;
     templateTaskCheckBoxId: number;
+    importHashlistSuccessMessage: string;
 } & newTaskFormData &
     GenericForm<newTaskInputsError> &
     Omit<TDBData, 'hashtypes'>;
@@ -20,7 +21,8 @@ export interface CreateTaskProps {
     handleTaskCreationAdded: () => void;
     handleTaskCreationError: () => void;
     toggleNewTask: () => void;
-    toggleImportHashlist: () => void;
+    isToggled: boolean;
+    // toggleImportHashlist: () => void;
 }
 
 export type inputDatalist = {

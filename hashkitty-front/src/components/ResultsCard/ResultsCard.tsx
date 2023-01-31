@@ -36,8 +36,10 @@ export default class ResultsCard extends Component<
                 <div style={cardBody}>
                     {/* <h3 style={hashListName}>{this.props.hashlistName}</h3> */}
                     <div style={contentBody}>
-                        {this.state.crackedPasswd.map(passwd => (
-                            <p style={passwdsTxt}>{passwd}</p>
+                        {this.state.crackedPasswd.map((passwd, i) => (
+                            <p style={passwdsTxt} key={i}>
+                                {passwd}
+                            </p>
                         ))}
                     </div>
                 </div>
