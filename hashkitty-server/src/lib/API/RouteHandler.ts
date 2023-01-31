@@ -195,9 +195,9 @@ export class RouteHandler {
         const body: AddHashlist = req.body;
         const sanitizer = new Sanitizer(this.dao);
         await sanitizer.analyseHashlist(body);
-        if (!req.files || Object.keys(req.files).length === 0) {
+        if (!body || !req.files || Object.keys(req.files).length === 0) {
             res.status(400).json({
-                error: 'No files were uploaded.',
+                fail: 'No files were uploaded.',
             });
             return;
         }
@@ -208,20 +208,23 @@ export class RouteHandler {
             });
             return;
         }
-        const hashlist = sanitizer.getHashlist();
         try {
+            const hashlist = sanitizer.getHashlist();
+            const respMessage = `File ${hashlist.name} uploaded, successfully, and hashlist added correctly !`;
             await FsUtils.uploadFile(
                 req.files.file as UploadedFile,
                 hashlist.name,
                 'hashlist'
             );
+            await this.dao.hashlist.update(hashlist);
+            res.status(200).json({
+                success: respMessage,
+            });
+            logger.info(respMessage);
         } catch (err) {
             res.status(500).json({ error: err });
-            return;
+            logger.error(err);
         }
-        res.status(200).json({
-            success: `File ${hashlist.name} uploaded!`,
-        });
     };
 
     public taskResults = (
@@ -231,7 +234,7 @@ export class RouteHandler {
         if (!req.body.filename) {
             res.status(400).json({
                 passwds: [],
-                error: 'You need to submit the filename',
+                fail: 'You need to submit the filename',
             });
             return;
         }
@@ -250,7 +253,7 @@ export class RouteHandler {
             logger.debug(err);
             res.status(400).json({
                 passwds: [],
-                error: `file ${req.body.filename} does not exist`,
+                fail: `file ${req.body.filename} does not exist`,
             });
         }
     };
