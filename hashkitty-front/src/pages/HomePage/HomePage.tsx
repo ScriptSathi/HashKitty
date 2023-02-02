@@ -1,23 +1,14 @@
 import React, { Component } from 'react';
 
-import Navbar from '../components/Navbar/Navbar';
-import newTask from '../assets/images/newTask.svg';
-import '../assets/fonts/Inter-Bold.ttf';
-import '../assets/styles/main.scss';
-import '../assets/styles/HomePage.scss';
-import { TTask } from '../types/TypesORM';
-import TasksBody from '../components/TasksBody';
-import {
-    mainBox,
-    LeftBox,
-    tasksTitle,
-    cardBody,
-    creationTaskStatusMessage,
-    RightBox,
-    runningTasks,
-} from '../styles/HomePage';
-import { Constants } from '../Constants';
-import CreateTask from '../components/CreateTask/CreateTask';
+import Navbar from '../../components/Navbar/Navbar';
+import newTask from '../../assets/images/newTask.svg';
+import '../../assets/fonts/Inter-Bold.ttf';
+import '../../assets/styles/main.scss';
+import './HomePage.scss';
+import { TTask } from '../../types/TypesORM';
+import TasksBody from '../../components/TasksBody';
+import { Constants } from '../../Constants';
+import CreateTask from '../../components/CreateTask/CreateTask';
 
 type HomePageState = {
     newTaskToogle: boolean;
@@ -61,13 +52,13 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
             >
                 <Navbar />
                 <this.renderCreationTaskStatus />
-                <div style={mainBox}>
-                    <div style={LeftBox}>
-                        <div style={tasksTitle}>
+                <div className="mainBox">
+                    <div className="HomepageLeftBox">
+                        <div className="tasksTitle">
                             <p style={{ marginTop: '0' }}>Running tasks</p>
                         </div>
-                        <div style={cardBody}>
-                            <div style={runningTasks}>
+                        <div className="HomePagecardBody">
+                            <div className="runningTasks">
                                 <TasksBody
                                     tasks={this.state.tasks}
                                     handleRefreshTasks={this.loadTasks.bind(
@@ -85,13 +76,11 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                             </div>
                         </div>
                     </div>
-                    <div style={RightBox}>
-                        <div style={tasksTitle}>
+                    <div className="HomePageRightBox">
+                        <div className="tasksTitle">
                             <p style={{ marginTop: '0' }}>Ended tasks</p>
                         </div>
-                        <div
-                            style={{ display: 'grid', gap: 20, width: '100%' }}
-                        >
+                        <div className="tasksBody">
                             <TasksBody
                                 handleRefreshTasks={this.handleRefreshTasks}
                                 tasks={this.state.endedTasks}
@@ -182,22 +171,16 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
 
     private renderCreationTaskStatus = () => {
         let message = '';
-        let style = creationTaskStatusMessage;
+        let style = 'creationTaskStatusMessage';
 
         if (this.state.taskCreationAdded) {
-            style = {
-                ...creationTaskStatusMessage,
-                ...{ color: 'green' },
-            };
+            style += ' colorGreen';
             message = 'New task added successfully';
         } else if (this.state.taskCreationError) {
-            style = {
-                ...creationTaskStatusMessage,
-                ...{ color: 'red' },
-            };
+            style += ' colorRed';
             message =
                 'An error occured while creating the task. Check the server logs for more informations';
         }
-        return <p style={style}>{message}</p>;
+        return <p className={style}>{message}</p>;
     };
 }

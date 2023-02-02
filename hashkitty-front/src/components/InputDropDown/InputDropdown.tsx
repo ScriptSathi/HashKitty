@@ -103,9 +103,9 @@ export default class InputDropdown extends Component<
 
     private sortDropdownList(input: string): itemBase[] {
         return this.props.hashTypeFormat ? (this.props.list as THashType[]).filter(item => {
-            return input.length > 0 ? `${item.typeNumber}-${item.name}`.includes(input) : item;
+            return input.length > 0 ? `${item.typeNumber}-${item.name}`.toLowerCase().includes(input.toLowerCase()) : item;
         }) : this.props.list.filter(item => {
-            return input.length > 0 ? item.name.includes(input) : item;
+            return input.length > 0 ? item.name.toLowerCase().includes(input.toLowerCase()) : item;
         });
     }
 
