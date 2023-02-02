@@ -16,10 +16,10 @@ export default function ErrorPage() {
                 <Navbar />
             </div>
             <div className="DivFlex">
-                <div className="LeftBox">
+                <div className="ErrorLeftBox">
                     <img className="cryingCat" src={logo} alt="Logo" />
                 </div>
-                <div className="RightBox">
+                <div className="ErrorRightBox">
                     <p className="errorText">404 {statusText}</p>
                     <h1 className="errorTitle">OH NO!</h1>
                     <p className="errorText">The cat is lost</p>
