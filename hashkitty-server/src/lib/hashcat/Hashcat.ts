@@ -4,18 +4,15 @@ import { Worker } from 'node:worker_threads';
 import { Constants } from '../Constants';
 import { FsUtils } from '../utils/FsUtils';
 import { TTask } from '../types/TApi';
-import { THashcatStatus } from '../types/THashcat';
+import { THashcatRunningStatus, THashcatStatus } from '../types/THashcat';
 import { logger } from '../utils/Logger';
 import { Task } from '../ORM/entity/Task';
 import { Dao } from '../API/DAOs/Dao';
 import { Hashlist } from '../ORM/entity/Hashlist';
+import { HashcatListener } from './HashcatListener';
 
 export class Hashcat {
-    public state: THashcatStatus = {
-        isRunning: false,
-        ended: false,
-        status: {},
-    };
+    private listener: HashcatListener | undefined;
     private lastTaskRun: TTask | undefined;
     private outputFile: string | undefined;
     private bin: string;
@@ -29,10 +26,31 @@ export class Hashcat {
         this.fsUtils = new FsUtils(Constants.hashlistsPath);
     }
 
+    public get status(): THashcatStatus {
+        return this.listener
+            ? this.listener.state
+            : {
+                  processState: 'stopped',
+                  runningStatus: <THashcatRunningStatus>{},
+              };
+    }
+
+    public get isRunning(): boolean {
+        return this.listener
+            ? this.listener.state.processState === 'running'
+            : false;
+    }
+
     public exec(task: TTask): void {
         // this.fsUtils.
         if (this.hashlistHaveNeverBeenCracked(task)) {
             this.hashcatWorker = this.createWorkerThread();
+            this.listener = new HashcatListener({
+                worker: this.hashcatWorker,
+                task,
+                handleHashlistIsCracked: this.handleHashlistIsCracked,
+                handleTaskHasFinnished: this.handleTaskHasFinnished,
+            });
             const cmd = this.generateCmd(task);
             logger.debug('Starting Hashcat cracking');
             this.hashcatWorker.postMessage(cmd);
@@ -46,12 +64,17 @@ export class Hashcat {
         if (this.hashcatWorker) {
             logger.debug('Stopping the hashcat process');
             this.hashcatWorker.postMessage('exit');
-            this.state.isRunning = false;
         }
     }
 
     public restore(task: TTask): void {
         this.hashcatWorker = this.createWorkerThread();
+        this.listener = new HashcatListener({
+            worker: this.hashcatWorker,
+            task,
+            handleHashlistIsCracked: this.handleHashlistIsCracked,
+            handleTaskHasFinnished: this.handleTaskHasFinnished,
+        });
         logger.debug(`Restoring Hashcat session ${task.name}-${task.id}`);
         const cmd = this.generateCmd(task, false);
         logger.info(cmd);
@@ -110,60 +133,9 @@ export class Hashcat {
     }
 
     private listenProcess(): void {
-        //TODO create hashcat listener that wrap all this
-        this.hashcatWorker &&
-            this.hashcatWorker.on('message', hashcatStdout => {
-                if (hashcatStdout === 'ended' && this.lastTaskRun) {
-                    this.hashcatWorker?.terminate();
-                    this.handleTaskHasFinnished();
-                    this.handleHashlistIsCracked();
-                } else if (hashcatStdout === 'exhausted' && this.lastTaskRun) {
-                    const [nbOfCrackedPasswords, amountOfPasswords] = this.state
-                        .status.recovered_hashes || [0, 0];
-                    if (nbOfCrackedPasswords > 0) {
-                        this.lastTaskRun.hashlistId.numberOfCrackedPasswords =
-                            nbOfCrackedPasswords;
-                        this.handleTaskHasFinnished();
-                        this.handleHashlistIsCracked();
-                        logger.debug('Status: Exhausted');
-                        logger.info(
-                            'Process: Hashcat ended and cracked' +
-                                `${nbOfCrackedPasswords}/${amountOfPasswords} passwords`
-                        );
-                    } else {
-                        logger.debug('Status: Exhausted');
-                        logger.info(
-                            'Process: Hashcat ended but no passwords were cracked !'
-                        );
-                    }
-                    this.state.isRunning = false;
-                    this.hashcatWorker?.terminate();
-                    // TODO hashcat did not crack any passwords, what to do next ?
-                } else if (hashcatStdout === 'error' && this.lastTaskRun) {
-                    this.state.isRunning = false;
-                    this.hashcatWorker?.terminate();
-                    logger.debug('Status: Error');
-                    // TODO hashcat return an unknow code
-                }
-                if (hashcatStdout.status) {
-                    this.state = {
-                        ended: false,
-                        status: hashcatStdout.status,
-                        isRunning: true,
-                    };
-                } else if (hashcatStdout.any) {
-                    if (hashcatStdout.any.match(/\n/g)) {
-                        logger.debug(
-                            '\n-------------------Hashcat warning-------------------\n' +
-                                hashcatStdout.any +
-                                '\n---------------------------------------------------------'
-                        );
-                    }
-                    logger.debug('Message from stdout: ' + hashcatStdout.any);
-                } else {
-                    this.hashcatWorker?.terminate();
-                }
-            });
+        if (this.listener && this.hashcatWorker) {
+            this.hashcatWorker.on('message', this.listener.listen);
+        }
     }
 
     private createWorkerThread(): Worker {
@@ -174,15 +146,11 @@ export class Hashcat {
         return task.hashlistId.crackedOutputFileName === null;
     }
 
-    private handleTaskHasFinnished(task?: TTask): void {
-        this.state.isRunning = false;
-        this.state.ended = true;
-        this.dao.task.registerTaskEnded(
-            (task as unknown as Task) || (this.lastTaskRun as unknown as Task)
-        );
-    }
+    private handleTaskHasFinnished = (task: TTask): void => {
+        this.dao.task.registerTaskEnded(task as unknown as Task);
+    };
 
-    private handleHashlistIsCracked(): void {
+    private handleHashlistIsCracked = (): void => {
         if (this.outputFile && this.lastTaskRun) {
             this.lastTaskRun.hashlistId.crackedOutputFileName = this.outputFile;
             this.dao.hashlist.update(
@@ -190,5 +158,5 @@ export class Hashcat {
                 false
             );
         }
-    }
+    };
 }

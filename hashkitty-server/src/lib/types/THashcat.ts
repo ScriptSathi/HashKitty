@@ -29,7 +29,7 @@ export type ThashcatParams = {
     [key in ThashcatAllowedFlags]: string;
 };
 
-export type THashcatPartialStatus = {
+export type THashcatRunningStatus = {
     session: string;
     guess: {
         [key: string]: string | number | null | boolean;
@@ -54,7 +54,6 @@ export type THashcatPartialStatus = {
 };
 
 export type THashcatStatus = {
-    isRunning: boolean;
-    ended: boolean;
-    status: Partial<THashcatPartialStatus>;
+    processState: 'running' | 'pending' | 'stopped';
+    runningStatus: THashcatRunningStatus;
 };

@@ -3,11 +3,15 @@ import { parentPort } from 'node:worker_threads';
 
 import { HashcatError } from '../hashcat/HashcatError';
 import { logger } from './Logger';
-import { THashcatPartialStatus } from '../types/THashcat';
+import { THashcatRunningStatus } from '../types/THashcat';
 
 export type TProcessStdout = {
-    status: THashcatPartialStatus | undefined;
-    any: string | undefined;
+    exit: {
+        message: string;
+        code: number;
+    };
+    status: THashcatRunningStatus | {};
+    anyOutput: string | string[];
 };
 
 export class Processus {
@@ -53,42 +57,68 @@ export class Processus {
     };
 
     private onStdout = (data: Buffer): void => {
+        const readableData = data.toString().trim();
         try {
-            const status: THashcatPartialStatus = JSON.parse(
-                data.toString().trim()
-            );
-            parentPort?.postMessage({ status });
+            const status: THashcatRunningStatus = JSON.parse(readableData);
+            parentPort?.postMessage(this.processResponses({ status }));
         } catch (e) {
-            parentPort?.postMessage({
-                any: data.toString().trim(),
-            });
+            parentPort?.postMessage(
+                this.processResponses({
+                    anyOutput: readableData,
+                })
+            );
         }
     };
 
     private onExit = (code: number): void => {
+        let exitMessage = '';
         if (code !== 0 && code !== null && code !== 1) {
-            parentPort && parentPort.postMessage('close');
+            exitMessage = 'close';
             logger.error(
                 new Error(`Command '${this.cmd}' failed with code ${code}`)
             );
         } else if (code === null) {
-            parentPort && parentPort.postMessage('close');
+            exitMessage = 'close';
             logger.info(
                 `A request has been sent to stop the process: ${this.cmd[0]}`
             );
         } else if (code === 0) {
             //TODO TRIGGER de fin de tache ? voir si le code passe ici
-            parentPort && parentPort.postMessage('ended');
+            exitMessage = 'ended';
             logger.info(`Process: ${this.cmd[0]} ended correctly`);
         } else if (code === 1) {
-            parentPort && parentPort.postMessage('exhausted');
+            exitMessage = 'exhausted';
         } else {
-            parentPort && parentPort.postMessage('error');
+            exitMessage = 'error';
             logger.info(
                 `Process: ${this.cmd[0]} ended with an unknown status code ${code} !`
             );
         }
+        parentPort &&
+            parentPort.postMessage(
+                this.processResponses({
+                    exit: {
+                        message: exitMessage,
+                        code,
+                    },
+                })
+            );
     };
+
+    private processResponses({
+        exit,
+        status,
+        anyOutput,
+    }: Partial<TProcessStdout>): TProcessStdout {
+        return {
+            exit: {
+                message: exit?.message || '',
+                code: exit?.code || -1,
+            },
+            status: status || {},
+            anyOutput: anyOutput || '',
+        };
+    }
 }
 
 (() => {
