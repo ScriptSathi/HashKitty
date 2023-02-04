@@ -1,4 +1,4 @@
-export type THashcatStatus = {
+export type THashcatRunningStatus = {
     session: string;
     guess: {
         [key: string]: string | number | null | boolean;
@@ -20,4 +20,10 @@ export type THashcatStatus = {
     }[];
     time_start: number;
     estimated_stop: number;
+};
+
+export type THashcatStatus = {
+    processState: 'running' | 'pending' | 'stopped';
+    exitInfo: string;
+    runningStatus: THashcatRunningStatus;
 };

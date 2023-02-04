@@ -1,7 +1,7 @@
 import React, { Component, CSSProperties } from 'react';
 
 import { TTask } from '../types/TypesORM';
-import { THashcatStatus } from '../types/TServer';
+import { THashcatRunningStatus } from '../types/TServer';
 import RunnableTaskCard from './RunnableTaskCard/RunnableTaskCard';
 import { Constants } from '../Constants';
 import EndedTaskCard from './EndedTaskCard/EndedTaskCard';
@@ -26,7 +26,7 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
             await fetch(Constants.apiGetStatus, Constants.mandatoryFetchOptions)
         ).json();
         if (req.status !== undefined && Object.keys(req.status).length !== 0) {
-            const status = req.status as THashcatStatus;
+            const status = req.status as THashcatRunningStatus;
             this.runningSessionName = status.session || '';
         } else {
             this.runningSessionName = '';
