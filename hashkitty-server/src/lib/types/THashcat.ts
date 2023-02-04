@@ -55,5 +55,6 @@ export type THashcatRunningStatus = {
 
 export type THashcatStatus = {
     processState: 'running' | 'pending' | 'stopped';
+    exitInfo: string;
     runningStatus: THashcatRunningStatus;
 };

@@ -1,5 +1,6 @@
 import path = require('node:path');
 import { Worker } from 'node:worker_threads';
+import * as fs from 'fs-extra';
 
 import { Constants } from '../Constants';
 import { FsUtils } from '../utils/FsUtils';
@@ -14,14 +15,16 @@ import { HashcatListener } from './HashcatListener';
 export class Hashcat {
     private listener: HashcatListener | undefined;
     private lastTaskRun: TTask | undefined;
-    private outputFile: string | undefined;
+    private outputFilePath: string | undefined;
     private bin: string;
+    private cmd: string;
     private dao: Dao;
     private fsUtils: FsUtils;
     private hashcatWorker: Worker | undefined;
 
     constructor(dao: Dao) {
         this.bin = Constants.defaultBin;
+        this.cmd = '';
         this.dao = dao;
         this.fsUtils = new FsUtils(Constants.hashlistsPath);
     }
@@ -31,6 +34,7 @@ export class Hashcat {
             ? this.listener.state
             : {
                   processState: 'stopped',
+                  exitInfo: '',
                   runningStatus: <THashcatRunningStatus>{},
               };
     }
@@ -48,12 +52,11 @@ export class Hashcat {
             this.listener = new HashcatListener({
                 worker: this.hashcatWorker,
                 task,
-                handleHashlistIsCracked: this.handleHashlistIsCracked,
                 handleTaskHasFinnished: this.handleTaskHasFinnished,
             });
-            const cmd = this.generateCmd(task);
+            this.generateCmd(task);
             logger.debug('Starting Hashcat cracking');
-            this.hashcatWorker.postMessage(cmd);
+            this.hashcatWorker.postMessage(this.cmd);
             this.listenProcess();
         } else {
             this.handleTaskHasFinnished(task);
@@ -72,17 +75,29 @@ export class Hashcat {
         this.listener = new HashcatListener({
             worker: this.hashcatWorker,
             task,
-            handleHashlistIsCracked: this.handleHashlistIsCracked,
             handleTaskHasFinnished: this.handleTaskHasFinnished,
         });
         logger.debug(`Restoring Hashcat session ${task.name}-${task.id}`);
-        const cmd = this.generateCmd(task, false);
-        logger.info(cmd);
-        this.hashcatWorker.postMessage(cmd);
+        this.generateCmd(task, false);
+        this.hashcatWorker.postMessage(this.cmd);
         this.listenProcess();
     }
 
-    private generateCmd(task: TTask, isStart = true): string {
+    private get outputFileExists(): boolean {
+        if (!this.outputFilePath) {
+            return false;
+        }
+        return this.outputFilePath
+            ? fs.existsSync(
+                  path.join(Constants.outputFilePath, this.outputFilePath)
+              )
+            : false;
+    }
+
+    private generateCmd(task: TTask, isStart = true): void {
+        //TODO Refacto in HashcatGenerator && make a bigger object with cmd and flags
+        // Use all of this to check if Output file exists, otherwise run the command again
+        // with flag --show to generate it from potfile records
         const hashcatTaskName = `${task.name}-${task.id}`;
         const restorePath = `--restore-file-path=${path.join(
             Constants.restorePath,
@@ -103,10 +118,10 @@ export class Hashcat {
                 Constants.potfilesPath,
                 `${task.hashlistId.hashTypeId.typeNumber}`
             )}`;
-            this.outputFile = `${task.hashlistId.name}-${task.hashlistId.id}`;
+            this.outputFilePath = `${task.hashlistId.name}-${task.hashlistId.id}`;
             const outputCmd = `--outfile=${path.join(
                 Constants.outputFilePath,
-                this.outputFile
+                this.outputFilePath
             )}`;
             const attackModeCmd = `--attack-mode=${task.options.attackModeId.mode}`;
             const hashTypeCmd = `--hash-type=${task.hashlistId.hashTypeId.typeNumber}`;
@@ -129,7 +144,7 @@ export class Hashcat {
             cmd += '--restore';
         }
         this.lastTaskRun = task;
-        return cmd;
+        this.cmd = cmd;
     }
 
     private listenProcess(): void {
@@ -148,15 +163,28 @@ export class Hashcat {
 
     private handleTaskHasFinnished = (task: TTask): void => {
         this.dao.task.registerTaskEnded(task as unknown as Task);
-    };
-
-    private handleHashlistIsCracked = (): void => {
-        if (this.outputFile && this.lastTaskRun) {
-            this.lastTaskRun.hashlistId.crackedOutputFileName = this.outputFile;
+        if (this.outputFilePath && this.lastTaskRun) {
+            this.lastTaskRun.hashlistId.crackedOutputFileName =
+                this.outputFilePath;
             this.dao.hashlist.update(
                 this.lastTaskRun.hashlistId as unknown as Hashlist,
                 false
             );
         }
+        if (!this.outputFileExists) {
+            this.generateOutputFileFromPotfile();
+        }
     };
+
+    private generateOutputFileFromPotfile(): void {
+        if (this.lastTaskRun) {
+            const tmpProcess = this.createWorkerThread();
+            const cmdShow = this.cmd + ' --show';
+            logger.info('Generating the output file based on potfile recordes');
+            tmpProcess.postMessage(cmdShow);
+            setTimeout(() => {
+                tmpProcess.terminate();
+            }, 1000);
+        }
+    }
 }
