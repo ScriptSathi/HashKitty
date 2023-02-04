@@ -7,7 +7,6 @@ import { TProcessStdout } from '../utils/Processus';
 type THashcatListenerProperties = {
     worker: Worker;
     task: TTask;
-    handleHashlistIsCracked: () => void;
     handleTaskHasFinnished: (task: TTask) => void;
 };
 
@@ -15,21 +14,19 @@ export class HashcatListener {
     public state: THashcatStatus;
     private task: TTask;
     private hashcatWorker: Worker;
-    private handleHashlistIsCracked: () => void;
     private handleTaskHasFinnished: (task: TTask) => void;
 
     constructor({
         worker,
         task,
-        handleHashlistIsCracked,
         handleTaskHasFinnished,
     }: THashcatListenerProperties) {
         this.hashcatWorker = worker;
         this.task = task;
-        this.handleHashlistIsCracked = handleHashlistIsCracked;
         this.handleTaskHasFinnished = handleTaskHasFinnished;
         this.state = {
             processState: 'pending',
+            exitInfo: '',
             runningStatus: <THashcatRunningStatus>{},
         };
     }
@@ -65,7 +62,6 @@ export class HashcatListener {
         switch (processStdout.exit.message) {
             case 'exit':
                 this.handleTaskHasFinnished(this.task);
-                this.handleHashlistIsCracked();
                 break;
             case 'exhausted':
                 this.onExhaustedExit();
@@ -84,18 +80,17 @@ export class HashcatListener {
     private onExhaustedExit(): void {
         const [nbOfCrackedPasswords, amountOfPasswords] = this.state
             .runningStatus.recovered_hashes || [0, 0];
+        logger.debug('Status: Exhausted');
         if (nbOfCrackedPasswords > 0) {
             this.task.hashlistId.numberOfCrackedPasswords =
                 nbOfCrackedPasswords;
-            this.handleTaskHasFinnished(this.task);
-            this.handleHashlistIsCracked();
-            logger.debug('Status: Exhausted');
             logger.info(
-                'Process: Hashcat ended and cracked' +
+                'Process: Hashcat ended and cracked ' +
                     `${nbOfCrackedPasswords}/${amountOfPasswords} passwords`
             );
+            this.handleTaskHasFinnished(this.task);
         } else {
-            logger.debug('Status: Exhausted');
+            this.state.exitInfo = 'No passwords recovered';
             logger.info(
                 'Process: Hashcat ended but no passwords were cracked !'
             );
@@ -130,6 +125,8 @@ export class HashcatListener {
     }
 
     private stopListener(): void {
+        this.state.processState = 'stopped';
+        this.state.runningStatus = <THashcatRunningStatus>{};
         this.hashcatWorker.terminate();
     }
 }
