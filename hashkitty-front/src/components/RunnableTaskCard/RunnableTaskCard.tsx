@@ -11,17 +11,15 @@ import stopTaskHover from '../../assets/images/stopTaskHover.svg';
 import startTaskHover from '../../assets/images/playTaskHover.svg';
 import startTask from '../../assets/images/playTask.svg';
 import { Constants } from '../../Constants';
-import { THashcatStatus } from '../../types/TServer';
+import { THashcatRunningStatus, THashcatStatus } from '../../types/TServer';
 
 type RunnableTaskCardState = {
     mouseIsEnterTaskCard: boolean;
     mouseIsEnterRunTask: boolean;
-    taskIsFinnished: boolean;
     moreDetailsClicked: boolean;
     clickedRunTask: boolean;
     onErrorStart: string;
-    isRunning: boolean;
-    isLoading: boolean;
+    processState: 'running' | 'pending' | 'stopped';
     estimatedStop: string;
     runningProgress: string;
     speed: string;
@@ -38,11 +36,9 @@ export default class RunnableTaskCard extends Component<
     public state: RunnableTaskCardState = {
         mouseIsEnterTaskCard: false,
         mouseIsEnterRunTask: false,
-        taskIsFinnished: false,
         moreDetailsClicked: false,
         clickedRunTask: this.props.isRunning,
-        isRunning: this.props.isRunning,
-        isLoading: false,
+        processState: 'stopped',
         onErrorStart: '',
         estimatedStop: 'Not running',
         runningProgress: '0',
@@ -80,7 +76,7 @@ export default class RunnableTaskCard extends Component<
                 <div className="bottomBox">
                     <div>
                         <p className="bottomBoxText">
-                            Speed: {this.state.speed} H/s
+                            Speed: {this.state.speed}
                             <br />
                             Progress: {this.state.runningProgress}
                             <br />
@@ -88,7 +84,7 @@ export default class RunnableTaskCard extends Component<
                         </p>
                     </div>
                     <div className="runButton">
-                        {!this.state.isLoading ? (
+                        {!this.isPending ? (
                             <img
                                 onMouseEnter={this.onMouseEnterRunTask}
                                 onMouseLeave={this.onMouseLeaveRunTask}
@@ -108,7 +104,7 @@ export default class RunnableTaskCard extends Component<
                                 alt="loader"
                                 style={{
                                     display: 'block',
-                                    marginLeft: 5,
+                                    marginRight: 10,
                                     marginTop: 5,
                                 }}
                             />
@@ -120,15 +116,22 @@ export default class RunnableTaskCard extends Component<
         );
     }
 
+    private get isRunning(): boolean {
+        return this.state.processState === 'running';
+    }
+
+    private get isPending(): boolean {
+        return this.state.processState === 'pending';
+    }
+
     private refreshStatus: () => Promise<void> = async () => {
         if (this.props.hashlistId.crackedOutputFileName) {
-            this.displayHashlistAlreadyCracked();
-            setTimeout(() => this.props.handleRefreshTasks(), 2000);
-        } else if (this.state.isRunning) {
+            this.displayErrorMessage('This hashlist has already been cracked');
+            setTimeout(() => this.props.handleRefreshTasks(), 500);
+        } else if (this.isRunning || this.isPending) {
             await this.fetchStatus();
-            setTimeout(this.refreshStatus, 2000);
+            setTimeout(this.refreshStatus, 500);
         } else {
-            this.setState({ isLoading: false });
             this.updateStartButton();
             this.props.handleRefreshTasks();
             this.setState({
@@ -145,74 +148,42 @@ export default class RunnableTaskCard extends Component<
                 Constants.apiGetStatus,
                 Constants.mandatoryFetchOptions
             );
-            const req = await reqJson.json();
-            if (retryFetch < 5) {
-                if (
-                    req.status.status !== undefined &&
-                    Object.keys(req.status.status).length !== 0 &&
-                    req.status.status.session ===
-                        `${this.props.name}-${this.props.id}`
-                ) {
-                    const status = req.status.status as THashcatStatus;
-                    const runningProgress = `${
-                        (status.progress[0] / status.progress[1]) * 100
-                    }%`;
-                    const timeLeft =
-                        status.estimated_stop * 1000 - Date.now().valueOf();
-                    const estimatedStop =
-                        timeLeft > 0
-                            ? duration(
-                                  status.estimated_stop * 1000 -
-                                      Date.now().valueOf(),
-                                  {
-                                      largest: 2,
-                                      maxDecimalPoints: 0,
-                                      units: ['y', 'mo', 'w', 'd', 'h', 'm'],
-                                  }
-                              )
-                            : '0 minutes';
-                    this.setState({
-                        taskIsFinnished: req.status.ended,
-                        estimatedStop,
-                        runningProgress,
-                        speed: `${status.devices[0].speed}`,
-                    });
-                    this.state.isRunning = req.status.isRunning;
-                    this.state.isLoading = false;
+            const req: { status: THashcatStatus } = await reqJson.json();
+            this.setProcessStateOnFetch(req);
+            if (this.isPending || this.isRunning || retryFetch < 0) {
+                if (Object.keys(req.status.runningStatus).length !== 0) {
+                    this.setStatusData(req.status.runningStatus);
                     this.updateStopButton();
                 } else {
                     setTimeout(() => {
-                        this.fetchStatus((retryFetch += 1));
+                        this.fetchStatus(
+                            this.isPending ? 0 : (retryFetch += 1)
+                        );
                     }, 500);
                 }
-            } else {
-                this.state.isRunning = false;
-                this.state.isLoading = false;
+            } else if (req.status.exitInfo.length > 0) {
                 this.updateStartButton();
-                this.displayErrorMessageOnHashcatStart();
+                this.displayErrorMessage(req.status.exitInfo);
+            } else {
+                this.updateStartButton();
+                this.displayErrorMessage('An error occured');
             }
         } catch (e) {
-            this.state.isRunning = false;
-            this.state.isLoading = false;
             this.updateStartButton();
-            this.displayUnreachableOnHashcatStart();
+            this.displayErrorMessage('Server is unreachable');
         }
     }
 
-    private displayErrorMessageOnHashcatStart(): void {
-        this.setState({ onErrorStart: 'An error occured' });
-        setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
+    private setProcessStateOnFetch(req: { status: THashcatStatus }) {
+        try {
+            this.state.processState = req.status.processState;
+        } catch (e) {
+            this.state.processState = 'stopped';
+        }
     }
 
-    private displayUnreachableOnHashcatStart(): void {
-        this.setState({ onErrorStart: 'Server is unreachable' });
-        setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
-    }
-
-    private displayHashlistAlreadyCracked(): void {
-        this.setState({
-            onErrorStart: 'This hashlist has already been cracked',
-        });
+    private displayErrorMessage(msg: string): void {
+        this.setState({ onErrorStart: msg });
         setTimeout(() => this.setState({ onErrorStart: '' }), 3000);
     }
 
@@ -224,7 +195,11 @@ export default class RunnableTaskCard extends Component<
             ...Constants.mandatoryFetchOptions,
         };
         fetch(Constants.apiPOSTStart, requestOptions);
-        this.refreshStatus();
+        this.state.processState = 'pending';
+        setTimeout(() => {
+            this.fetchStatus();
+            this.refreshStatus();
+        }, 1000);
     }
 
     private fetchStopHashcat(): void {
@@ -235,16 +210,13 @@ export default class RunnableTaskCard extends Component<
         fetch(Constants.apiGetStop, requestOptions)
             .then(response => response.json())
             .then(() => {
-                this.state.isRunning = false;
                 this.refreshStatus();
                 this.updateStartButton();
             });
     }
 
     private onClickRunOrStopTask: () => void = () => {
-        if (!this.state.isRunning) {
-            this.state.isRunning = true;
-            this.state.isLoading = true;
+        if (!this.isRunning) {
             this.fetchStartHashcat();
         } else {
             this.fetchStopHashcat();
@@ -301,4 +273,45 @@ export default class RunnableTaskCard extends Component<
             </p>
         );
     };
+
+    private setStatusData(status: THashcatRunningStatus): void {
+        function getFirstDigitsOfNumber(number: number): number {
+            return parseInt(number.toString().split('.')[0]);
+        }
+        const runningProgress = `${
+            (status.progress[0] / status.progress[1]) * 100
+        }%`;
+        const timeLeft = status.estimated_stop * 1000 - Date.now().valueOf();
+        const estimatedStop =
+            timeLeft > 0
+                ? duration(
+                      status.estimated_stop * 1000 - Date.now().valueOf(),
+                      {
+                          largest: 2,
+                          maxDecimalPoints: 0,
+                          units: ['y', 'mo', 'w', 'd', 'h', 'm'],
+                      }
+                  )
+                : '0 minutes';
+        const unFormatedSpeed = status.devices[0].speed;
+        let speed = '';
+        if (unFormatedSpeed > Math.pow(10, 12)) {
+            const tmp = unFormatedSpeed / Math.pow(10, 12);
+            speed = `${getFirstDigitsOfNumber(tmp)} TH/S`;
+        } else if (unFormatedSpeed > Math.pow(10, 9)) {
+            const tmp = unFormatedSpeed / Math.pow(10, 9);
+            speed = `${getFirstDigitsOfNumber(tmp)} GH/S`;
+        } else if (unFormatedSpeed > Math.pow(10, 6)) {
+            const tmp = unFormatedSpeed / Math.pow(10, 6);
+            speed = `${getFirstDigitsOfNumber(tmp)} MH/S`;
+        } else if (unFormatedSpeed > Math.pow(10, 3)) {
+            const tmp = unFormatedSpeed / Math.pow(10, 3);
+            speed = `${getFirstDigitsOfNumber(tmp)} KH/S`;
+        }
+        this.setState({
+            estimatedStop,
+            runningProgress,
+            speed,
+        });
+    }
 }

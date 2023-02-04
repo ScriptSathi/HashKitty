@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 export const cardBody: CSSProperties = {
     backgroundColor: 'white',
     width: 800,
-    border: '2px solid',
+    border: '4px solid',
     borderRadius: '50px',
     padding: '50px 80px',
 };
@@ -15,7 +15,6 @@ export const contentBody: CSSProperties = {
     color: 'white',
     borderRadius: '50px',
     paddingLeft: '30px',
-    // paddingTop: '20px',
     maxHeight: '600px',
     overflowY: 'scroll',
 };
