@@ -307,6 +307,8 @@ export default class RunnableTaskCard extends Component<
         } else if (unFormatedSpeed > Math.pow(10, 3)) {
             const tmp = unFormatedSpeed / Math.pow(10, 3);
             speed = `${getFirstDigitsOfNumber(tmp)} KH/S`;
+        } else {
+            speed = `${unFormatedSpeed} H/S`;
         }
         this.setState({
             estimatedStop,
