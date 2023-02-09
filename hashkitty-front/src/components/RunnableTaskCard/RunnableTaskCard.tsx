@@ -12,6 +12,7 @@ import startTaskHover from '../../assets/images/playTaskHover.svg';
 import startTask from '../../assets/images/playTask.svg';
 import { Constants } from '../../Constants';
 import { THashcatRunningStatus, THashcatStatus } from '../../types/TServer';
+import Card from '../Card/Card';
 
 type RunnableTaskCardState = {
     mouseIsEnterTaskCard: boolean;
@@ -56,7 +57,7 @@ export default class RunnableTaskCard extends Component<
 
     public render() {
         return (
-            <div className="cardBodyGeneric">
+            <Card>
                 <div className="topPart">
                     <div className="topLeftPart">
                         <p className="taskName">{this.props.name}</p>
@@ -65,9 +66,7 @@ export default class RunnableTaskCard extends Component<
                         </div>
                     </div>
                     <div className="moreDetails">
-                        <p onClick={() => alert(1)} className="moreDetails">
-                            More details
-                        </p>
+                        <p onClick={() => alert(1)}>More details</p>
                         <p className="cardOnStartError">
                             {this.state.onErrorStart}
                         </p>
@@ -112,7 +111,7 @@ export default class RunnableTaskCard extends Component<
                     </div>
                 </div>
                 {this.state.moreDetailsClicked ? <p>Bonjour</p> : ''}
-            </div>
+            </Card>
         );
     }
 

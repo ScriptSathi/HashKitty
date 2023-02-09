@@ -9,6 +9,7 @@ import resultsLogo from '../../assets/images/results.png';
 import { Constants } from '../../Constants';
 import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
 import ResultsCard from '../ResultsCard/ResultsCard';
+import Card from '../Card/Card';
 
 type EndedTaskCardState = {
     moreDetailsClicked: boolean;
@@ -53,7 +54,7 @@ export default class EndedTaskCard extends Component<
 
     public render() {
         return (
-            <div className="cardBodyGeneric">
+            <Card>
                 <div className="topPart">
                     <div className="topLeftPart">
                         <p className="taskName">{this.props.name}</p>
@@ -101,7 +102,7 @@ export default class EndedTaskCard extends Component<
                         hashlistId={this.props.hashlistId.id}
                     />
                 </BackgroundBlur>
-            </div>
+            </Card>
         );
     }
 

@@ -34,11 +34,6 @@
     color: $hover-color;
 }
 
-.moreDetails {
-    cursor: pointer;
-    color: $hover-color;
-}
-
 .cardHover:hover {
     box-shadow: '0px 15px 5px 0px #FC6F6F';
     color: $hover-color
@@ -55,4 +50,27 @@ body {
 
 .colorRed {
     color: red;
+}
+
+.Title {
+    font-family: InterBold;
+    font-size: 24px;
+    padding-left: 5px;
+}
+
+.noMarginTop {
+    margin-top: 0px;
+}
+
+.noMargin {
+    margin: 0px;
+}
+
+.lockScreen {
+    overflow: hidden;
+    user-select: none;
+}
+
+.marginBottom20 {
+    margin-bottom: 20px;
 }

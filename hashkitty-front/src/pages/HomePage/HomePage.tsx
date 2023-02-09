@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import Navbar from '../../components/Navbar/Navbar';
 import newTask from '../../assets/images/newTask.svg';
 import '../../assets/fonts/Inter-Bold.ttf';
 import '../../assets/styles/main.scss';
@@ -9,6 +8,7 @@ import { TTask } from '../../types/TypesORM';
 import TasksBody from '../../components/TasksBody';
 import { Constants } from '../../Constants';
 import CreateTask from '../../components/CreateTask/CreateTask';
+import Frame from '../../components/Frame/Frame';
 
 type HomePageState = {
     newTaskToogle: boolean;
@@ -43,19 +43,17 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
 
     public render() {
         return (
-            <div
-                style={
+            <Frame
+                className={
                     this.state.newTaskToogle || this.state.taskResultsToggle
-                        ? { overflow: 'hidden', userSelect: 'none' }
-                        : {}
+                        ? 'lockScreen'
+                        : ''
                 }
             >
-                <Navbar />
-                <this.renderCreationTaskStatus />
-                <div className="mainBox">
+                <div className="SplitTasks">
                     <div className="HomepageLeftBox">
-                        <div className="tasksTitle">
-                            <p style={{ marginTop: '0' }}>Running tasks</p>
+                        <div className="Title">
+                            <p className="noMarginTop">Running tasks</p>
                         </div>
                         <div className="HomePagecardBody">
                             <div className="runningTasks">
@@ -77,8 +75,8 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                         </div>
                     </div>
                     <div className="HomePageRightBox">
-                        <div className="tasksTitle">
-                            <p style={{ marginTop: '0' }}>Ended tasks</p>
+                        <div className="Title">
+                            <p className="noMarginTop">Ended tasks</p>
                         </div>
                         <div className="tasksBody">
                             <TasksBody
@@ -97,7 +95,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                         isToggled={this.state.newTaskToogle}
                     />
                 </div>
-            </div>
+            </Frame>
         );
     }
 
