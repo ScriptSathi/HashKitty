@@ -64,7 +64,7 @@ export const hashcatParam = {
     cpuOnly: {
         alias: 'D',
         flag: 'opencl-device-types',
-        needAParam: false,
+        needAParam: true,
         defaultValue: '1',
     },
     progressOnly: {
@@ -109,6 +109,7 @@ export const hashcatParam = {
     statusTimer: {
         flag: 'status-timer',
         needAParam: true,
+        defaultValue: '1',
     },
     status: {
         flag: 'status',
