@@ -20,11 +20,9 @@
 .div1 { grid-area: 1 / 1 / 2 / 5; }
 .div2 { grid-area: 1 / 5 / 2 / 7; }
 
-.mainBox {
+.SplitTasks {
     display: grid;
     grid-template-columns: minmax(auto, 79%) auto;
-    margin-top: 100px;
-    padding: 0 60px;
 }
 
 .HomepageLeftBox {
@@ -46,12 +44,6 @@
 .HomePageRightBox {
     display: block;
     margin-left: 60px;
-}
-
-.tasksTitle {
-    font-family: InterBold;
-    font-size: 24px;
-    padding-left: 5px;
 }
 
 .HomePagecardBody {

@@ -1,30 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import HomePage from './pages/HomePage/HomePage';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+import HomePage from './pages/HomePage/HomePage';
 import ErrorPage from './components/ErrorPage/ErrorPage';
+import Template from './pages/Template/Template';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 const router = createBrowserRouter([
     {
-        path: '/',
-        element: <HomePage />,
         errorElement: <ErrorPage />,
         children: [
+            {
+                path: '/',
+                element: <HomePage />,
+            },
             {
                 path: 'home',
                 element: <HomePage />,
             },
             {
-                path: 'lists',
-                element: <HomePage />,
+                path: 'templates',
+                element: <Template />,
             },
             {
-                path: 'templates',
+                path: 'lists',
                 element: <HomePage />,
             },
             {
