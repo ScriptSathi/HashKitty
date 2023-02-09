@@ -1,33 +1,57 @@
-export type ThashcatAllowedFlags =
-    | 'hashType'
-    | 'attackMode'
-    | 'restore'
-    | 'runtime'
-    | 'session'
-    | 'outputFile'
-    | 'outputFormat'
-    | 'show'
-    | 'left'
-    | 'potfilePath'
-    | 'speedOnly'
-    | 'cpuOnly'
-    | 'progressOnly'
-    | 'kernelOptimisation'
-    | 'workloadProfile'
-    | 'kernelAccel'
-    | 'kernelLoops'
-    | 'kernelThreads'
-    | 'temperatureAbort'
-    | 'rulesFiles'
-    | 'statusJson'
-    | 'statusTimer'
-    | 'status'
-    | 'quiet'
-    | 'restoreDisable';
+export type ThashcatAllowedFlags = keyof THashcatFlags;
+
+export type THashcatFlags = {
+    hashType: THashcatFlagsObjectFull;
+    attackMode: THashcatFlagsObjectFull;
+    restore: THashcatFlagsObjectNoAlias;
+    runtime: THashcatFlagsObjectNoAlias;
+    session: THashcatFlagsObjectNoAlias;
+    outputFile: THashcatFlagsObjectFull;
+    outputFormat: THashcatFlagsObjectNoAlias;
+    show: THashcatFlagsObjectNoAlias;
+    left: THashcatFlagsObjectNoAlias;
+    increment: THashcatFlagsObjectFull;
+    incrementMin: THashcatFlagsObjectNoAlias;
+    incrementMax: THashcatFlagsObjectNoAlias;
+    potfilePath: THashcatFlagsObjectNoAlias;
+    speedOnly: THashcatFlagsObjectNoAlias;
+    cpuOnly: THashcatFlagsObjectFull;
+    progressOnly: THashcatFlagsObjectNoAlias;
+    kernelOptimisation: THashcatFlagsObjectFull;
+    workloadProfile: THashcatFlagsObjectFull;
+    kernelAccel: THashcatFlagsObjectFull;
+    kernelLoops: THashcatFlagsObjectFull;
+    kernelThreads: THashcatFlagsObjectFull;
+    temperatureAbort: THashcatFlagsObjectNoAlias;
+    statusJson: THashcatFlagsObjectNoAlias;
+    statusTimer: THashcatFlagsObjectNoAlias;
+    status: THashcatFlagsObjectNoAlias;
+    quiet: THashcatFlagsObjectNoAlias;
+    restoreFilePath: THashcatFlagsObjectNoAlias;
+    restoreDisable: THashcatFlagsObjectNoAlias;
+    ruleLeft: THashcatFlagsObjectFull;
+    ruleRight: THashcatFlagsObjectFull;
+    rulesFile: THashcatFlagsObjectFull;
+    customCharset1: THashcatFlagsObjectFull;
+    customCharset2: THashcatFlagsObjectFull;
+    customCharset3: THashcatFlagsObjectFull;
+    customCharset4: THashcatFlagsObjectFull;
+};
 
 export type ThashcatParams = {
-    [key in ThashcatAllowedFlags]: string;
+    [Prop in keyof THashcatFlags]: THashcatFlags[Prop] extends THashcatFlagsObjectFull
+        ? THashcatFlags[Prop]
+        : Omit<THashcatFlags[Prop], 'alias'>;
 };
+
+type THashcatFlagsObjectFull = {
+    alias: string;
+    flag: string;
+    needAParam: boolean;
+    defaultValue?: string;
+};
+
+type THashcatFlagsObjectNoAlias = Omit<THashcatFlagsObjectFull, 'alias'>;
 
 export type THashcatRunningStatus = {
     session: string;
