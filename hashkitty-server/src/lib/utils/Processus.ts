@@ -79,11 +79,11 @@ export class Processus {
             );
         } else if (code === null) {
             exitMessage = 'close';
+            code = 999; // add artificial code to avoid processResponse.exit.code = -1
             logger.info(
                 `A request has been sent to stop the process: ${this.cmd[0]}`
             );
         } else if (code === 0) {
-            //TODO TRIGGER de fin de tache ? voir si le code passe ici
             exitMessage = 'ended';
             logger.info(`Process: ${this.cmd[0]} ended correctly`);
         } else if (code === 1) {
