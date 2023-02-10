@@ -41,7 +41,7 @@ export const InputAttackModes = ({
             <div className="divRadio">
                 {state.attackModes.map(elem => {
                     return (
-                        <label key={elem.id}>
+                        <label key={elem.id} className="fontMedium">
                             <input
                                 className="inputRadio"
                                 type="radio"

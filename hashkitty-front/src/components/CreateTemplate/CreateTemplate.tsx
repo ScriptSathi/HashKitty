@@ -1,11 +1,10 @@
 import React, { ChangeEvent, Component, FormEvent } from 'react';
 
-import './CreateTask.scss';
+import './CreateTemplate.scss';
 
 import { Constants } from '../../Constants';
 import { Utils } from '../../Utils';
 import {
-    RenderAdvancedConfigButton,
     InputAttackModes,
     InputCPUOnly,
     InputHashlist,
@@ -18,7 +17,7 @@ import {
     RenderTemplateTaskCheckBox,
     InputBreakpointTemp,
 } from '../Inputs/Inputs';
-import { ErrorHandlingCreateTask } from '../../ErrorHandlingCreateTask';
+import { ErrorHandlingCreateTemplate } from '../../ErrorHandlingCreateTemplate';
 import { THashlist, TemplateTask, TAttackMode } from '../../types/TypesORM';
 import {
     ApiOptionsFormData,
@@ -26,9 +25,7 @@ import {
     itemBase,
     newTaskFormData,
 } from '../../types/TComponents';
-import toggleClose from '../../assets/images/toggleClose.svg';
-import toggleOpen from '../../assets/images/toggleOpen.svg';
-import { CreateTaskProps, CreateTaskState } from './TCreateTask';
+import { CreateTemplateProps, CreateTemplateState } from './TCreateTemplate';
 import Button from '../Button/Button';
 import ImportList from '../ImportList/ImportList';
 import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
@@ -45,15 +42,16 @@ const defaultFormData = {
     formBreakpointGPUTemperature: 90,
 };
 
-export default class CreateTask extends Component<
-    CreateTaskProps,
-    CreateTaskState
+// TODO Carrousel https://codesandbox.io/s/form-carousel-h9mnm?file=/src/Form/atoms.js:1131-1137
+
+export default class CreateTemplate extends Component<
+    CreateTemplateProps,
+    CreateTemplateState
 > {
-    private toggleIcon = toggleClose;
-    private inputsError: ErrorHandlingCreateTask;
-    constructor(props: CreateTaskProps) {
+    private inputsError: ErrorHandlingCreateTemplate;
+    constructor(props: CreateTemplateProps) {
         super(props);
-        this.inputsError = new ErrorHandlingCreateTask();
+        this.inputsError = new ErrorHandlingCreateTemplate();
         this.state = {
             inputsErrorCheck: this.inputsError.results,
             handleTaskCreationAdded: props.handleTaskCreationAdded,
@@ -90,16 +88,10 @@ export default class CreateTask extends Component<
                     toggleFn={this.props.toggleNewTask}
                     centerContent={false}
                 >
-                    <div className="createTaskBody">
-                        <div
-                            style={{
-                                height: this.state.createOptionsToggle
-                                    ? 750
-                                    : 350,
-                            }}
-                        >
-                            <div className="contentBody">
-                                <p className="title">New Task</p>
+                    <div className="createTemplateBody">
+                        <div style={{ height: 750 }}>
+                            <div className="createTemplateContentBody">
+                                <p className="title">New Template</p>
                                 <form
                                     onSubmit={e => {
                                         this.handleSubmit(e);
@@ -114,45 +106,9 @@ export default class CreateTask extends Component<
                                                     this.handleInputChange
                                                 }
                                             />
-                                            <br />
-                                            <InputHashlist
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                                buttonClick={
-                                                    this.toggleHashlistCreation
-                                                }
-                                                importMessage={
-                                                    this.state
-                                                        .importHashlistSuccessMessage
-                                                }
-                                            />
-                                            <RenderAdvancedConfigButton
-                                                toggleOptionCreation={
-                                                    this.toggleOptionCreation
-                                                }
-                                                toggleIcon={this.toggleIcon}
-                                            />
-                                        </div>
-                                        <div>
-                                            <RenderTemplateTaskCheckBox
-                                                list={this.state.templateTasks}
-                                                state={this.state}
-                                                handleTemplateTaskCheckbox={
-                                                    this
-                                                        .handleTemplateTaskCheckbox
-                                                }
-                                            />
                                         </div>
                                     </div>
-                                    <div
-                                        className={
-                                            this.state.createOptionsToggle
-                                                ? 'advancedConfigsDivMain'
-                                                : 'hideBlock'
-                                        }
-                                    >
+                                    <div className="advancedConfigsDivMain">
                                         <div>
                                             <InputRules
                                                 state={this.state}
@@ -214,9 +170,9 @@ export default class CreateTask extends Component<
                                     </div>
                                     <Button
                                         type="submit"
-                                        className="submitInputCreateTask"
+                                        className="submitInputCreateTemplate"
                                     >
-                                        Create task
+                                        Create template
                                     </Button>
                                 </form>
                             </div>
@@ -351,24 +307,24 @@ export default class CreateTask extends Component<
     };
 
     private submitForm(form: ApiTaskFormData): void {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(form),
-            ...Constants.mandatoryFetchOptions,
-        };
-        fetch(Constants.apiPOSTCreateTask, requestOptions)
-            .then(response => {
-                return response.json();
-            })
-            .then(res => {
-                if (res.success) {
-                    this.state.handleTaskCreationAdded();
-                } else {
-                    this.state.handleTaskCreationError();
-                }
-                this.state.toggleNewTask();
-            });
+        // const requestOptions = {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify(form),
+        //     ...Constants.mandatoryFetchOptions,
+        // };
+        // fetch(Constants.apiPOSTCreateTemplate, requestOptions)
+        //     .then(response => {
+        //         return response.json();
+        //     })
+        //     .then(res => {
+        //         if (res.success) {
+        //             this.state.handleTaskCreationAdded();
+        //         } else {
+        //             this.state.handleTaskCreationError();
+        //         }
+        //         this.state.toggleNewTask();
+        //     });
     }
 
     private handleTemplateTaskCheckbox(event) {
@@ -404,15 +360,6 @@ export default class CreateTask extends Component<
             }
         }
     }
-
-    private toggleOptionCreation = () => {
-        this.setState({
-            createOptionsToggle: !this.state.createOptionsToggle,
-        });
-        this.toggleIcon = this.state.createOptionsToggle
-            ? toggleClose
-            : toggleOpen;
-    };
 
     private toggleHashlistCreation = () => {
         this.setState({

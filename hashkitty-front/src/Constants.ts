@@ -12,6 +12,7 @@ export class Constants {
     public static readonly apiPOSTStart: string = `${this.apiUrl}/start`;
     public static readonly apiGetStop: string = `${this.apiUrl}/stop`;
     public static readonly apiPOSTCreateTask: string = `${this.apiUrl}/tasks`;
+    public static readonly apiPOSTCreateTemplate: string = `${this.apiUrl}/templatetasks`;
     public static readonly apiGetTemplateTasks: string = `${this.apiUrl}/templatetasks`;
     public static readonly apiGetRules: string = `${this.apiUrl}/rules`;
     public static readonly apiGetPotfiles: string = `${this.apiUrl}/potfiles`;
