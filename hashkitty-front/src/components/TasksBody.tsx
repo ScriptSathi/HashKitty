@@ -19,6 +19,7 @@ export default class RunningTasksBody extends Component<RunningTasksBodyProps> {
         fontSize: '20px',
         marginTop: '2em',
         marginLeft: '2em',
+        fontFamily: 'InterMedium',
     };
 
     public async componentDidMount() {

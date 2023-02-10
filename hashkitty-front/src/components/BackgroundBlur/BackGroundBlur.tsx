@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import './BackGroundBlur.scss';
+
 interface BackgroundBlurProps {
     children: React.ReactNode;
     isToggled: boolean;
@@ -20,6 +22,7 @@ export default class BackgroundBlur extends Component<
     };
 
     public render() {
+        document.body.className = 'noMargin';
         return (
             <div
                 style={
