@@ -35,7 +35,8 @@
 }
 
 .divRadio {
-    margin-top: 5;
+    margin: 5px 0;
+    padding: 5px;
     overflow-y: scroll;
     max-height: 120;
     max-width: 100%;
@@ -69,7 +70,7 @@
     height: 0.65em;
     transform: scale(0);
     transition: 180ms transform ease-in-out;
-    box-shadow: inset 1em 1em var(--form-control-color);
+    box-shadow: inset 1em 1em $hover-color;
 }
 
 .inputCheckbox:checked::before {
@@ -108,4 +109,60 @@
 
 .smallTxt {
     font-size: 15px;
+}
+
+input[type="radio"]:hover {
+    border: 0.15em solid $hover-color;
+}  
+input[type="radio"]:checked:hover {
+    border: 0.15em solid black;
+}
+
+.labelRadioControl {
+    font-family: 'InterMedium', system-ui, sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    line-height: 1.1;
+    display: grid;
+    grid-template-columns: 1em auto;
+    gap: 0.5em;
+    margin-top: 1em;
+}
+  
+.labelRadioControl:focus-within, .labelRadioControl:hover {
+    color: $hover-color;
+}
+  
+input[type="radio"] {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+    font: inherit;
+    color: $hover-color;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid black;
+    border-radius: 50%;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+}
+  
+input[type="radio"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em $hover-color;
+}
+  
+input[type="radio"]:checked::before {
+    transform: scale(1);
+}
+  
+input[type="radio"]:focus {
+    outline: max(2px, 0.15em) solid $hover-color;
+    outline-offset: max(2px, 0.15em);
 }

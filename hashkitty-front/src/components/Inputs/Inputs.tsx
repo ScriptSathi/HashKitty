@@ -28,7 +28,7 @@ export const InputAttackModes = ({
 }) => {
     return state.attackModes.length > 0 ? (
         <div style={{ marginTop: 30 }}>
-            <p className="noMargin labelsTitles">Choose an attack mode</p>
+            <p className="noMargin labelsTitles">Select the attack mode</p>
             <p
                 className={
                     state.formHasErrors
@@ -41,7 +41,10 @@ export const InputAttackModes = ({
             <div className="divRadio">
                 {state.attackModes.map(elem => {
                     return (
-                        <label key={elem.id} className="fontMedium">
+                        <label
+                            key={elem.id}
+                            className="fontMedium labelRadioControl marginTop5"
+                        >
                             <input
                                 className="inputRadio"
                                 type="radio"
