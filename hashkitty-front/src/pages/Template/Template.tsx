@@ -33,6 +33,9 @@ export default class Template extends Component<TemplateProps, TemplateState> {
     }
 
     public render() {
+        // if (!this.state.createTemplateToggle) {
+        //     location.href = '';
+        // }
         return (
             <Frame
                 className={this.state.createTemplateToggle ? 'lockScreen' : ''}

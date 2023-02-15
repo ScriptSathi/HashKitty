@@ -26,7 +26,6 @@
     margin-right: 5px;
 }
 
-
 .divCheckbox {
     margin-top: 10px;
     max-height: 180;
@@ -96,10 +95,6 @@
     margin-left: 33px;
 }
 
-.hideBlock { 
-    visibility: hidden;
-}
-
 .isError { 
     display: grid;
     color: red;
@@ -113,14 +108,14 @@
 
 input[type="radio"]:hover {
     border: 0.15em solid $hover-color;
-}  
+}
+
 input[type="radio"]:checked:hover {
     border: 0.15em solid black;
 }
 
 .labelRadioControl {
     font-family: 'InterMedium', system-ui, sans-serif;
-    font-size: 1rem;
     font-weight: bold;
     line-height: 1.1;
     display: grid;
@@ -128,11 +123,11 @@ input[type="radio"]:checked:hover {
     gap: 0.5em;
     margin-top: 1em;
 }
-  
+
 .labelRadioControl:focus-within, .labelRadioControl:hover {
     color: $hover-color;
 }
-  
+
 input[type="radio"] {
     -webkit-appearance: none;
     appearance: none;

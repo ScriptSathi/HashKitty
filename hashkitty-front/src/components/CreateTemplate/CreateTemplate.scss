@@ -11,5 +11,33 @@
 .createTemplateContentBody {
     margin: 5% 7.5%;
     height: 80%;
-    width: 90%;
+}
+
+.CarouselBody {
+    display: flex;
+    // margin-top: 30px;
+    overflow: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    width: 100%;
+    max-width: 100vw;
+    height: 480px;
+}
+
+.nameDivInput {
+    align-items: center;
+}
+
+.test {
+    background-color: red;
+    height: 500px;
+    width: 400px;
+}
+
+.sectionTemplate{
+    display: grid;
+    width: 100%;
+    height: 500px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
 }
