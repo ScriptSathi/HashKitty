@@ -49,6 +49,9 @@ export default class CreateTemplate extends Component<
     CreateTemplateState
 > {
     private inputsError: ErrorHandlingCreateTemplate;
+    private stepOne: string;
+    private stepTwo: string;
+
     constructor(props: CreateTemplateProps) {
         super(props);
         this.inputsError = new ErrorHandlingCreateTemplate();
@@ -57,11 +60,11 @@ export default class CreateTemplate extends Component<
             handleTaskCreationAdded: props.handleTaskCreationAdded,
             handleTaskCreationError: props.handleTaskCreationError,
             toggleNewTask: props.toggleNewTask,
-            createOptionsToggle: false,
             hashlistCreationToggle: false,
             formHasErrors: false,
             isMouseIn: false,
             templateCheckboxIsChecked: false,
+            userFormStep: 0,
             templateTaskCheckBoxId: -1,
             hashlist: [],
             wordlists: [],
@@ -74,6 +77,8 @@ export default class CreateTemplate extends Component<
             formHashlistName: '',
             ...defaultFormData,
         };
+        this.stepOne = 'attackMode';
+        this.stepTwo = 'mainForm';
     }
 
     public async componentDidMount(): Promise<void> {
@@ -81,6 +86,7 @@ export default class CreateTemplate extends Component<
     }
 
     public render() {
+        this.setCorrectStep();
         return (
             <div>
                 <BackgroundBlur
@@ -89,7 +95,13 @@ export default class CreateTemplate extends Component<
                     centerContent={false}
                 >
                     <div className="createTemplateBody">
-                        <div style={{ height: 750 }}>
+                        <div
+                            style={
+                                this.state.userFormStep === 0
+                                    ? { height: 450 }
+                                    : { height: 750 }
+                            }
+                        >
                             <div className="createTemplateContentBody">
                                 <p className="title">New Template</p>
                                 <form
@@ -98,79 +110,44 @@ export default class CreateTemplate extends Component<
                                     }}
                                     className="formBody"
                                 >
-                                    <div className="mandatoryBody">
-                                        <div>
-                                            <InputName
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
-                                        </div>
+                                    <div className="">
+                                        <InputName
+                                            state={this.state}
+                                            handleInputChange={
+                                                this.handleInputChange
+                                            }
+                                        />
                                     </div>
-                                    <div className="advancedConfigsDivMain">
-                                        <div>
-                                            <InputRules
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
-                                            <br />
-                                            <InputWordlist
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
-                                            <br />
-                                            <br />
-                                            <InputWorkloadProfiles
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
-                                            <br />
-                                            <InputCPUOnly
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
-                                            <br />
-                                            <InputKernelOpti
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
-                                        </div>
-                                        <div className="advancedConfigsDivLeft">
-                                            <InputPotfiles
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
+                                    <article className="CarouselBody">
+                                        <div
+                                            id={this.stepOne}
+                                            className={
+                                                this.state.userFormStep === 0
+                                                    ? 'sectionTemplate contentTopCenter'
+                                                    : 'hideBlock'
+                                            }
+                                        >
                                             <InputAttackModes
                                                 state={this.state}
                                                 handleInputChange={
                                                     this.handleInputChange
                                                 }
-                                            />
-                                            <br />
-                                            <InputBreakpointTemp
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
+                                                biggerFonts
                                             />
                                         </div>
-                                    </div>
+                                        <div
+                                            id={this.stepTwo}
+                                            className={
+                                                this.state.userFormStep === 1
+                                                    ? 'test sectionTemplate'
+                                                    : 'hideBlock'
+                                            }
+                                        ></div>
+                                    </article>
                                     <Button
                                         type="submit"
-                                        className="submitInputCreateTemplate"
+                                        className="submitInputCreateTask"
+                                        onClick={this.nextFormStep}
                                     >
                                         Create template
                                     </Button>
@@ -406,5 +383,29 @@ export default class CreateTemplate extends Component<
             wordlists: this.constructInputList(wordlists),
             attackModes,
         });
+    }
+
+    private nextFormStep = () => {
+        this.setState({
+            userFormStep: this.state.userFormStep + 1,
+        });
+    };
+
+    private setCorrectStep(): void {
+        if (this.state.formAttackModeId < 0 || this.state.userFormStep === 0) {
+            location.href = '#' + this.stepOne;
+            if (this.state.userFormStep !== 0) {
+                this.setState({
+                    userFormStep: 0,
+                });
+            }
+        } else if (
+            this.state.formAttackModeId > 0 &&
+            this.state.userFormStep > 0
+        ) {
+            location.href = '#' + this.stepTwo;
+        } else {
+            location.href = '';
+        }
     }
 }

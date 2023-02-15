@@ -19,16 +19,26 @@ type InputsState<
 export const InputAttackModes = ({
     state,
     handleInputChange,
+    biggerFonts,
 }: {
     state: InputsState<
         'formAttackModeId',
         Pick<TDBData, 'attackModes'> & Pick<newTaskFormData, 'formAttackModeId'>
     >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
+    biggerFonts?: boolean;
 }) => {
     return state.attackModes.length > 0 ? (
         <div style={{ marginTop: 30 }}>
-            <p className="noMargin labelsTitles">Select the attack mode</p>
+            <p
+                className={
+                    biggerFonts
+                        ? 'noMargin labelsTitles font25px'
+                        : 'noMargin labelsTitles'
+                }
+            >
+                Select the attack mode
+            </p>
             <p
                 className={
                     state.formHasErrors
@@ -43,7 +53,11 @@ export const InputAttackModes = ({
                     return (
                         <label
                             key={elem.id}
-                            className="fontMedium labelRadioControl marginTop5"
+                            className={
+                                biggerFonts
+                                    ? 'fontMedium labelRadioControl font20px marginTop5'
+                                    : 'fontMedium labelRadioControl marginTop5'
+                            }
                         >
                             <input
                                 className="inputRadio"

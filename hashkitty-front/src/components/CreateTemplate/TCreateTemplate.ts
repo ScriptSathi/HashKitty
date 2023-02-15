@@ -7,11 +7,11 @@ export type CreateTemplateState = {
     handleTaskCreationAdded: () => void;
     handleTaskCreationError: () => void;
     toggleNewTask: () => void;
-    createOptionsToggle: boolean;
     hashlistCreationToggle: boolean;
     isMouseIn: boolean;
     templateCheckboxIsChecked: boolean;
     templateTaskCheckBoxId: number;
+    userFormStep: number;
     importHashlistSuccessMessage: string;
 } & newTaskFormData &
     GenericForm<newTaskInputsError> &
