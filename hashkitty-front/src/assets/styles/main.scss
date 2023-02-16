@@ -95,6 +95,9 @@ body {
 .grid {
     display: grid;
 }
+.flex {
+    display: flex;
+}
 
 
 .font1rem {
@@ -109,10 +112,20 @@ body {
     font-size: 25px;
 }
 
-.contentCenter{
-    place-content: center;
+.alignCenter{
+    align-items: center;
+    justify-content: center;
 }
 
 .contentTopCenter{
     place-content: start center;
+}
+
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.width100P {
+    width: 100%;
 }

@@ -1,4 +1,4 @@
-import { newTaskFormData } from './types/TComponents';
+import { templateFormData } from './types/TComponents';
 import { TAttackMode, THashlist } from './types/TypesORM';
 import { itemBase } from './types/TComponents';
 import { ErrorHandling } from './ErrorHandling';
@@ -23,13 +23,12 @@ export class ErrorHandlingCreateTemplate extends ErrorHandling<
             'formWorkloadProfile',
             'formBreakpointGPUTemperature',
             'formCpuOnly',
-            'formHashlistName',
             'formName',
         ]);
     }
 
     public analyse(
-        form: newTaskFormData,
+        form: templateFormData,
         dbData: {
             attackModes: TAttackMode[];
             hashlist: THashlist[];
@@ -41,7 +40,6 @@ export class ErrorHandlingCreateTemplate extends ErrorHandling<
         this.hasErrors = false;
         this.checkName(form.formName);
         this.checkAttackMode(form.formAttackModeId, dbData.attackModes);
-        this.checkHashlist(form.formHashlistName, dbData.hashlist);
         this.checkWordlist(form.formWordlistName, dbData.wordlist);
         this.checkRules(form.formRuleName, dbData.rules);
         this.checkPotfiles(form.formPotfileName, dbData.potfiles);
@@ -82,23 +80,6 @@ export class ErrorHandlingCreateTemplate extends ErrorHandling<
             this.results.formWordlistName = this.requieredFields;
         } else {
             this.results.formWordlistName = this.wrongData;
-        }
-    }
-
-    private checkHashlist(name: THashlist['name'], list: THashlist[]): void {
-        const find = list.find(elem => {
-            return elem.name === name;
-        });
-        if (find) {
-            this.results.formHashlistName = {
-                isError: false,
-                message: '',
-                itemId: find.id,
-            };
-        } else if (name === '') {
-            this.results.formHashlistName = this.requieredFields;
-        } else {
-            this.results.formHashlistName = this.wrongData;
         }
     }
 

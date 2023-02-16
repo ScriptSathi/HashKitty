@@ -6,24 +6,18 @@ import { Constants } from '../../Constants';
 import { Utils } from '../../Utils';
 import {
     InputAttackModes,
-    InputCPUOnly,
-    InputHashlist,
-    InputKernelOpti,
     InputName,
     InputPotfiles,
     InputRules,
     InputWordlist,
-    InputWorkloadProfiles,
-    RenderTemplateTaskCheckBox,
-    InputBreakpointTemp,
 } from '../Inputs/Inputs';
 import { ErrorHandlingCreateTemplate } from '../../ErrorHandlingCreateTemplate';
 import { THashlist, TemplateTask, TAttackMode } from '../../types/TypesORM';
 import {
     ApiOptionsFormData,
-    ApiTaskFormData,
+    ApiTemplateFormData,
     itemBase,
-    newTaskFormData,
+    templateFormData,
 } from '../../types/TComponents';
 import { CreateTemplateProps, CreateTemplateState } from './TCreateTemplate';
 import Button from '../Button/Button';
@@ -49,22 +43,18 @@ export default class CreateTemplate extends Component<
     CreateTemplateState
 > {
     private inputsError: ErrorHandlingCreateTemplate;
-    private stepOne: string;
-    private stepTwo: string;
 
     constructor(props: CreateTemplateProps) {
         super(props);
         this.inputsError = new ErrorHandlingCreateTemplate();
         this.state = {
             inputsErrorCheck: this.inputsError.results,
-            handleTaskCreationAdded: props.handleTaskCreationAdded,
-            handleTaskCreationError: props.handleTaskCreationError,
             toggleNewTask: props.toggleNewTask,
             hashlistCreationToggle: false,
             formHasErrors: false,
             isMouseIn: false,
             templateCheckboxIsChecked: false,
-            userFormStep: 0,
+            activePage: 0,
             templateTaskCheckBoxId: -1,
             hashlist: [],
             wordlists: [],
@@ -74,11 +64,8 @@ export default class CreateTemplate extends Component<
             templateTasks: [],
             formName: '',
             importHashlistSuccessMessage: '',
-            formHashlistName: '',
             ...defaultFormData,
         };
-        this.stepOne = 'attackMode';
-        this.stepTwo = 'mainForm';
     }
 
     public async componentDidMount(): Promise<void> {
@@ -86,18 +73,13 @@ export default class CreateTemplate extends Component<
     }
 
     public render() {
-        this.setCorrectStep();
         return (
             <div>
-                <BackgroundBlur
-                    isToggled={this.props.isToggled}
-                    toggleFn={this.props.toggleNewTask}
-                    centerContent={false}
-                >
+                <BackgroundBlur {...this.backgroundBlurProps}>
                     <div className="createTemplateBody">
                         <div
                             style={
-                                this.state.userFormStep === 0
+                                this.state.activePage === 0
                                     ? { height: 450 }
                                     : { height: 750 }
                             }
@@ -105,64 +87,54 @@ export default class CreateTemplate extends Component<
                             <div className="createTemplateContentBody">
                                 <p className="title">New Template</p>
                                 <form
-                                    onSubmit={e => {
-                                        this.handleSubmit(e);
-                                    }}
+                                    onSubmit={this.handleSubmit}
                                     className="formBody"
                                 >
                                     <div className="">
-                                        <InputName
-                                            state={this.state}
-                                            handleInputChange={
-                                                this.handleInputChange
-                                            }
-                                        />
+                                        <InputName {...this.inputNameProps} />
                                     </div>
                                     <article className="CarouselBody">
-                                        <div
-                                            id={this.stepOne}
-                                            className={
-                                                this.state.userFormStep === 0
-                                                    ? 'sectionTemplate contentTopCenter'
-                                                    : 'hideBlock'
-                                            }
-                                        >
-                                            <InputAttackModes
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                                biggerFonts
-                                            />
-                                        </div>
-                                        <div
-                                            id={this.stepTwo}
-                                            className={
-                                                this.state.userFormStep === 1
-                                                    ? 'test sectionTemplate'
-                                                    : 'hideBlock'
-                                            }
-                                        ></div>
+                                        <this.Pages />
                                     </article>
-                                    <Button
-                                        type="submit"
-                                        className="submitInputCreateTask"
-                                        onClick={this.nextFormStep}
-                                    >
-                                        Create template
-                                    </Button>
+                                    <this.Buttons />
                                 </form>
                             </div>
                         </div>
                     </div>
                 </BackgroundBlur>
-                <ImportList
-                    isToggled={this.state.hashlistCreationToggle}
-                    toggleFn={this.toggleHashlistCreation}
-                    handleImportHasSucced={this.importHashlistSuccess}
-                />
+                <ImportList {...this.importListProps} />
             </div>
         );
+    }
+
+    private get inputAttackModesProps() {
+        return {
+            state: this.state,
+            handleInputChange: this.handleInputChange,
+            biggerFonts: true,
+        };
+    }
+
+    private get backgroundBlurProps() {
+        return {
+            isToggled: this.props.isToggled,
+            toggleFn: this.props.toggleNewTask,
+            centerContent: false,
+        };
+    }
+    private get inputNameProps() {
+        return {
+            state: this.state,
+            handleInputChange: this.handleInputChange,
+        };
+    }
+
+    private get importListProps() {
+        return {
+            isToggled: this.state.hashlistCreationToggle,
+            toggleFn: this.toggleHashlistCreation,
+            handleImportHasSucced: this.importHashlistSuccess,
+        };
     }
 
     private constructInputList(list: string[]): itemBase[] {
@@ -174,10 +146,9 @@ export default class CreateTemplate extends Component<
         });
     }
 
-    private get form(): newTaskFormData {
+    private get form(): templateFormData {
         return {
             formName: this.state.formName,
-            formHashlistName: this.state.formHashlistName,
             formAttackModeId: this.state.formAttackModeId,
             formCpuOnly: this.state.formCpuOnly,
             formRuleName: this.state.formRuleName,
@@ -229,7 +200,7 @@ export default class CreateTemplate extends Component<
             }
             this.setState({
                 [target.name]: value,
-            } as Pick<newTaskFormData, keyof newTaskFormData>);
+            } as Pick<templateFormData, keyof templateFormData>);
         }
     };
 
@@ -247,12 +218,6 @@ export default class CreateTemplate extends Component<
             formHasErrors: this.inputsError.hasErrors,
         });
         if (!this.inputsError.hasErrors) {
-            const templateTask = this.state.templateTasks.find(templateTask => {
-                return templateTask.id === this.state.templateTaskCheckBoxId;
-            });
-            const hashList = this.state.hashlist.find(hashlist => {
-                return hashlist.name === this.state.formHashlistName;
-            });
             const options: ApiOptionsFormData = {
                 attackModeId: this.state.formAttackModeId,
                 breakpointGPUTemperature:
@@ -262,80 +227,36 @@ export default class CreateTemplate extends Component<
                 kernelOpti: this.state.formKernelOpti,
                 CPUOnly: this.state.formCpuOnly,
             };
-            if (hashList && templateTask) {
-                this.submitForm({
-                    name: this.state.formName,
-                    description: 'test',
-                    hashlistId: hashList.id,
-                    templateTaskId: templateTask.id,
-                    options,
-                });
-            } else if (hashList && this.form.formWordlistName.length > 0) {
-                this.submitForm({
-                    name: this.state.formName,
-                    description: 'test',
-                    hashlistId: hashList.id,
-                    options,
-                });
-            } else {
-                //TODO No reference found
-            }
+            this.submitForm({
+                name: this.state.formName,
+                description: 'test',
+                options,
+            });
         }
     };
 
-    private submitForm(form: ApiTaskFormData): void {
-        // const requestOptions = {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(form),
-        //     ...Constants.mandatoryFetchOptions,
-        // };
+    private submitForm(form: ApiTemplateFormData): void {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(form),
+            ...Constants.mandatoryFetchOptions,
+        };
+        console.log(requestOptions);
+        this.props.handleTemplateCreation('SUCEESSS', false);
         // fetch(Constants.apiPOSTCreateTemplate, requestOptions)
         //     .then(response => {
         //         return response.json();
         //     })
         //     .then(res => {
+        //         console.log(res);
         //         if (res.success) {
-        //             this.state.handleTaskCreationAdded();
+        //             this.props.handleTemplateCreation(res.message, false);
         //         } else {
-        //             this.state.handleTaskCreationError();
+        //             this.props.handleTemplateCreation(res.error, true);
         //         }
         //         this.state.toggleNewTask();
         //     });
-    }
-
-    private handleTemplateTaskCheckbox(event) {
-        if (this.state.templateCheckboxIsChecked) {
-            this.setState({
-                templateTaskCheckBoxId: -1,
-                templateCheckboxIsChecked:
-                    !this.state.templateCheckboxIsChecked,
-                ...defaultFormData,
-            });
-        } else {
-            const templateId = parseInt(event.target.name);
-            const template = this.state.templateTasks.find(template => {
-                return template.id === templateId;
-            });
-            if (template) {
-                this.setState({
-                    templateTaskCheckBoxId: templateId,
-                    templateCheckboxIsChecked:
-                        !this.state.templateCheckboxIsChecked,
-                    formAttackModeId: template.options.attackModeId.id,
-                    formCpuOnly: template.options.CPUOnly,
-                    formRuleName: template.options.ruleName || '',
-                    formMaskQuery: template.options.maskQuery || '',
-                    formPotfileName: template.options.potfileName || '',
-                    formKernelOpti: template.options.kernelOpti,
-                    formWordlistName: template.options.wordlistId.name,
-                    formWorkloadProfile:
-                        template.options.workloadProfileId.profileId,
-                    formBreakpointGPUTemperature:
-                        template.options.breakpointGPUTemperature,
-                });
-            }
-        }
     }
 
     private toggleHashlistCreation = () => {
@@ -387,25 +308,160 @@ export default class CreateTemplate extends Component<
 
     private nextFormStep = () => {
         this.setState({
-            userFormStep: this.state.userFormStep + 1,
+            activePage: this.state.activePage + 1,
         });
     };
 
-    private setCorrectStep(): void {
-        if (this.state.formAttackModeId < 0 || this.state.userFormStep === 0) {
-            location.href = '#' + this.stepOne;
-            if (this.state.userFormStep !== 0) {
-                this.setState({
-                    userFormStep: 0,
-                });
-            }
-        } else if (
-            this.state.formAttackModeId > 0 &&
-            this.state.userFormStep > 0
-        ) {
-            location.href = '#' + this.stepTwo;
-        } else {
-            location.href = '';
-        }
+    private prevFormStep = () => {
+        this.setState({
+            activePage: this.state.activePage - 1,
+        });
+    };
+
+    private get attackModeType() {
+        const attackModes = this.state.attackModes.find(
+            attackModes => attackModes.id === this.state.formAttackModeId
+        );
+        return attackModes?.mode || 0;
     }
+
+    private Buttons = () => {
+        if (this.state.activePage === 0) {
+            return (
+                <Button
+                    type="button"
+                    className="submitInputCreateTask"
+                    onClick={this.nextFormStep}
+                >
+                    Next
+                </Button>
+            );
+        } else if (this.state.activePage === 1) {
+            return (
+                <div className="submitInputCreateTask buttonNextAndPrevDiv">
+                    <Button type="button" onClick={this.prevFormStep}>
+                        previous
+                    </Button>
+                    <Button
+                        type="submit"
+                        onClick={(e: unknown) =>
+                            this.handleSubmit(e as FormEvent<HTMLFormElement>)
+                        }
+                    >
+                        Create template
+                    </Button>
+                </div>
+            );
+        } else {
+            return (
+                <div className="submitInputCreateTask buttonNextAndPrevDiv">
+                    <Button type="button" onClick={this.prevFormStep}>
+                        previous
+                    </Button>
+                    <Button
+                        type="submit"
+                        onClick={(e: unknown) =>
+                            this.handleSubmit(e as FormEvent<HTMLFormElement>)
+                        }
+                    >
+                        Create template
+                    </Button>
+                </div>
+            );
+        }
+    };
+
+    private PageTwo = () => {
+        const inputOptions = {
+            state: this.state,
+            handleInputChange: this.handleInputChange,
+        };
+        switch (this.attackModeType) {
+            case 0:
+                return (
+                    <>
+                        <InputWordlist {...inputOptions} />
+                        <InputRules {...inputOptions} />
+                        <InputPotfiles {...inputOptions} />
+                    </>
+                );
+            case 1:
+                return (
+                    <>
+                        <InputWordlist {...inputOptions} />
+                        <InputRules {...inputOptions} />
+                        <InputPotfiles {...inputOptions} />
+                    </>
+                );
+            case 3:
+                return (
+                    <>
+                        <InputWordlist {...inputOptions} />
+                        <InputRules {...inputOptions} />
+                        <InputPotfiles {...inputOptions} />
+                    </>
+                );
+            case 6:
+                return (
+                    <>
+                        <InputWordlist {...inputOptions} />
+                        <InputRules {...inputOptions} />
+                        <InputPotfiles {...inputOptions} />
+                    </>
+                );
+            case 7:
+                return (
+                    <>
+                        <InputWordlist {...inputOptions} />
+                        <InputRules {...inputOptions} />
+                        <InputPotfiles {...inputOptions} />
+                    </>
+                );
+            case 9:
+                return (
+                    <>
+                        <InputWordlist {...inputOptions} />
+                        <InputRules {...inputOptions} />
+                        <InputPotfiles {...inputOptions} />
+                    </>
+                );
+            default:
+                return (
+                    <>
+                        <InputWordlist {...inputOptions} />
+                        <InputRules {...inputOptions} />
+                        <InputPotfiles {...inputOptions} />
+                    </>
+                );
+        }
+    };
+
+    private Pages = () => {
+        if (this.state.activePage === 0) {
+            const inputAttackModesProps = {
+                state: this.state,
+                handleInputChange: this.handleInputChange,
+                biggerFonts: true,
+            };
+            return (
+                <div
+                    className={`sectionTemplate contentTopCenter ${
+                        this.state.activePage === 0 ? 'active' : 'inactive'
+                    }`}
+                >
+                    <InputAttackModes {...inputAttackModesProps} />
+                </div>
+            );
+        } else {
+            return (
+                <div
+                    className={`flexColumn alignCenter width100P ${
+                        this.state.activePage === 1 ? 'active' : 'inactive'
+                    }`}
+                >
+                    <this.PageTwo />
+                </div>
+            );
+        }
+    };
 }

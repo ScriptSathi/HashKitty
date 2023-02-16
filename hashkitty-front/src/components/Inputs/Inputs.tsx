@@ -158,7 +158,7 @@ export const InputWordlist = ({
             <p
                 className={
                     state.formHasErrors &&
-                    state.inputsErrorCheck.formName.isError
+                    state.inputsErrorCheck.formWordlistName.isError
                         ? 'isError noMargin'
                         : 'hideBlock noMargin'
                 }

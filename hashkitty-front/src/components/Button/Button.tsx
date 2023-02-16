@@ -1,4 +1,4 @@
-import React, { CSSProperties, Component } from 'react';
+import React, { CSSProperties, Component, HTMLAttributes } from 'react';
 import './Button.scss';
 
 type ButtonProps = {
@@ -7,37 +7,31 @@ type ButtonProps = {
     className?: string | undefined;
     name?: string | undefined;
     style?: CSSProperties | undefined;
-    onClick?: () => void;
-};
+} & HTMLAttributes<HTMLButtonElement>;
 
 type ButtonState = {};
 
 export default class Button extends Component<ButtonProps, ButtonState> {
     public render() {
+        const {
+            children,
+            type = 'button',
+            className = '',
+            name,
+            style,
+            ...otherProps
+        } = this.props;
         return (
-            <div {...this.attrRoot}>
-                <button {...this.attrButton}>
-                    {this.props.children || 'button'}
+            <div className={className} style={style}>
+                <button
+                    {...otherProps}
+                    type={type}
+                    className="button"
+                    name={name}
+                >
+                    {children || 'button'}
                 </button>
             </div>
         );
-    }
-
-    private get attrButton(): Partial<
-        React.ButtonHTMLAttributes<HTMLButtonElement>
-    > {
-        return {
-            type: this.props.type ? this.props.type : 'button',
-            className: 'button',
-            name: this.props.name ? this.props.name : undefined,
-        };
-    }
-
-    private get attrRoot(): React.HTMLAttributes<HTMLDivElement> {
-        return {
-            className: this.props.className ? this.props.className : '',
-            style: this.props.style ? this.props.style : {},
-            onClick: this.props.onClick ? this.props.onClick : () => {},
-        };
     }
 }

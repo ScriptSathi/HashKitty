@@ -12,6 +12,8 @@ export type newTaskFormData = {
     formBreakpointGPUTemperature: number;
 };
 
+export type templateFormData = Omit<newTaskFormData, 'formHashlistName'>;
+
 export type newTHashlistFormData = {
     formHashlist?: File;
     formName: string;
@@ -24,6 +26,12 @@ export type ApiTaskFormData = {
     hashlistId: number;
     id?: number;
     templateTaskId?: number;
+    options: ApiOptionsFormData;
+};
+
+export type ApiTemplateFormData = {
+    name: string;
+    description: string;
     options: ApiOptionsFormData;
 };
 

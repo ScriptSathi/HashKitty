@@ -132,6 +132,7 @@ export default class EndedTaskCard extends Component<
                 .then(() => {
                     setTimeout(() => this.props.handleRefreshTasks(), 100);
                     //Delay is needed here to let the server update itself
+                    //TODO fail to delete
                 });
         }
     }
