@@ -11,6 +11,7 @@ export type ReceivedRequest<Body extends { [key: string]: unknown } = {}> =
 export type ResponseSend = Response<ResponseAttr>;
 
 export type ResponseAttr = {
+    message: string;
     success?: unknown;
     status?: Partial<THashcatStatus>;
     passwds?: string[];
