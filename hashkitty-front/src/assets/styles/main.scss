@@ -67,6 +67,10 @@ body {
     margin: 0px;
 }
 
+.block {
+    display: block;
+}
+
 .hideBlock { 
     visibility: hidden;
 }
@@ -78,6 +82,10 @@ body {
 
 .marginBottom20 {
     margin-bottom: 20px;
+}
+
+.noMarginBottom {
+    margin-bottom: 0px;
 }
 
 .fontMedium {

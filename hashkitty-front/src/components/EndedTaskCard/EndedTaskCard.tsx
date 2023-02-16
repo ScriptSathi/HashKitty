@@ -4,16 +4,16 @@ import duration from 'humanize-duration';
 import { TTask } from '../../types/TypesORM';
 import '../../assets/styles/main.scss';
 import './EndedTaskCard.scss';
-import trash from '../../assets/images/trash.svg';
+
 import resultsLogo from '../../assets/images/results.png';
 import { Constants } from '../../Constants';
 import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
 import ResultsCard from '../ResultsCard/ResultsCard';
 import Card from '../Card/Card';
+import DeleteButton from '../DeleteButton/DeleteButton';
 
 type EndedTaskCardState = {
     moreDetailsClicked: boolean;
-    clickedRunTask: boolean;
     onErrorStart: string;
     isRunning: boolean;
     isMouseOverResultBtn: boolean;
@@ -33,7 +33,6 @@ export default class EndedTaskCard extends Component<
     public state: EndedTaskCardState = {
         moreDetailsClicked: false,
         toggledResults: false,
-        clickedRunTask: this.props.isRunning,
         isRunning: this.props.isRunning,
         onErrorStart: '',
         endedSince: 'Unknown',
@@ -41,7 +40,6 @@ export default class EndedTaskCard extends Component<
     };
 
     private interval: number;
-    private displayedLogo = trash;
 
     public componentDidMount() {
         this.setNewDurationTime();
@@ -82,12 +80,13 @@ export default class EndedTaskCard extends Component<
                         Nb of cracked passwords:{' '}
                         {this.props.hashlistId.numberOfCrackedPasswords}
                     </p>
-                    <div className="deleteButton">
-                        <img
-                            className="deleteTask"
-                            onClick={this.onClickDeleteTask}
-                            src={this.displayedLogo}
-                            alt="Logo"
+                    <div className="cardDeleteButton">
+                        <DeleteButton
+                            apiEndpoint={Constants.apiPOSTDeleteTasks}
+                            idToDelete={this.props.id}
+                            handleRefreshAfterDelete={
+                                this.props.handleRefreshTasks
+                            }
                         />
                     </div>
                 </div>
@@ -119,33 +118,11 @@ export default class EndedTaskCard extends Component<
         });
     }
 
-    private fetchDeleteTask(isClicked: boolean): void {
-        if (isClicked) {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: this.props.id }),
-                ...Constants.mandatoryFetchOptions,
-            };
-            fetch(Constants.apiPOSTDeleteTasks, requestOptions)
-                .then(response => response.json())
-                .then(() => {
-                    setTimeout(() => this.props.handleRefreshTasks(), 100);
-                    //Delay is needed here to let the server update itself
-                    //TODO fail to delete
-                });
-        }
-    }
-
     private displayResults = () => {
         this.props.toggleDisplayResults();
         this.setState({
             toggledResults: !this.state.toggledResults,
         });
-    };
-
-    private onClickDeleteTask: () => void = () => {
-        this.fetchDeleteTask(!this.state.clickedRunTask);
     };
 
     private renderTaskInfo = () => {

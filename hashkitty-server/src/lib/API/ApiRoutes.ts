@@ -27,23 +27,14 @@ export class ApiRouter {
         this.router.get('/hashtypes', this.routeHandler.getHashTypes);
         this.router.get('/reload-wordlists', this.routeHandler.reloadWordlists);
         this.router.get('/rules', this.routeHandler.getFilesInRulesDir);
-        this.router.post(
-            '/templatetasks',
-            this.routeHandler.updateTemplateTask
-        );
-        this.router.post(
-            '/templatetasks/delete',
-            this.routeHandler.deleteTemplateTask
-        );
+        this.router.post('/template', this.routeHandler.updateTemplateTask);
+        this.router.post('/template/delete', this.routeHandler.deleteTemplate);
         this.router.post('/tasks', this.routeHandler.updateTask);
         this.router.post('/tasks/delete', this.routeHandler.deleteTask);
         this.router.post('/hashlist', this.routeHandler.addHashlist);
         this.router.post('/hashlist/delete', this.routeHandler.deleteHashlist);
-        this.router.get(
-            '/templateTasks/:id',
-            this.routeHandler.getTemplateTaskById
-        );
-        this.router.get('/templatetasks', this.routeHandler.getTemplateTasks);
+        this.router.get('/template/:id', this.routeHandler.getTemplateById);
+        this.router.get('/template', this.routeHandler.getTemplate);
         this.router.get('/tasks', this.routeHandler.getTasks);
         this.router.get('/tasks/:id', this.routeHandler.getTaskById);
         this.router.post('/results', this.routeHandler.taskResults);
