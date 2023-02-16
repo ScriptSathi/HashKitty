@@ -7,12 +7,7 @@ import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { Dao } from './DAOs/Dao';
 import { TTask } from '../types/TApi';
-import {
-    AddHashlist,
-    UploadFile,
-    TaskUpdate,
-    TemplateTaskUpdate,
-} from '../types/TRoutes';
+import { AddHashlist, TaskUpdate, TemplateTaskUpdate } from '../types/TRoutes';
 import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
 import { UploadedFile } from 'express-fileupload';
@@ -282,14 +277,14 @@ export class RouteHandler {
         console.dir(req.files); //TODO
     };
 
-    public deleteTemplateTask = async (
+    public deleteTemplate = async (
         req: ReceivedRequest,
         res: ResponseSend
     ): Promise<void> => {
         const id = (req.body.id && parseInt(req.body.id)) || undefined;
-        if (id && (await this.dao.taskExistById(id))) {
+        if (id && (await this.dao.templateTaskExistById(id))) {
             try {
-                const message = `Task deleted with id ${id} deleted successfully`;
+                const message = `Template deleted with id ${id} deleted successfully`;
                 res.status(200).json({
                     success: this.dao.templateTask.deleteById(id),
                     message,
@@ -297,7 +292,7 @@ export class RouteHandler {
                 logger.info(message);
             } catch (err) {
                 logger.error(
-                    `An error occured while trying to delete template task: ${err}`
+                    `An error occured while trying to delete template : ${err}`
                 );
                 res.status(200).json({
                     message: Dao.UnexpectedError,
@@ -307,7 +302,7 @@ export class RouteHandler {
         } else {
             this.responseFail(
                 res,
-                `There is no tasks with id ${id || 'undefined'}`,
+                `There is no template with id ${id || 'undefined'}`,
                 'delete'
             );
         }
@@ -323,12 +318,12 @@ export class RouteHandler {
             if (sanitizer.hasSucceded) {
                 let message = '';
                 if (sanitizer.isAnUpdate) {
-                    message = `Template task "${req.body.name}" updated successfully`;
+                    message = `Template "${req.body.name}" updated successfully`;
                     logger.info(
-                        `Template task ${req.body.id} "${req.body.name}" updated successfully`
+                        `Template ${req.body.id} "${req.body.name}" updated successfully`
                     );
                 } else {
-                    message = 'New template task created successfully';
+                    message = 'New template created successfully';
                     logger.info(message);
                 }
                 res.status(200).json({
@@ -355,7 +350,7 @@ export class RouteHandler {
         }
     };
 
-    public getTemplateTasks = async (
+    public getTemplate = async (
         _: ReceivedRequest,
         res: ResponseSend
     ): Promise<void> => {
@@ -373,7 +368,7 @@ export class RouteHandler {
         }
     };
 
-    public getTemplateTaskById = async (
+    public getTemplateById = async (
         req: ReceivedRequest<ReqID>,
         res: ResponseSend
     ): Promise<void> => {

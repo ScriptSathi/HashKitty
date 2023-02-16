@@ -403,7 +403,7 @@ export default class CreateTask extends Component<
             Constants.apiGetHashlists
         );
         const templateTasks = await Utils.fetchListWithEndpoint<TemplateTask>(
-            Constants.apiGetTemplateTasks
+            Constants.apiGetTemplate
         );
         const rules = await Utils.fetchListWithEndpoint<string>(
             Constants.apiGetRules

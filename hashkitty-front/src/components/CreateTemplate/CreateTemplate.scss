@@ -59,12 +59,18 @@
 }
 
 .templateCardGrid {
-    width: 80%;
-    // margin-left: 10%;
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(450px, 3fr));
-    // grid-template-rows: repeat(5, minmax(450px, auto)); 
-    // grid-template-columns: repeat(auto-fill, minmax(3, 1fr));;
-    // grid-template-rows: repeat(auto-fill, minmax(5, 1fr));;
-    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 4fr));
+    grid-gap: 10px;
+}
+
+.sizingTemplateCard {
+    height: 170px;
+    width: 80%;
+}
+
+.templateDeleteButton {
+    margin-top: 10px;
+    margin-right: 30px;
 }

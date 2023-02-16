@@ -7,6 +7,7 @@ import Card from '../../components/Card/Card';
 import CreateTemplate from '../../components/CreateTemplate/CreateTemplate';
 import { Constants } from '../../Constants';
 import { TemplateTask } from '../../types/TypesORM';
+import DeleteButton from '../../components/DeleteButton/DeleteButton';
 
 type TemplateState = {
     createTemplateToggle: boolean;
@@ -63,36 +64,58 @@ export default class Template extends Component<TemplateProps, TemplateState> {
     }
 
     private TemplateCards = () => {
-        const hashTypeName =
-            'this.props.hashlistId.hashTypeId.name'.length > 20
-                ? 'this.props.hashlistId.hashTypeId.name'.substring(0, 20) +
-                  '...'
-                : 'this.props.hashlistId.hashTypeId.name';
+        function shorten(str: string): string {
+            return str.length > 20 ? str.substring(0, 15) + '...' : str;
+        }
         return (
             <>
                 {this.state.templates.map(template => (
-                    <Card key={template.id}>
-                        <div className="topPart">
-                            <div className="topLeftPart">
-                                <p className="taskName">{template.name}</p>
-                                <div className="taskSoftInfos">
-                                    <p>
-                                        {`${template.options.attackModeId.mode} - ${template.options.attackModeId.name}`}
-                                        <br />
-                                        this.props.templateTaskId ?
-                                        this.props.templateTaskId.name : ''
-                                        <br />
-                                        this.props.hashlistId.name
-                                        <br />
-                                        this.props.options.wordlistId.name
-                                        <br />
-                                    </p>
+                    <Card key={template.id} smallCard>
+                        <div className="topLeftPart">
+                            <div className="grid gridColumn3-1">
+                                <p className="taskName marginBottom5">
+                                    {shorten(template.name)}
+                                </p>
+                                <div className="templateDeleteButton">
+                                    <DeleteButton
+                                        apiEndpoint={
+                                            Constants.apiPOSTDeleteTemplate
+                                        }
+                                        idToDelete={template.id}
+                                        handleRefreshAfterDelete={
+                                            this.refreshTemplates
+                                        }
+                                    />
                                 </div>
                             </div>
-                        </div>
-                        <div className="bottomBox">
-                            <div>
-                                <p className="bottomBoxText">Mistery Data</p>
+                            <div className="taskSoftInfos sizingTemplateCard">
+                                <p className="noMarginBottom">{`${template.options.attackModeId.mode} - ${template.options.attackModeId.name}`}</p>
+                                <p className="noMargin">
+                                    <strong>Wordlist :</strong>{' '}
+                                    {template.options.wordlistId.name}
+                                </p>
+                                <p className="noMargin">
+                                    {template.options.potfileName &&
+                                    template.options.potfileName?.length > 0 ? (
+                                        <>
+                                            <strong>Potfile :</strong>{' '}
+                                            {template.options.potfileName}
+                                        </>
+                                    ) : (
+                                        ''
+                                    )}
+                                </p>
+                                <p className="noMargin">
+                                    {template.options.ruleName &&
+                                    template.options.ruleName?.length > 0 ? (
+                                        <>
+                                            <strong>Rule :</strong>{' '}
+                                            {template.options.ruleName}
+                                        </>
+                                    ) : (
+                                        ''
+                                    )}
+                                </p>
                             </div>
                         </div>
                     </Card>
@@ -136,7 +159,7 @@ export default class Template extends Component<TemplateProps, TemplateState> {
             ((
                 await (
                     await fetch(
-                        Constants.apiGetTemplateTasks,
+                        Constants.apiGetTemplate,
                         Constants.mandatoryFetchOptions
                     )
                 ).json()
@@ -145,4 +168,8 @@ export default class Template extends Component<TemplateProps, TemplateState> {
             templates,
         });
     }
+
+    private refreshTemplates = () => {
+        this.loadTemplates();
+    };
 }
