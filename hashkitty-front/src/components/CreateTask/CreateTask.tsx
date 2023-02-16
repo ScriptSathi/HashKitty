@@ -83,6 +83,10 @@ export default class CreateTask extends Component<
     }
 
     public render() {
+        const inputOptions = {
+            state: this.state,
+            handleInputChange: this.handleInputChange,
+        };
         return (
             <div>
                 <BackgroundBlur
@@ -108,18 +112,10 @@ export default class CreateTask extends Component<
                                 >
                                     <div className="mandatoryBody">
                                         <div>
-                                            <InputName
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
+                                            <InputName {...inputOptions} />
                                             <br />
                                             <InputHashlist
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
+                                                {...inputOptions}
                                                 buttonClick={
                                                     this.toggleHashlistCreation
                                                 }
@@ -154,34 +150,16 @@ export default class CreateTask extends Component<
                                         }
                                     >
                                         <div>
-                                            <InputRules
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
+                                            <InputRules {...inputOptions} />
                                             <br />
-                                            <InputWordlist
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
+                                            <InputWordlist {...inputOptions} />
                                             <br />
                                             <br />
                                             <InputWorkloadProfiles
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
+                                                {...inputOptions}
                                             />
                                             <br />
-                                            <InputCPUOnly
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
+                                            <InputCPUOnly {...inputOptions} />
                                             <br />
                                             <InputKernelOpti
                                                 state={this.state}
@@ -191,24 +169,13 @@ export default class CreateTask extends Component<
                                             />
                                         </div>
                                         <div className="advancedConfigsDivLeft">
-                                            <InputPotfiles
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
+                                            <InputPotfiles {...inputOptions} />
                                             <InputAttackModes
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
+                                                {...inputOptions}
                                             />
                                             <br />
                                             <InputBreakpointTemp
-                                                state={this.state}
-                                                handleInputChange={
-                                                    this.handleInputChange
-                                                }
+                                                {...inputOptions}
                                             />
                                         </div>
                                     </div>

@@ -10,7 +10,7 @@ import { TemplateTask } from '../../types/TypesORM';
 
 type TemplateState = {
     createTemplateToggle: boolean;
-    templateCreationAdded: boolean;
+    templateCreationMessage: JSX.Element;
     templateCreationError: boolean;
     templates: TemplateTask[];
 };
@@ -22,7 +22,7 @@ export default class Template extends Component<TemplateProps, TemplateState> {
         super(props);
         this.state = {
             createTemplateToggle: false,
-            templateCreationAdded: false,
+            templateCreationMessage: <></>,
             templateCreationError: false,
             templates: [],
         };
@@ -33,13 +33,11 @@ export default class Template extends Component<TemplateProps, TemplateState> {
     }
 
     public render() {
-        // if (!this.state.createTemplateToggle) {
-        //     location.href = '';
-        // }
         return (
             <Frame
                 className={this.state.createTemplateToggle ? 'lockScreen' : ''}
             >
+                {this.state.templateCreationMessage}
                 <div className="Title">
                     <div className="divGridSplit TitleWidth">
                         <p className="noMarginTop">Templates</p>
@@ -48,17 +46,14 @@ export default class Template extends Component<TemplateProps, TemplateState> {
                         </Button>
                     </div>
                 </div>
-                <div className="tasksBody">
-                    <this.TemplateCards />
+                <div className="flex alignCenter">
+                    <div className="templateCardGrid ">
+                        <this.TemplateCards />
+                    </div>
                 </div>
                 <div id="blur">
                     <CreateTemplate
-                        handleTaskCreationAdded={
-                            this.handleTemplateCreationAdded
-                        }
-                        handleTaskCreationError={
-                            this.handleTemplateCreationError
-                        }
+                        handleTemplateCreation={this.handleTemplateCreation}
                         toggleNewTask={this.toggleCreateTemplate}
                         isToggled={this.state.createTemplateToggle}
                     />
@@ -74,7 +69,7 @@ export default class Template extends Component<TemplateProps, TemplateState> {
                   '...'
                 : 'this.props.hashlistId.hashTypeId.name';
         return (
-            <div>
+            <>
                 {this.state.templates.map(template => (
                     <Card key={template.id}>
                         <div className="topPart">
@@ -102,7 +97,7 @@ export default class Template extends Component<TemplateProps, TemplateState> {
                         </div>
                     </Card>
                 ))}
-            </div>
+            </>
         );
     };
 
@@ -115,25 +110,23 @@ export default class Template extends Component<TemplateProps, TemplateState> {
             : (document.body.style.overflow = 'hidden');
     };
 
-    private handleTemplateCreationAdded = () => {
+    private handleTemplateCreation = (message: string, isError = false) => {
         this.setState({
-            templateCreationAdded: true,
+            templateCreationMessage: (
+                <p
+                    className={`fontMedium creationTaskStatusMessage ${
+                        isError ? 'colorRed' : 'colorGreen'
+                    }`}
+                >
+                    {message}
+                </p>
+            ),
         });
+        this.toggleCreateTemplate();
         this.loadTemplates();
         setTimeout(() => {
             this.setState({
-                templateCreationAdded: false,
-            });
-        }, 5000);
-    };
-
-    private handleTemplateCreationError = () => {
-        this.setState({
-            templateCreationError: true,
-        });
-        setTimeout(() => {
-            this.setState({
-                templateCreationError: false,
+                templateCreationMessage: <></>,
             });
         }, 5000);
     };
