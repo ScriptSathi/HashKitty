@@ -50,12 +50,13 @@ export class RouteHandler {
                 (await this.dao.task.getById(id)) as unknown as TTask
             );
             res.status(200).json({
-                success: 'Hashcat has started successfully',
+                message: 'Hashcat has started successfully',
+                success: true,
             });
         } catch (err) {
             logger.error(`An error occured while trying to start task: ${err}`);
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -73,14 +74,15 @@ export class RouteHandler {
                         (await this.dao.task.getById(id)) as unknown as TTask
                     );
                     res.status(200).json({
-                        success: 'Hashcat has beed restored successfully',
+                        message: 'Hashcat has beed restored successfully',
+                        success: true,
                     });
                 } catch (err) {
                     logger.error(
                         `An error occured while trying to restore task: ${err}`
                     );
                     res.status(200).json({
-                        fail: Dao.UnexpectedError,
+                        message: Dao.UnexpectedError,
                         error: `[ERROR]: ${err}`,
                     });
                 }
@@ -98,6 +100,7 @@ export class RouteHandler {
 
     public getHashcatStatus = (_: ReceivedRequest, res: ResponseSend): void => {
         res.status(200).json({
+            message: '',
             status: this.hashcat.status,
         });
     };
@@ -106,12 +109,13 @@ export class RouteHandler {
         if (this.hashcat.isRunning) {
             this.hashcat.stop();
             res.status(200).json({
-                success: 'Hashcat stopped successfully',
+                message: 'Hashcat stopped successfully',
+                success: true,
             });
         } else {
             res.status(200).json({
                 status: {},
-                fail: 'Hashcat is not running',
+                message: 'Hashcat is not running',
             });
         }
     };
@@ -126,7 +130,8 @@ export class RouteHandler {
                 this.dao.task.deleteById(id);
                 const respMessage = `Task deleted with id ${id} deleted successfully`;
                 res.status(200).json({
-                    success: respMessage,
+                    message: respMessage,
+                    success: true,
                 });
                 logger.info(respMessage);
             } catch (err) {
@@ -134,7 +139,7 @@ export class RouteHandler {
                     `An error occured while trying to delete task: ${err}`
                 );
                 res.status(200).json({
-                    fail: Dao.UnexpectedError,
+                    message: Dao.UnexpectedError,
                     error: `[ERROR]: ${err}`,
                 });
             }
@@ -155,14 +160,20 @@ export class RouteHandler {
             const sanitizer = new Sanitizer(this.dao);
             await sanitizer.analyseTask(req.body);
             if (sanitizer.hasSucceded) {
+                let message = '';
+                if (sanitizer.isAnUpdate) {
+                    logger.info(
+                        `Task ${req.body.id} "${req.body.name}" updated successfully`
+                    );
+                    message = `Task "${req.body.name}" updated successfully`;
+                } else {
+                    message = 'New task created successfully';
+                    logger.info(message);
+                }
                 res.status(200).json({
+                    message,
                     success: await this.dao.task.create(sanitizer.getTask()),
                 });
-                sanitizer.isAnUpdate
-                    ? logger.info(
-                          `Task ${req.body.id} "${req.body.name}" updated successfully`
-                      )
-                    : logger.info('New task created successfully');
             } else {
                 this.responseFail(
                     res,
@@ -175,7 +186,7 @@ export class RouteHandler {
                 `An error occured while trying to create task: ${err}`
             );
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -190,13 +201,13 @@ export class RouteHandler {
         await sanitizer.analyseHashlist(body);
         if (!body || !req.files || Object.keys(req.files).length === 0) {
             res.status(400).json({
-                fail: 'No files were uploaded.',
+                message: 'No files were uploaded.',
             });
             return;
         }
         if (!sanitizer.hasSucceded) {
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${sanitizer.errorMessage}`,
             });
             return;
@@ -212,10 +223,14 @@ export class RouteHandler {
             await this.dao.hashlist.update(hashlist);
             res.status(200).json({
                 success: respMessage,
+                message: respMessage,
             });
             logger.info(respMessage);
         } catch (err) {
-            res.status(500).json({ error: err });
+            res.status(500).json({
+                error: err,
+                message: 'An error occurred',
+            });
             logger.error(err);
         }
     };
@@ -227,7 +242,7 @@ export class RouteHandler {
         if (!req.body.filename) {
             res.status(400).json({
                 passwds: [],
-                fail: 'You need to submit the filename',
+                message: 'You need to submit the filename',
             });
             return;
         }
@@ -241,12 +256,13 @@ export class RouteHandler {
                 .filter(line => line);
             res.status(200).json({
                 passwds: taskResults,
+                message: '',
             });
         } catch (err) {
             logger.debug(err);
             res.status(400).json({
                 passwds: [],
-                fail: `file ${req.body.filename} does not exist`,
+                message: `file ${req.body.filename} does not exist`,
             });
         }
     };
@@ -273,16 +289,18 @@ export class RouteHandler {
         const id = (req.body.id && parseInt(req.body.id)) || undefined;
         if (id && (await this.dao.taskExistById(id))) {
             try {
+                const message = `Task deleted with id ${id} deleted successfully`;
                 res.status(200).json({
                     success: this.dao.templateTask.deleteById(id),
+                    message,
                 });
-                logger.info(`Task deleted with id ${id} deleted successfully`);
+                logger.info(message);
             } catch (err) {
                 logger.error(
                     `An error occured while trying to delete template task: ${err}`
                 );
                 res.status(200).json({
-                    fail: Dao.UnexpectedError,
+                    message: Dao.UnexpectedError,
                     error: `[ERROR]: ${err}`,
                 });
             }
@@ -303,16 +321,22 @@ export class RouteHandler {
             const sanitizer = new Sanitizer(this.dao);
             await sanitizer.analyseTemplateTask(req.body);
             if (sanitizer.hasSucceded) {
+                let message = '';
+                if (sanitizer.isAnUpdate) {
+                    message = `Template task "${req.body.name}" updated successfully`;
+                    logger.info(
+                        `Template task ${req.body.id} "${req.body.name}" updated successfully`
+                    );
+                } else {
+                    message = 'New template task created successfully';
+                    logger.info(message);
+                }
                 res.status(200).json({
+                    message,
                     success: await this.dao.templateTask.create(
                         sanitizer.getTemplateTask()
                     ),
                 });
-                sanitizer.isAnUpdate
-                    ? logger.info(
-                          `Template task ${req.body.id} "${req.body.name}" updated successfully`
-                      )
-                    : logger.info('New template task created successfully');
             } else {
                 this.responseFail(
                     res,
@@ -325,7 +349,7 @@ export class RouteHandler {
                 `An error occured while trying to create task: ${err}`
             );
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -337,12 +361,13 @@ export class RouteHandler {
     ): Promise<void> => {
         try {
             res.status(200).json({
+                message: '',
                 success: await this.dao.templateTask.getAll(),
             });
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -364,12 +389,13 @@ export class RouteHandler {
         }
         try {
             res.status(200).json({
+                message: '',
                 success: await this.dao.templateTask.getById(id),
             });
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -381,12 +407,13 @@ export class RouteHandler {
     ): Promise<void> => {
         try {
             res.status(200).json({
+                message: '',
                 success: await this.dao.task.getAll(),
             });
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -400,12 +427,13 @@ export class RouteHandler {
         if (id && (await this.dao.taskExistById(id))) {
             try {
                 res.status(200).json({
+                    message: '',
                     success: await this.dao.task.getById(id),
                 });
             } catch (err) {
                 logger.error(err);
                 res.status(200).json({
-                    fail: Dao.UnexpectedError,
+                    message: Dao.UnexpectedError,
                     error: `[ERROR]: ${err}`,
                 });
             }
@@ -420,12 +448,13 @@ export class RouteHandler {
     ): Promise<void> => {
         try {
             res.status(200).json({
+                message: '',
                 success: await this.dao.hashlist.getAll(),
             });
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -437,12 +466,13 @@ export class RouteHandler {
     ): Promise<void> => {
         try {
             res.status(200).json({
+                message: '',
                 success: await this.dao.attackMode.getAll(),
             });
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -454,12 +484,13 @@ export class RouteHandler {
     ): Promise<void> => {
         try {
             res.status(200).json({
+                message: '',
                 success: await this.dao.hashType.getAll(),
             });
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -473,12 +504,13 @@ export class RouteHandler {
             await this.dao.reloadWordlistInDB();
             await this.dao.reloadHashlistInDB();
             res.status(200).json({
+                message: '',
                 success: 'Update successfully',
             });
         } catch (err) {
             logger.error(err);
             res.status(200).json({
-                fail: Dao.UnexpectedError,
+                message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
         }
@@ -509,15 +541,18 @@ export class RouteHandler {
         try {
             const files = FsUtils.listFileInDir(dirPath);
             res.json({
+                message: '',
                 success: files,
             });
         } catch (e) {
             logger.error(
                 `An error occured while reading dir ${dirPath} - Error: ${e}`
             );
+            const msgError = `An error occured while reading dir ${dirPath}`;
             res.status(200).json({
+                message: msgError,
                 error: {
-                    name: `An error occured while reading dir ${dirPath}`,
+                    name: msgError,
                     message: e || 'No message error',
                 },
             });
@@ -531,7 +566,7 @@ export class RouteHandler {
         entity = 'task'
     ) {
         res.status(200).json({
-            fail: message,
+            message,
         });
         logger.debug(`Fail to ${job} ${entity}`);
         logger.debug(`Message: ${message}`);
