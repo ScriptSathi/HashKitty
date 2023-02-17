@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Component, FormEvent } from 'react';
 
-import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
+import BackgroundBlur from '../ui/BackgroundBlur/BackGroundBlur';
 import './ImportList.scss';
 import { Utils } from '../../Utils';
 import { newTHashlistFormData } from '../../types/TComponents';
@@ -10,8 +10,8 @@ import { newHashlistInputsError } from '../../types/TErrorHandling';
 import { InputHashtypes, InputName } from '../Inputs/Inputs';
 import { TDBData, THashType } from '../../types/TypesORM';
 import { Constants } from '../../Constants';
-import DragNDrop from '../DragNDrop/DragNDrop';
-import Button from '../Button/Button';
+import DragNDrop from '../ui/DragNDrop/DragNDrop';
+import Button from '../ui/Button/Button';
 
 type ImportListProps = {
     isToggled: boolean;

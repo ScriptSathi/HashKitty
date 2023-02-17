@@ -2,27 +2,28 @@ import React, { ChangeEvent, Component, FormEvent } from 'react';
 
 import './CreateTemplate.scss';
 
-import { Constants } from '../../Constants';
-import { Utils } from '../../Utils';
+import { Constants } from '../../../Constants';
+import { Utils } from '../../../Utils';
 import {
     InputAttackModes,
     InputName,
     InputPotfiles,
     InputRules,
     InputWordlist,
-} from '../Inputs/Inputs';
-import { ErrorHandlingCreateTemplate } from '../../ErrorHandlingCreateTemplate';
-import { THashlist, TemplateTask, TAttackMode } from '../../types/TypesORM';
+} from '../../../components/Inputs/Inputs';
+import { ErrorHandlingCreateTemplate } from '../../../ErrorHandlingCreateTemplate';
+import { THashlist, TemplateTask, TAttackMode } from '../../../types/TypesORM';
 import {
     ApiOptionsFormData,
     ApiTemplateFormData,
     itemBase,
     templateFormData,
-} from '../../types/TComponents';
+} from '../../../types/TComponents';
 import { CreateTemplateProps, CreateTemplateState } from './TCreateTemplate';
-import Button from '../Button/Button';
-import ImportList from '../ImportList/ImportList';
-import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
+import Button from '../../../components/ui/Button/Button';
+import ImportList from '../../../components/ImportList/ImportList';
+import BackgroundBlur from '../../../components/ui/BackgroundBlur/BackGroundBlur';
+import { RequestUtils, StandardResponse } from '../../../RequestUtils';
 
 const defaultFormData = {
     formAttackModeId: -1,
@@ -36,8 +37,6 @@ const defaultFormData = {
     formBreakpointGPUTemperature: 90,
 };
 
-// TODO Carrousel https://codesandbox.io/s/form-carousel-h9mnm?file=/src/Form/atoms.js:1131-1137
-
 export default class CreateTemplate extends Component<
     CreateTemplateProps,
     CreateTemplateState
@@ -47,6 +46,7 @@ export default class CreateTemplate extends Component<
     constructor(props: CreateTemplateProps) {
         super(props);
         this.inputsError = new ErrorHandlingCreateTemplate();
+
         this.state = {
             inputsErrorCheck: this.inputsError.results,
             toggleNewTask: props.toggleNewTask,
@@ -236,27 +236,16 @@ export default class CreateTemplate extends Component<
     };
 
     private submitForm(form: ApiTemplateFormData): void {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(form),
-            ...Constants.mandatoryFetchOptions,
-        };
-        console.log(requestOptions);
-        this.props.handleTemplateCreation('SUCEESSS', false);
-        // fetch(Constants.apiPOSTCreateTemplate, requestOptions)
-        //     .then(response => {
-        //         return response.json();
-        //     })
-        //     .then(res => {
-        //         console.log(res);
-        //         if (res.success) {
-        //             this.props.handleTemplateCreation(res.message, false);
-        //         } else {
-        //             this.props.handleTemplateCreation(res.error, true);
-        //         }
-        //         this.state.toggleNewTask();
-        //     });
+        RequestUtils.POST<StandardResponse>(
+            Constants.apiPOSTCreateTemplate,
+            form,
+            res => {
+                let isError = true;
+                if (res.success) isError = false;
+                this.props.handleTemplateCreation(res.message, isError);
+                this.state.toggleNewTask();
+            }
+        );
     }
 
     private toggleHashlistCreation = () => {

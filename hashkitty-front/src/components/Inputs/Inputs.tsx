@@ -2,13 +2,13 @@ import React from 'react';
 import { ChangeEvent } from 'react';
 
 import './Inputs.scss';
-import InputDropdown from '../InputDropDown/InputDropdown';
-import { inputDatalist } from '../CreateTask/TCreateTask';
+import InputDropdown from '../ui/InputDropDown/InputDropdown';
+import { inputDatalist } from './TInputs';
 import { GenericForm } from '../../types/TForm';
 import { fieldError } from '../../types/TErrorHandling';
 import { TDBData } from '../../types/TypesORM';
 import { newTHashlistFormData, newTaskFormData } from '../../types/TComponents';
-import Button from '../Button/Button';
+import Button from '../ui/Button/Button';
 
 type InputsState<
     formName extends keyof newTaskFormData | keyof newTHashlistFormData,
@@ -55,8 +55,8 @@ export const InputAttackModes = ({
                             key={elem.id}
                             className={
                                 biggerFonts
-                                    ? 'fontMedium labelRadioControl font20px marginTop5'
-                                    : 'fontMedium labelRadioControl marginTop5'
+                                    ? 'fontMedium labelRadioControl fontWeightBold font20px marginTop5'
+                                    : 'fontMedium labelRadioControl fontWeightBold marginTop5'
                             }
                         >
                             <input
@@ -81,13 +81,13 @@ export const InputAttackModes = ({
     );
 };
 
-export const RenderTemplateTaskCheckBox = ({
+export const RenderTemplateRadio = ({
     list,
-    handleTemplateTaskCheckbox,
+    handleOnClick,
     state,
 }: {
     state: { templateTaskCheckBoxId: number };
-    handleTemplateTaskCheckbox: (e: ChangeEvent<HTMLInputElement>) => void;
+    handleOnClick: (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => void;
 } & Pick<inputDatalist, 'list'>) => {
     return (
         <label className="labelsTitles">
@@ -96,18 +96,20 @@ export const RenderTemplateTaskCheckBox = ({
                 <div className="divCheckbox">
                     {list.map(elem => {
                         return (
-                            <label key={elem.id}>
+                            <label
+                                key={elem.id}
+                                className="labelRadioControl marginTop5 font20px fontMedium"
+                            >
                                 <input
-                                    className="templateInputCheckbox"
-                                    type="checkbox"
+                                    className="inputRadio"
+                                    type="radio"
                                     checked={
                                         state.templateTaskCheckBoxId === elem.id
                                     }
                                     name={`${elem.id}`}
                                     value={elem.name}
-                                    onChange={e =>
-                                        handleTemplateTaskCheckbox(e)
-                                    }
+                                    onClick={e => handleOnClick(e)}
+                                    onChange={() => {}}
                                 ></input>
                                 {elem.name.length > 20
                                     ? elem.name.slice(0, 17) + '...'
@@ -148,7 +150,7 @@ export const InputWordlist = ({
 }: {
     state: InputsState<
         'formWordlistName',
-        Pick<TDBData, 'wordlists'> & Pick<newTaskFormData, 'formAttackModeId'>
+        Pick<TDBData, 'wordlists'> & Pick<newTaskFormData, 'formWordlistName'>
     >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
@@ -171,6 +173,8 @@ export const InputWordlist = ({
                 handleInputChange={(e: ChangeEvent<HTMLInputElement>) =>
                     handleInputChange(e)
                 }
+                required
+                formValue={state.formWordlistName}
             />
         </label>
     );
@@ -180,7 +184,10 @@ export const InputRules = ({
     state,
     handleInputChange,
 }: {
-    state: InputsState<'formRuleName', Pick<TDBData, 'rules'>>;
+    state: InputsState<
+        'formRuleName',
+        Pick<TDBData, 'rules'> & Pick<newTaskFormData, 'formRuleName'>
+    >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
@@ -202,6 +209,7 @@ export const InputRules = ({
                 handleInputChange={(e: ChangeEvent<HTMLInputElement>) =>
                     handleInputChange(e)
                 }
+                formValue={state.formRuleName}
             />
         </label>
     );
@@ -211,7 +219,10 @@ export const InputPotfiles = ({
     state,
     handleInputChange,
 }: {
-    state: InputsState<'formPotfileName', Pick<TDBData, 'potfiles'>>;
+    state: InputsState<
+        'formPotfileName',
+        Pick<TDBData, 'potfiles'> & Pick<newTaskFormData, 'formPotfileName'>
+    >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
     return (
@@ -231,6 +242,7 @@ export const InputPotfiles = ({
                 list={state.potfiles}
                 formName="formPotfileName"
                 handleInputChange={event => handleInputChange(event)}
+                formValue={state.formPotfileName}
             />
         </label>
     );
@@ -242,7 +254,10 @@ export const InputHashlist = ({
     buttonClick,
     importMessage,
 }: {
-    state: InputsState<'formHashlistName', Pick<TDBData, 'hashlist'>>;
+    state: InputsState<
+        'formHashlistName',
+        Pick<TDBData, 'hashlist'> & Pick<newTaskFormData, 'formHashlistName'>
+    >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
     buttonClick: () => void;
     importMessage: string;
@@ -273,9 +288,11 @@ export const InputHashlist = ({
                 <InputDropdown
                     list={state.hashlist}
                     formName="formHashlistName"
+                    formValue={state.formHashlistName}
                     handleInputChange={(e: ChangeEvent<HTMLInputElement>) =>
                         handleInputChange(e)
                     }
+                    required
                 />
             </label>
         </div>
@@ -384,6 +401,7 @@ export const InputHashtypes = ({
                 handleInputChange={event => handleInputChange(event)}
                 hashTypeFormat={true}
                 placeholder="Name of the hashs type's"
+                formValue={state.formHashtypeName}
             />
         </label>
     );

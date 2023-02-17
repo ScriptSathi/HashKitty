@@ -4,7 +4,7 @@ import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import HomePage from './pages/HomePage/HomePage';
-import ErrorPage from './components/ErrorPage/ErrorPage';
+import ErrorPage from './pages/ErrorPage/ErrorPage';
 import Template from './pages/Template/Template';
 
 const root = ReactDOM.createRoot(

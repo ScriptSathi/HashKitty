@@ -1,9 +1,15 @@
 import { Constants } from './Constants';
 
+export type StandardResponse = {
+    message: string;
+    success?: unknown;
+    error?: string;
+};
+
 export class RequestUtils {
     public static POST<
         ResponseType extends {
-            [key: string]: string | Object | number | boolean | string[];
+            [key: string]: unknown | string | number | boolean | string[];
         }
     >(
         url: string,

@@ -89,7 +89,7 @@ body {
 }
 
 .fontMedium {
-    font-family: InterMedium;
+    font-family: 'InterMedium', 'Arial', system-ui, sans-serif;
 }
 
 .fontBold {
@@ -136,4 +136,13 @@ body {
 
 .width100P {
     width: 100%;
+}
+
+.ErrorMessage {
+    // position: absolute;
+    display: flex;
+}
+
+.fontWeightBold {
+    font-weight: bold;
 }

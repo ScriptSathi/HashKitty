@@ -1,9 +1,9 @@
 import React, { Component, CSSProperties } from 'react';
 
-import { TTask } from '../types/TypesORM';
-import { THashcatRunningStatus } from '../types/TServer';
+import { TTask } from '../../types/TypesORM';
+import { THashcatRunningStatus } from '../../types/TServer';
 import RunnableTaskCard from './RunnableTaskCard/RunnableTaskCard';
-import { Constants } from '../Constants';
+import { Constants } from '../../Constants';
 import EndedTaskCard from './EndedTaskCard/EndedTaskCard';
 
 type RunningTasksBodyProps = {

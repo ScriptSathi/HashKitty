@@ -2,8 +2,8 @@ import React, { ChangeEvent, Component, FormEvent } from 'react';
 
 import './CreateTask.scss';
 
-import { Constants } from '../../Constants';
-import { Utils } from '../../Utils';
+import { Constants } from '../../../Constants';
+import { Utils } from '../../../Utils';
 import {
     RenderAdvancedConfigButton,
     InputAttackModes,
@@ -15,23 +15,23 @@ import {
     InputRules,
     InputWordlist,
     InputWorkloadProfiles,
-    RenderTemplateTaskCheckBox,
+    RenderTemplateRadio,
     InputBreakpointTemp,
-} from '../Inputs/Inputs';
-import { ErrorHandlingCreateTask } from '../../ErrorHandlingCreateTask';
-import { THashlist, TemplateTask, TAttackMode } from '../../types/TypesORM';
+} from '../../../components/Inputs/Inputs';
+import { ErrorHandlingCreateTask } from '../../../ErrorHandlingCreateTask';
+import { THashlist, TemplateTask, TAttackMode } from '../../../types/TypesORM';
 import {
     ApiOptionsFormData,
     ApiTaskFormData,
     itemBase,
     newTaskFormData,
-} from '../../types/TComponents';
-import toggleClose from '../../assets/images/toggleClose.svg';
-import toggleOpen from '../../assets/images/toggleOpen.svg';
+} from '../../../types/TComponents';
+import toggleClose from '../../../assets/images/toggleClose.svg';
+import toggleOpen from '../../../assets/images/toggleOpen.svg';
 import { CreateTaskProps, CreateTaskState } from './TCreateTask';
-import Button from '../Button/Button';
-import ImportList from '../ImportList/ImportList';
-import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
+import Button from '../../../components/ui/Button/Button';
+import ImportList from '../../../components/ImportList/ImportList';
+import BackgroundBlur from '../../../components/ui/BackgroundBlur/BackGroundBlur';
 
 const defaultFormData = {
     formAttackModeId: -1,
@@ -56,8 +56,6 @@ export default class CreateTask extends Component<
         this.inputsError = new ErrorHandlingCreateTask();
         this.state = {
             inputsErrorCheck: this.inputsError.results,
-            handleTaskCreationAdded: props.handleTaskCreationAdded,
-            handleTaskCreationError: props.handleTaskCreationError,
             toggleNewTask: props.toggleNewTask,
             createOptionsToggle: false,
             hashlistCreationToggle: false,
@@ -132,12 +130,11 @@ export default class CreateTask extends Component<
                                             />
                                         </div>
                                         <div>
-                                            <RenderTemplateTaskCheckBox
+                                            <RenderTemplateRadio
                                                 list={this.state.templateTasks}
                                                 state={this.state}
-                                                handleTemplateTaskCheckbox={
-                                                    this
-                                                        .handleTemplateTaskCheckbox
+                                                handleOnClick={
+                                                    this.handleTemplateRadio
                                                 }
                                             />
                                         </div>
@@ -329,17 +326,22 @@ export default class CreateTask extends Component<
                 return response.json();
             })
             .then(res => {
-                if (res.success) {
-                    this.state.handleTaskCreationAdded();
-                } else {
-                    this.state.handleTaskCreationError();
-                }
+                let isError = true;
+                if (res.success) isError = false;
+                this.props.handleTaskCreation(res.message, isError);
                 this.state.toggleNewTask();
             });
     }
 
-    private handleTemplateTaskCheckbox(event) {
-        if (this.state.templateCheckboxIsChecked) {
+    private handleTemplateRadio = (
+        event: React.MouseEvent<HTMLInputElement, MouseEvent>
+    ) => {
+        const target = event.target as HTMLInputElement;
+        const templateId = parseInt(target.name);
+        const template = this.state.templateTasks.find(template => {
+            return template.id === templateId;
+        });
+        if (!template || this.state.templateTaskCheckBoxId === template.id) {
             this.setState({
                 templateTaskCheckBoxId: -1,
                 templateCheckboxIsChecked:
@@ -347,30 +349,24 @@ export default class CreateTask extends Component<
                 ...defaultFormData,
             });
         } else {
-            const templateId = parseInt(event.target.name);
-            const template = this.state.templateTasks.find(template => {
-                return template.id === templateId;
+            this.setState({
+                templateTaskCheckBoxId: templateId,
+                templateCheckboxIsChecked:
+                    !this.state.templateCheckboxIsChecked,
+                formAttackModeId: template.options.attackModeId.id,
+                formCpuOnly: template.options.CPUOnly,
+                formRuleName: template.options.ruleName || '',
+                formMaskQuery: template.options.maskQuery || '',
+                formPotfileName: template.options.potfileName || '',
+                formKernelOpti: template.options.kernelOpti,
+                formWordlistName: template.options.wordlistId.name,
+                formWorkloadProfile:
+                    template.options.workloadProfileId.profileId,
+                formBreakpointGPUTemperature:
+                    template.options.breakpointGPUTemperature,
             });
-            if (template) {
-                this.setState({
-                    templateTaskCheckBoxId: templateId,
-                    templateCheckboxIsChecked:
-                        !this.state.templateCheckboxIsChecked,
-                    formAttackModeId: template.options.attackModeId.id,
-                    formCpuOnly: template.options.CPUOnly,
-                    formRuleName: template.options.ruleName || '',
-                    formMaskQuery: template.options.maskQuery || '',
-                    formPotfileName: template.options.potfileName || '',
-                    formKernelOpti: template.options.kernelOpti,
-                    formWordlistName: template.options.wordlistId.name,
-                    formWorkloadProfile:
-                        template.options.workloadProfileId.profileId,
-                    formBreakpointGPUTemperature:
-                        template.options.breakpointGPUTemperature,
-                });
-            }
         }
-    }
+    };
 
     private toggleOptionCreation = () => {
         this.setState({

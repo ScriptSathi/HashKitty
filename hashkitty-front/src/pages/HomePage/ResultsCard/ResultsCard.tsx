@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 
-import {
-    cardBody,
-    contentBody,
-    hashListName,
-    passwdsTxt,
-} from './StyleResultsCard';
-import { Constants } from '../../Constants';
-import { RequestUtils } from '../../RequestUtils';
+import { cardBody, contentBody, passwdsTxt } from './StyleResultsCard';
+import { Constants } from '../../../Constants';
+import { RequestUtils } from '../../../RequestUtils';
 
 type ResultsCardState = {
     crackedPasswd: string[];

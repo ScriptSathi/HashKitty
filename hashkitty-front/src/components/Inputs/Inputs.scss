@@ -28,9 +28,12 @@
 
 .divCheckbox {
     margin-top: 10px;
-    max-height: 180;
+    max-height: 170px;
     max-width: 100%;
     display: grid;
+    overflow-y: scroll;
+    padding-left: 10px;
+    padding-top: 5px;
 }
 
 .divRadio {
@@ -79,6 +82,38 @@
     clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
 }
 
+.smallInputCheckbox {
+    appearance: none;
+    background-color: white;
+    margin: 0;
+    font: inherit;
+    color: $hover-color;
+    width: 1em;
+    height: 1em;
+    border: 0.15em solid black;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+    
+}
+
+.smallInputCheckbox::before {
+    content: "";
+    width: 0.5em;
+    height: 0.5em;
+    transform: scale(0);
+    transition: 180ms transform ease-in-out;
+    box-shadow: inset 1em 1em $hover-color;
+}
+
+.smallInputCheckbox:checked::before {
+    transform: scale(1);
+    transform-origin: bottom left;
+    background-color: $hover-color;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
 .flexBox {
     display: flex;
 }
@@ -115,8 +150,6 @@ input[type="radio"]:checked:hover {
 }
 
 .labelRadioControl {
-    font-family: 'InterMedium', system-ui, sans-serif;
-    font-weight: bold;
     line-height: 1.1;
     display: grid;
     grid-template-columns: 1em auto;

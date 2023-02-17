@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
 import Frame from '../../components/Frame/Frame';
-import Button from '../../components/Button/Button';
+import Button from '../../components/ui/Button/Button';
 import './Template.scss';
-import Card from '../../components/Card/Card';
-import CreateTemplate from '../../components/CreateTemplate/CreateTemplate';
+import Card from '../../components/ui/Card/Card';
+import CreateTemplate from './CreateTemplate/CreateTemplate';
 import { Constants } from '../../Constants';
 import { TemplateTask } from '../../types/TypesORM';
-import DeleteButton from '../../components/DeleteButton/DeleteButton';
+import DeleteButton from '../../components/ui/DeleteButton/DeleteButton';
 
 type TemplateState = {
     createTemplateToggle: boolean;
@@ -37,8 +37,8 @@ export default class Template extends Component<TemplateProps, TemplateState> {
         return (
             <Frame
                 className={this.state.createTemplateToggle ? 'lockScreen' : ''}
+                message={this.state.templateCreationMessage}
             >
-                {this.state.templateCreationMessage}
                 <div className="Title">
                     <div className="divGridSplit TitleWidth">
                         <p className="noMarginTop">Templates</p>
