@@ -2,15 +2,17 @@
 import React, { CSSProperties, ChangeEvent, Component } from 'react';
 
 import { frame, inputText, listFrame, inputDatalists, inputs } from './StyleInputDropdown';
-import { itemBase } from '../../types/TComponents';
-import { THashType } from '../../types/TypesORM';
+import { itemBase } from '../../../types/TComponents';
+import { THashType } from '../../../types/TypesORM';
 import './InputDropdown.scss';
 
 interface InputDropdownProps {
     list: itemBase[];
     formName: string;
+    formValue: string;
     placeholder?: string;
     hashTypeFormat?: boolean;
+    required?: boolean;
     handleInputChange: (event: ChangeEvent<HTMLInputElement> | React.MouseEvent<
         HTMLInputElement,
         MouseEvent
@@ -20,7 +22,6 @@ interface InputDropdownProps {
 
 interface InputDropdownState {
     openDropdown: boolean;
-    inputData: string;
     sortedDropdownList: itemBase[];
 }
 
@@ -37,7 +38,6 @@ export default class InputDropdown extends Component<
         this.retryCount = 0;
         this.state = {
             openDropdown: false,
-            inputData: '',
             sortedDropdownList: [],
         };
     }
@@ -68,10 +68,11 @@ export default class InputDropdown extends Component<
                                 ChangeEvent<HTMLInputElement>
                         )
                     }
+                    required={this.props.required || false}
                     onChange={event => this.handleInputChange(event)}
                     placeholder={this.props.placeholder || 'Name of the list'}
                     style={{ ...inputs, ...inputDatalists }}
-                    value={this.state.inputData}
+                    value={this.props.formValue}
                     name={this.formName}
                     autoComplete="off"
                 ></input>
@@ -96,7 +97,6 @@ export default class InputDropdown extends Component<
         this.props.handleInputChange(event);
         const sort = this.sortDropdownList(inputData);
         this.setState({
-            inputData,
             sortedDropdownList: sort,
         });
     };

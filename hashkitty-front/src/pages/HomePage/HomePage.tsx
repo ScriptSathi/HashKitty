@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component, ReactElement } from 'react';
 
 import newTask from '../../assets/images/newTask.svg';
 import '../../assets/fonts/Inter-Bold.ttf';
 import '../../assets/styles/main.scss';
 import './HomePage.scss';
 import { TTask } from '../../types/TypesORM';
-import TasksBody from '../../components/TasksBody';
+import TasksBody from './TasksBody';
 import { Constants } from '../../Constants';
-import CreateTask from '../../components/CreateTask/CreateTask';
+import CreateTask from './CreateTask/CreateTask';
 import Frame from '../../components/Frame/Frame';
 
 type HomePageState = {
+    taskCreationMessage: ReactElement;
     newTaskToogle: boolean;
     taskCreationAdded: boolean;
     isMouseOvershowResultsCard: boolean;
@@ -27,6 +28,7 @@ type HomePageProps = {};
 export default class HomePage extends Component<HomePageProps, HomePageState> {
     public state: HomePageState = {
         taskCreationAdded: false,
+        taskCreationMessage: <></>,
         isMouseOvershowResultsCard: false,
         hashlistCreationToggle: false,
         taskResultsToggle: false,
@@ -49,6 +51,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                         ? 'lockScreen'
                         : ''
                 }
+                message={this.state.taskCreationMessage}
             >
                 <div className="SplitTasks">
                     <div className="HomepageLeftBox">
@@ -89,8 +92,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                 </div>
                 <div id="blur">
                     <CreateTask
-                        handleTaskCreationAdded={this.handleTaskCreationAdded}
-                        handleTaskCreationError={this.handleTaskCreationError}
+                        handleTaskCreation={this.handleTaskCreation}
                         toggleNewTask={this.toggleNewTask}
                         isToggled={this.state.newTaskToogle}
                     />
@@ -144,41 +146,23 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
             : (document.body.style.overflow = 'hidden');
     };
 
-    private handleTaskCreationAdded = () => {
+    private handleTaskCreation = (message: string, isError = false) => {
         this.setState({
-            taskCreationAdded: true,
+            taskCreationMessage: (
+                <p
+                    className={`fontMedium creationTaskStatusMessage ${
+                        isError ? 'colorRed' : 'colorGreen'
+                    }`}
+                >
+                    {message}
+                </p>
+            ),
         });
         this.loadTasks();
         setTimeout(() => {
             this.setState({
-                taskCreationAdded: false,
+                taskCreationMessage: <></>,
             });
         }, 5000);
-    };
-
-    private handleTaskCreationError = () => {
-        this.setState({
-            taskCreationError: true,
-        });
-        setTimeout(() => {
-            this.setState({
-                taskCreationError: false,
-            });
-        }, 5000);
-    };
-
-    private renderCreationTaskStatus = () => {
-        let message = '';
-        let style = 'creationTaskStatusMessage';
-
-        if (this.state.taskCreationAdded) {
-            style += ' colorGreen';
-            message = 'New task added successfully';
-        } else if (this.state.taskCreationError) {
-            style += ' colorRed';
-            message =
-                'An error occured while creating the task. Check the server logs for more informations';
-        }
-        return <p className={style}>{message}</p>;
     };
 }

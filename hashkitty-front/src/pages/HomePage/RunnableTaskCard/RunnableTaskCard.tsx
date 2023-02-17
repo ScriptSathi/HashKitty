@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import duration from 'humanize-duration';
 
-import { TTask } from '../../types/TypesORM';
+import { TTask } from '../../../types/TypesORM';
 
-import '../../assets/styles/main.scss';
+import '../../../assets/styles/main.scss';
 import './RunnableTaskCard.scss';
-import loader from '../../assets/images/loader.svg';
-import stopTask from '../../assets/images/stopTask.svg';
-import stopTaskHover from '../../assets/images/stopTaskHover.svg';
-import startTaskHover from '../../assets/images/playTaskHover.svg';
-import startTask from '../../assets/images/playTask.svg';
-import { Constants } from '../../Constants';
-import { THashcatRunningStatus, THashcatStatus } from '../../types/TServer';
-import Card from '../Card/Card';
+import loader from '../../../assets/images/loader.svg';
+import stopTask from '../../../assets/images/stopTask.svg';
+import stopTaskHover from '../../../assets/images/stopTaskHover.svg';
+import startTaskHover from '../../../assets/images/playTaskHover.svg';
+import startTask from '../../../assets/images/playTask.svg';
+import { Constants } from '../../../Constants';
+import { THashcatRunningStatus, THashcatStatus } from '../../../types/TServer';
+import Card from '../../../components/ui/Card/Card';
 
 type RunnableTaskCardState = {
     mouseIsEnterTaskCard: boolean;

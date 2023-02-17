@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import duration from 'humanize-duration';
 
-import { TTask } from '../../types/TypesORM';
-import '../../assets/styles/main.scss';
+import { TTask } from '../../../types/TypesORM';
 import './EndedTaskCard.scss';
 
-import resultsLogo from '../../assets/images/results.png';
-import { Constants } from '../../Constants';
-import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
+import resultsLogo from '../../../assets/images/results.png';
+import { Constants } from '../../../Constants';
+import BackgroundBlur from '../../../components/ui/BackgroundBlur/BackGroundBlur';
 import ResultsCard from '../ResultsCard/ResultsCard';
-import Card from '../Card/Card';
-import DeleteButton from '../DeleteButton/DeleteButton';
+import Card from '../../../components/ui/Card/Card';
+import DeleteButton from '../../../components/ui/DeleteButton/DeleteButton';
 
 type EndedTaskCardState = {
     moreDetailsClicked: boolean;

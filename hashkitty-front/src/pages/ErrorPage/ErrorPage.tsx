@@ -1,10 +1,10 @@
 import React from 'react';
 import { useRouteError, useNavigate } from 'react-router-dom';
-import Navbar from '../Navbar/Navbar';
+import Navbar from '../../components/Navbar/Navbar';
 import { TuseRouteError } from '../../types/THooks';
 import logo from '../../assets/images/CryingKitty.svg';
 import './ErrorPage.scss';
-import Button from '../Button/Button';
+import Button from '../../components/ui/Button/Button';
 
 export default function ErrorPage() {
     const { statusText } = useRouteError() as TuseRouteError;

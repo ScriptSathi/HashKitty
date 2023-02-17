@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 
 import './DragNDrop.scss';
-import asFileImg from '../../assets/images/DragNDropOk.svg';
-import importAFileImg from '../../assets/images/DragNDropEmpty.svg';
+import asFileImg from '../../../assets/images/DragNDropOk.svg';
+import importAFileImg from '../../../assets/images/DragNDropEmpty.svg';
 
 type DropzoneProps = {
     setFile: (file: File) => void;
