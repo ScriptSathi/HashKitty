@@ -90,7 +90,7 @@ export const RenderTemplateRadio = ({
     handleOnClick: (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => void;
 } & Pick<inputDatalist, 'list'>) => {
     return (
-        <label className="labelsTitles">
+        <div className="labelsTitles">
             Choose a template
             {list.length > 0 ? (
                 <div className="divCheckbox">
@@ -98,7 +98,7 @@ export const RenderTemplateRadio = ({
                         return (
                             <label
                                 key={elem.id}
-                                className="labelRadioControl marginTop5 font20px fontMedium"
+                                className="marginTop5 font20px fontMedium labelRadioControl"
                             >
                                 <input
                                     className="inputRadio"
@@ -106,7 +106,7 @@ export const RenderTemplateRadio = ({
                                     checked={
                                         state.templateTaskCheckBoxId === elem.id
                                     }
-                                    name={`${elem.id}`}
+                                    name={elem.id}
                                     value={elem.name}
                                     onClick={e => handleOnClick(e)}
                                     onChange={() => {}}
@@ -121,7 +121,7 @@ export const RenderTemplateRadio = ({
             ) : (
                 <p>No template tasks loaded</p>
             )}
-        </label>
+        </div>
     );
 };
 

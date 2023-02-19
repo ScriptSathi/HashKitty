@@ -38,7 +38,6 @@
     gap: 20px;
     padding-bottom: 150px;
     max-height: 800px;
-    overflow-y: scroll;
 }
 
 .HomePageRightBox {
@@ -53,6 +52,7 @@
 }
 
 .newTask {
+    // position: fixed;
     height: 310px;
     width: 285px;
 }

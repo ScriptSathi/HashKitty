@@ -30,7 +30,6 @@
     margin-top: 10px;
     max-height: 170px;
     max-width: 100%;
-    display: grid;
     overflow-y: scroll;
     padding-left: 10px;
     padding-top: 5px;
@@ -141,24 +140,23 @@
     font-size: 15px;
 }
 
-input[type="radio"]:hover {
-    border: 0.15em solid $hover-color;
-}
-
-input[type="radio"]:checked:hover {
-    border: 0.15em solid black;
-}
-
 .labelRadioControl {
     line-height: 1.1;
-    display: grid;
-    grid-template-columns: 1em auto;
+    display: flex;
     gap: 0.5em;
     margin-top: 1em;
 }
 
 .labelRadioControl:focus-within, .labelRadioControl:hover {
     color: $hover-color;
+}
+
+input[type="radio"]:hover {
+    border: 0.15em solid $hover-color;
+}
+
+input[type="radio"]:checked:hover {
+    border: 0.15em solid black;
 }
 
 input[type="radio"] {

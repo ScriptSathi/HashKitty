@@ -5,6 +5,7 @@ export type newTaskFormData = {
     formCpuOnly: boolean;
     formRuleName: string;
     formMaskQuery: string;
+    formMaskFileName: string;
     formPotfileName: string;
     formKernelOpti: boolean;
     formWordlistName: string;

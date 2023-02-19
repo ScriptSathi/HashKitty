@@ -30,6 +30,7 @@ const defaultFormData = {
     formCpuOnly: false,
     formRuleName: '',
     formMaskQuery: '',
+    formMaskFileName: '',
     formPotfileName: '',
     formKernelOpti: false,
     formWordlistName: '',
@@ -159,6 +160,7 @@ export default class CreateTemplate extends Component<
             formWorkloadProfile: this.state.formWorkloadProfile,
             formBreakpointGPUTemperature:
                 this.state.formBreakpointGPUTemperature,
+            formMaskFileName: this.state.formMaskFileName,
         };
     }
 
@@ -226,6 +228,10 @@ export default class CreateTemplate extends Component<
                 workloadProfileId: this.state.formWorkloadProfile,
                 kernelOpti: this.state.formKernelOpti,
                 CPUOnly: this.state.formCpuOnly,
+                potfileName: this.state.formPotfileName,
+                ruleName: this.state.formRuleName,
+                maskQuery: this.state.formMaskQuery,
+                maskFilename: this.state.formMaskFileName,
             };
             this.submitForm({
                 name: this.state.formName,
