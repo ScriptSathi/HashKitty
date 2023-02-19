@@ -112,30 +112,12 @@ export class HashcatGenerator {
                 value: this.task.options.workloadProfileId.profileId,
             });
         }
-        return flags.reduce(
-            (acc: CmdData[], elem) => [
-                ...acc,
-                {
-                    ...elem,
-                    flagData: hashcatParam[elem.key],
-                },
-            ],
-            []
-        );
+        return this.buildFlags(flags);
     }
 
     private prepareRestoreFlags(): CmdData[] {
         const flags = this.defaultFlags;
-        return flags.reduce(
-            (acc: CmdData[], elem) => [
-                ...acc,
-                {
-                    ...elem,
-                    flagData: hashcatParam[elem.key],
-                },
-            ],
-            []
-        );
+        return this.buildFlags(flags);
     }
 
     private generateCmdFromFlags(flags: CmdData[]): string {
@@ -147,12 +129,29 @@ export class HashcatGenerator {
                     cmdData.value === undefined
                 ) {
                     cmd += `=${cmdData.flagData.defaultValue}`;
-                } else if (cmdData.value) {
+                } else if (cmdData.value !== undefined) {
                     cmd += `=${cmdData.value}`;
+                } else {
+                    throw new Error(
+                        `Parameter needed for ${cmdData.flagData.flag}`
+                    );
                 }
             }
             cmd += ' ';
             return acc + cmd;
         }, '');
+    }
+
+    private buildFlags(flags: PartialCmdData[]): CmdData[] {
+        return flags.reduce(
+            (acc: CmdData[], elem) => [
+                ...acc,
+                {
+                    ...elem,
+                    flagData: hashcatParam[elem.key],
+                },
+            ],
+            []
+        );
     }
 }
