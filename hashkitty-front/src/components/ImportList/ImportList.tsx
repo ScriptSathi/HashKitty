@@ -82,7 +82,7 @@ export default class ImportList extends Component<
                                     : 'title'
                             }
                         >
-                            Import a list of hashs
+                            Import a list of hashes
                         </p>
                         <p className="title cardOnImportError">
                             {this.state.onErrorImport}

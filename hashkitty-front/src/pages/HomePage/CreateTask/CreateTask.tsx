@@ -38,6 +38,7 @@ const defaultFormData = {
     formCpuOnly: false,
     formRuleName: '',
     formMaskQuery: '',
+    formMaskFileName: '',
     formPotfileName: '',
     formKernelOpti: false,
     formWordlistName: '',
@@ -129,15 +130,13 @@ export default class CreateTask extends Component<
                                                 toggleIcon={this.toggleIcon}
                                             />
                                         </div>
-                                        <div>
-                                            <RenderTemplateRadio
-                                                list={this.state.templateTasks}
-                                                state={this.state}
-                                                handleOnClick={
-                                                    this.handleTemplateRadio
-                                                }
-                                            />
-                                        </div>
+                                        <RenderTemplateRadio
+                                            list={this.state.templateTasks}
+                                            state={this.state}
+                                            handleOnClick={
+                                                this.handleTemplateRadio
+                                            }
+                                        />
                                     </div>
                                     <div
                                         className={
@@ -219,6 +218,7 @@ export default class CreateTask extends Component<
             formWorkloadProfile: this.state.formWorkloadProfile,
             formBreakpointGPUTemperature:
                 this.state.formBreakpointGPUTemperature,
+            formMaskFileName: this.state.formMaskFileName,
         };
     }
 
@@ -381,9 +381,6 @@ export default class CreateTask extends Component<
         this.setState({
             hashlistCreationToggle: !this.state.hashlistCreationToggle,
         });
-        this.state.hashlistCreationToggle
-            ? (document.body.style.overflow = 'hidden')
-            : (document.body.style.overflow = 'visible');
     };
 
     private importHashlistSuccess = () => {

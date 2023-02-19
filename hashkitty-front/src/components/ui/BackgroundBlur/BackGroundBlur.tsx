@@ -28,13 +28,16 @@ export default class BackgroundBlur extends Component<
                 style={
                     this.props.isToggled
                         ? {
-                              position: 'absolute',
+                              position: 'fixed',
                               backdropFilter: 'blur(5px) brightness(0.60)',
                               height: '100%',
                               width: '100%',
                               top: 0,
                               left: 0,
                               userSelect: 'text',
+                              display: 'flex',
+                              justifyContent: 'center',
+                              paddingTop: '5%',
                           }
                         : {}
                 }
@@ -44,17 +47,8 @@ export default class BackgroundBlur extends Component<
             >
                 {this.props.isToggled ? (
                     <div
-                        style={
-                            this.props.centerContent
-                                ? {
-                                      position: 'absolute',
-                                      marginRight: '-50%',
-                                      top: '50%',
-                                      left: '50%',
-                                      transform: 'translate(-50%, -50%)',
-                                  }
-                                : {}
-                        }
+                        style={{ height: 0 }}
+                        className="childrenParent"
                         onMouseEnter={this.onMouseEnterCantClick}
                         onMouseLeave={this.onMouseLeaveCanClick}
                     >

@@ -132,18 +132,14 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
         this.setState({
             newTaskToogle: !this.state.newTaskToogle,
         });
-        this.state.newTaskToogle
-            ? (document.body.style.overflow = 'visible')
-            : (document.body.style.overflow = 'hidden');
+        this.hiddenOverflowOnToggle();
     };
 
     private toggleTaskResults: () => void = () => {
         this.setState({
             taskResultsToggle: !this.state.taskResultsToggle,
         });
-        this.state.taskResultsToggle
-            ? (document.body.style.overflow = 'visible')
-            : (document.body.style.overflow = 'hidden');
+        this.hiddenOverflowOnToggle();
     };
 
     private handleTaskCreation = (message: string, isError = false) => {
@@ -165,4 +161,10 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
             });
         }, 5000);
     };
+
+    private hiddenOverflowOnToggle() {
+        this.state.newTaskToogle || this.state.taskResultsToggle
+            ? (document.body.style.overflow = 'visible')
+            : (document.body.style.overflow = 'hidden');
+    }
 }
