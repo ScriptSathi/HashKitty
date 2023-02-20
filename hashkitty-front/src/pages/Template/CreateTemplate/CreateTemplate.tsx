@@ -94,7 +94,14 @@ export default class CreateTemplate extends Component<
                                     <div className="">
                                         <InputName {...this.inputNameProps} />
                                     </div>
-                                    <article className="CarouselBody">
+                                    <article
+                                        className="CarouselBody"
+                                        style={
+                                            this.state.activePage === 0
+                                                ? { height: 300 }
+                                                : { height: 500 }
+                                        }
+                                    >
                                         <this.Pages />
                                     </article>
                                     <this.Buttons />
@@ -123,6 +130,7 @@ export default class CreateTemplate extends Component<
             centerContent: false,
         };
     }
+
     private get inputNameProps() {
         return {
             state: this.state,
@@ -324,7 +332,7 @@ export default class CreateTemplate extends Component<
         if (this.state.activePage === 0) {
             return (
                 <Button
-                    type="button"
+                    type="submit"
                     className="submitInputCreateTask"
                     onClick={this.nextFormStep}
                 >

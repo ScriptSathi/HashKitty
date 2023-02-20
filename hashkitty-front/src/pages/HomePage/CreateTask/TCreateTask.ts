@@ -1,7 +1,7 @@
 import { newTaskFormData } from '../../../types/TComponents';
 import { newTaskInputsError } from '../../../types/TErrorHandling';
 import { GenericForm } from '../../../types/TForm';
-import { TDBData, THashlist, TemplateTask } from '../../../types/TypesORM';
+import { TDBData } from '../../../types/TypesORM';
 
 export type CreateTaskState = {
     toggleNewTask: () => void;

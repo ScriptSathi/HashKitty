@@ -48,7 +48,6 @@ export default class BackgroundBlur extends Component<
                 {this.props.isToggled ? (
                     <div
                         style={{ height: 0 }}
-                        className="childrenParent"
                         onMouseEnter={this.onMouseEnterCantClick}
                         onMouseLeave={this.onMouseLeaveCanClick}
                     >

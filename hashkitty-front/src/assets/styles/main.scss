@@ -102,6 +102,7 @@ body {
 .grid {
     display: grid;
 }
+
 .flex {
     display: flex;
 }
@@ -144,4 +145,12 @@ body {
 
 .fontWeightBold {
     font-weight: bold;
+}
+
+.noSelect {
+    user-select: none;
+}
+
+.margin15 {
+    margin: 15px;
 }

@@ -392,27 +392,18 @@ export default class CreateTask extends Component<
     };
 
     private async fetchData(): Promise<void> {
-        const hashlist = await Utils.fetchListWithEndpoint<THashlist>(
-            Constants.apiGetHashlists
+        const { hashlists, rules, potfiles, wordlists } =
+            await Utils.fetchAllFilesLists();
+
+        const attackModes = await Utils.fetchListWithEndpoint<TAttackMode>(
+            Constants.apiGetAttackModes
         );
         const templateTasks = await Utils.fetchListWithEndpoint<TemplateTask>(
             Constants.apiGetTemplate
         );
-        const rules = await Utils.fetchListWithEndpoint<string>(
-            Constants.apiGetRules
-        );
-        const potfiles = await Utils.fetchListWithEndpoint<string>(
-            Constants.apiGetPotfiles
-        );
-        const wordlists = await Utils.fetchListWithEndpoint<string>(
-            Constants.apiGetWordlists
-        );
-        const attackModes = await Utils.fetchListWithEndpoint<TAttackMode>(
-            Constants.apiGetAttackModes
-        );
 
         this.setState({
-            hashlist,
+            hashlist: hashlists,
             templateTasks,
             rules: this.constructInputList(rules),
             potfiles: this.constructInputList(potfiles),

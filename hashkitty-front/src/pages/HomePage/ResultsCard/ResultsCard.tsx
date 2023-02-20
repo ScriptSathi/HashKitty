@@ -6,6 +6,7 @@ import { RequestUtils } from '../../../RequestUtils';
 
 type ResultsCardState = {
     crackedPasswd: string[];
+    onlyPasswds: boolean;
 };
 
 interface ResultsCardProps {
@@ -18,7 +19,8 @@ export default class ResultsCard extends Component<
     ResultsCardState
 > {
     public state = {
-        crackedPasswd: [],
+        crackedPasswd: [] as string[],
+        onlyPasswds: true,
     };
 
     public async componentDidMount(): Promise<void> {
@@ -29,13 +31,17 @@ export default class ResultsCard extends Component<
         return (
             <div>
                 <div style={cardBody}>
-                    {/* <h3 style={hashListName}>{this.props.hashlistName}</h3> */}
+                    <label className="flex noSelect margin15 fontMedium">
+                        <input
+                            className="inputCheckbox marginRight5 marginTop2"
+                            type="checkbox"
+                            checked={this.state.onlyPasswds}
+                            onChange={this.handleCheckbox}
+                        />
+                        Show only passwords
+                    </label>
                     <div style={contentBody}>
-                        {this.state.crackedPasswd.map((passwd, i) => (
-                            <p style={passwdsTxt} key={i}>
-                                {passwd}
-                            </p>
-                        ))}
+                        <this.Passwords />
                     </div>
                 </div>
             </div>
@@ -57,4 +63,30 @@ export default class ResultsCard extends Component<
             }
         );
     }
+
+    private handleCheckbox = () => {
+        this.setState({
+            onlyPasswds: !this.state.onlyPasswds,
+        });
+        console.log(this.state.onlyPasswds);
+    };
+
+    private Passwords = (): JSX.Element => {
+        let list = this.state.crackedPasswd;
+        if (this.state.onlyPasswds) {
+            list = list.map(_passwd => {
+                const passwd = _passwd.split(':');
+                return passwd[passwd.length - 1];
+            });
+        }
+        return (
+            <>
+                {list.map((passwd, i) => (
+                    <p style={passwdsTxt} key={i}>
+                        {passwd}
+                    </p>
+                ))}
+            </>
+        );
+    };
 }
