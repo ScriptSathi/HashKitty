@@ -13,10 +13,14 @@ import { Hashlist } from '../ORM/entity/Hashlist';
 import { HashcatListener } from './HashcatListener';
 import { HashcatGenerator } from './HashcatGenerator';
 
+type currentJobData = {
+    task: TTask;
+    outputFilePath: string;
+};
+
 export class Hashcat {
     private listener: HashcatListener | undefined;
-    private lastTaskRun: TTask | undefined;
-    private outputFilePath: string | undefined;
+    private currentJobData: currentJobData | undefined;
     private cmd: string;
     private dao: Dao;
     private fsUtils: FsUtils;
@@ -45,7 +49,6 @@ export class Hashcat {
     }
 
     public exec(task: TTask): void {
-        // this.fsUtils.
         if (this.hashlistHaveNeverBeenCracked(task)) {
             this.hashcatWorker = this.createWorkerThread();
             this.listener = new HashcatListener({
@@ -53,7 +56,12 @@ export class Hashcat {
                 task,
                 handleTaskHasFinnished: this.handleTaskHasFinnished,
             });
-            this.cmd = new HashcatGenerator(task).generateStartCmd();
+            const generator = new HashcatGenerator(task);
+            this.cmd = generator.generateStartCmd();
+            this.currentJobData = {
+                task,
+                outputFilePath: generator.outputFilePath,
+            };
             logger.debug('Starting Hashcat cracking');
             this.hashcatWorker.postMessage(this.cmd);
             this.listenProcess();
@@ -77,20 +85,21 @@ export class Hashcat {
             handleTaskHasFinnished: this.handleTaskHasFinnished,
         });
         logger.debug(`Restoring Hashcat session ${task.name}-${task.id}`);
-        this.cmd = new HashcatGenerator(task).generateRestoreCmd();
+        const generator = new HashcatGenerator(task);
+        this.cmd = generator.generateRestoreCmd();
+        this.currentJobData = {
+            task,
+            outputFilePath: generator.outputFilePath,
+        };
         this.hashcatWorker.postMessage(this.cmd);
         this.listenProcess();
     }
 
     private get outputFileExists(): boolean {
-        if (!this.outputFilePath) {
+        if (!this.currentJobData?.outputFilePath) {
             return false;
         }
-        return this.outputFilePath
-            ? fs.existsSync(
-                  path.join(Constants.outputFilePath, this.outputFilePath)
-              )
-            : false;
+        return fs.existsSync(this.currentJobData.outputFilePath);
     }
 
     private listenProcess(): void {
@@ -109,11 +118,11 @@ export class Hashcat {
 
     private handleTaskHasFinnished = (task: TTask): void => {
         this.dao.task.registerTaskEnded(task as unknown as Task);
-        if (this.outputFilePath && this.lastTaskRun) {
-            this.lastTaskRun.hashlistId.crackedOutputFileName =
-                this.outputFilePath;
+        if (this.currentJobData) {
+            this.currentJobData.task.hashlistId.crackedOutputFileName =
+                this.currentJobData.outputFilePath;
             this.dao.hashlist.update(
-                this.lastTaskRun.hashlistId as unknown as Hashlist,
+                this.currentJobData.task.hashlistId as unknown as Hashlist,
                 false
             );
         }
@@ -123,7 +132,7 @@ export class Hashcat {
     };
 
     private generateOutputFileFromPotfile(): void {
-        if (this.lastTaskRun) {
+        if (!this.outputFileExists) {
             const tmpProcess = this.createWorkerThread();
             const cmdShow = this.cmd + ' --show';
             logger.info('Generating the output file based on potfile recordes');

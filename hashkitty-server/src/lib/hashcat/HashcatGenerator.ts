@@ -6,6 +6,7 @@ import { CmdData, PartialCmdData } from '../types/THashcat';
 import { hashcatParam } from './hashcatParams';
 
 export class HashcatGenerator {
+    public outputFilePath: string;
     private task: TTask;
     private taskName: string;
     private restorePath: string;
@@ -24,6 +25,10 @@ export class HashcatGenerator {
         this.hashlist = path.join(
             Constants.hashlistsPath,
             this.task.hashlistId.name
+        );
+        this.outputFilePath = path.join(
+            Constants.outputFilePath,
+            `${this.task.hashlistId.name}-${this.task.hashlistId.id}`
         );
     }
 
@@ -47,7 +52,7 @@ export class HashcatGenerator {
         return [
             {
                 key: 'outputFile',
-                value: `${this.task.hashlistId.name}-${this.task.hashlistId.id}`,
+                value: this.outputFilePath,
             },
             {
                 key: 'attackMode',
