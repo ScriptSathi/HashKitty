@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import HomePage from './pages/HomePage/HomePage';
 import ErrorPage from './pages/ErrorPage/ErrorPage';
 import Template from './pages/Template/Template';
+import Lists from './pages/Lists/Lists';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -28,7 +29,7 @@ const router = createBrowserRouter([
             },
             {
                 path: 'lists',
-                element: <HomePage />,
+                element: <Lists />,
             },
             {
                 path: 'server-infos',
