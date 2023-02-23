@@ -25,29 +25,13 @@ export default class BackgroundBlur extends Component<
         document.body.className = 'noMargin';
         return (
             <div
-                style={
-                    this.props.isToggled
-                        ? {
-                              position: 'fixed',
-                              backdropFilter: 'blur(5px) brightness(0.60)',
-                              height: '100%',
-                              width: '100%',
-                              top: 0,
-                              left: 0,
-                              userSelect: 'text',
-                              display: 'flex',
-                              justifyContent: 'center',
-                              paddingTop: '5%',
-                          }
-                        : {}
-                }
+                className={this.props.isToggled ? 'backgroundBlur' : ''}
                 onClick={
                     this.state.isMouseOver ? () => {} : this.props.toggleFn
                 }
             >
                 {this.props.isToggled ? (
                     <div
-                        style={{ height: 0 }}
                         onMouseEnter={this.onMouseEnterCantClick}
                         onMouseLeave={this.onMouseLeaveCanClick}
                     >

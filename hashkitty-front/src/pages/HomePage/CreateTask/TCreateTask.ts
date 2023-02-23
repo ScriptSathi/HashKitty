@@ -5,7 +5,6 @@ import { TDBData } from '../../../types/TypesORM';
 
 export type CreateTaskState = {
     toggleNewTask: () => void;
-    createOptionsToggle: boolean;
     hashlistCreationToggle: boolean;
     isMouseIn: boolean;
     templateCheckboxIsChecked: boolean;

@@ -264,7 +264,7 @@ export const InputHashlist = ({
 }) => {
     return (
         <div>
-            <div className="divGridSplit labelsTitles">
+            <div className="flex labelsTitles">
                 Choose a hashlist
                 <Button onClick={buttonClick} className="importHashlist">
                     Import
@@ -278,7 +278,7 @@ export const InputHashlist = ({
                 <p
                     className={
                         state.formHasErrors &&
-                        state.inputsErrorCheck.formName.isError
+                        state.inputsErrorCheck.formHashlistName.isError
                             ? 'isError noMargin'
                             : 'hideBlock noMargin'
                     }

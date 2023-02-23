@@ -10,12 +10,15 @@
     width: 800px;
     border: 4px solid;
     border-radius: 50px;
+    height: 600px;
+    padding: 5% 7.5%;
+    box-sizing: border-box;
 }
 
 .contentBody {
-    margin: 5% 7.5%;
-    height: 80%;
-    width: 90%;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
 }
 
 .title {
@@ -62,6 +65,7 @@
 }
 
 .advancedConfigsDivMain {
+    margin-top: 100px;
     display: grid;
     grid-template-columns: minmax(auto, 50%) auto;
     height: max-content;

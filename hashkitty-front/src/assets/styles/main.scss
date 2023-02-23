@@ -139,7 +139,6 @@ body {
 }
 
 .ErrorMessage {
-    // position: absolute;
     display: flex;
 }
 
@@ -153,4 +152,8 @@ body {
 
 .margin15 {
     margin: 15px;
+}
+
+.spaceBtw {
+    justify-content: space-between;
 }
