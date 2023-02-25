@@ -15,12 +15,14 @@ export class HashcatGenerator {
 
     constructor(task: TTask) {
         this.task = task;
-
         this.taskName = `${task.name}-${task.id}`;
         this.restorePath = path.join(Constants.restorePath, this.taskName);
         this.wordlist = path.join(
             Constants.wordlistPath,
-            this.task.options.wordlistId.name
+            // Return empty string because Hashcat can use a directory as wordlist
+            this.task.options.wordlistId.name === '*'
+                ? ''
+                : this.task.options.wordlistId.name
         );
         this.hashlist = path.join(
             Constants.hashlistsPath,
