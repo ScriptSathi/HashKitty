@@ -6,6 +6,8 @@ import { HashType } from './entity/HashType';
 import { logger } from '../utils/Logger';
 import { workloadProfiles } from './migration/workloadProfiles';
 import { WorkloadProfile } from './entity/WorkloadProfile';
+import { Wordlist } from './entity/Wordlist';
+import { Constants } from '../Constants';
 
 export class Migration {
     private appDataSource: DataSource;
@@ -53,5 +55,13 @@ export class Migration {
             await this.appDataSource.manager.save(dbWP);
         }
         logger.debug('Adding known workload profiles in the database');
+    };
+
+    public migrateWordlist = async (): Promise<void> => {
+        const dbWL = new Wordlist();
+        dbWL.name = '*';
+        dbWL.path = Constants.wordlistPath;
+        await this.appDataSource.manager.save(dbWL);
+        logger.debug('Adding known "*" option wordlist');
     };
 }

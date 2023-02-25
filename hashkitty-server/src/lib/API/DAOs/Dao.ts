@@ -43,6 +43,11 @@ export class Dao {
             WorkloadProfile,
             migration.migrateWorkloadProfiles
         );
+        this.migrateIfNotExist<Wordlist>(
+            db,
+            Wordlist,
+            migration.migrateWordlist
+        );
     }
 
     private static async migrateIfNotExist<T extends ObjectLiteral>(

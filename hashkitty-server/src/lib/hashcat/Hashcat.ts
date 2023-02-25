@@ -49,6 +49,12 @@ export class Hashcat {
     }
 
     public exec(task: TTask): void {
+        const generator = new HashcatGenerator(task);
+        this.cmd = generator.generateStartCmd();
+        this.currentJobData = {
+            task,
+            outputFilePath: generator.outputFilePath,
+        };
         if (this.hashlistHaveNeverBeenCracked(task)) {
             this.hashcatWorker = this.createWorkerThread();
             this.listener = new HashcatListener({
@@ -56,12 +62,6 @@ export class Hashcat {
                 task,
                 handleTaskHasFinnished: this.handleTaskHasFinnished,
             });
-            const generator = new HashcatGenerator(task);
-            this.cmd = generator.generateStartCmd();
-            this.currentJobData = {
-                task,
-                outputFilePath: generator.outputFilePath,
-            };
             logger.debug('Starting Hashcat cracking');
             this.hashcatWorker.postMessage(this.cmd);
             this.listenProcess();
@@ -78,6 +78,12 @@ export class Hashcat {
     }
 
     public restore(task: TTask): void {
+        const generator = new HashcatGenerator(task);
+        this.cmd = generator.generateStartCmd();
+        this.currentJobData = {
+            task,
+            outputFilePath: generator.outputFilePath,
+        };
         this.hashcatWorker = this.createWorkerThread();
         this.listener = new HashcatListener({
             worker: this.hashcatWorker,
@@ -85,12 +91,6 @@ export class Hashcat {
             handleTaskHasFinnished: this.handleTaskHasFinnished,
         });
         logger.debug(`Restoring Hashcat session ${task.name}-${task.id}`);
-        const generator = new HashcatGenerator(task);
-        this.cmd = generator.generateRestoreCmd();
-        this.currentJobData = {
-            task,
-            outputFilePath: generator.outputFilePath,
-        };
         this.hashcatWorker.postMessage(this.cmd);
         this.listenProcess();
     }

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { THashcatStatus } from './THashcat';
 import { ApiOptionsFormData, TDaoById, TDaoCreate } from './TDAOs';
-import { TUploadFileName } from './TApi';
 
 export type ReceivedRequest<Body extends { [key: string]: unknown } = {}> =
     Request<{

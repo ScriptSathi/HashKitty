@@ -112,6 +112,7 @@ export class Sanitizer {
 
     private async checkWordlist(name: string): Promise<void> {
         try {
+            name = name.startsWith('*') ? '*' : name;
             const wordlist = await this.dao.findWordlistByName(name);
             if (wordlist !== null) {
                 this.options.wordlistId = wordlist.id;
