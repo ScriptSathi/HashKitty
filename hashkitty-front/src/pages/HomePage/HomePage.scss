@@ -1,72 +1,72 @@
 @import '../../assets/styles/main.scss';
+.HomePage {
+    &__newTask {
+        height: 310px;
+        width: 285px;
+        
+        &:hover {
+            cursor: pointer;
+            filter: invert(55%) sepia(6%) saturate(5446%) hue-rotate(314deg) brightness(105%) contrast(98%);    
+        }
+    }
+    
+    &__loader {
+        filter: invert(55%) sepia(6%) saturate(5000%) hue-rotate(314deg) brightness(100%) contrast(200%);
+    }
+    
+    &__parent {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+        grid-column-gap: 0px;
+        grid-row-gap: 0px;
+    }
+    
+    &__splitTasks {
+        display: grid;
+        grid-template-columns: minmax(auto, 79%) auto;
+        &__leftBox {
+            border: 1px solid;
+            border-left-style: none;
+            border-top-style: none;
+            border-bottom-style: none;
+        }
+        
+        &__rightBox {
+            display: block;
+            margin-left: 60px;
+        } 
 
-.newTask:hover {
-    cursor: pointer;
-    filter: invert(55%) sepia(6%) saturate(5446%) hue-rotate(314deg) brightness(105%) contrast(98%);
-}
+        &__tasksBody {
+            display: grid;
+            gap: 20px;
+            width: 100%;
+        }
+    }
+    
+    &__cardBody {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: minmax(auto, 73%) auto;
+    }
+    
+    
+    &__runningTasks {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 20px;
+        padding-bottom: 150px;
+        max-height: 800px;
+    } 
+    
+    
+    &__creationTaskStatusMessage {
+        position: absolute;
+        left: 50%;
+        font-size: 30px;
+        font-family: 'InterMedium';
+        transform: translate(-50%, 0%);
+    }
+    
 
-.loader {
-    filter: invert(55%) sepia(6%) saturate(5000%) hue-rotate(314deg) brightness(100%) contrast(200%);
-}
-
-.parent {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-}
-
-.div1 { grid-area: 1 / 1 / 2 / 5; }
-.div2 { grid-area: 1 / 5 / 2 / 7; }
-
-.SplitTasks {
-    display: grid;
-    grid-template-columns: minmax(auto, 79%) auto;
-}
-
-.HomepageLeftBox {
-    border: 1px solid;
-    border-left-style: none;
-    border-top-style: none;
-    border-bottom-style: none;
-}
-
-.runningTasks {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-    gap: 20px;
-    padding-bottom: 150px;
-    max-height: 800px;
-}
-
-.HomePageRightBox {
-    display: block;
-    margin-left: 60px;
-}
-
-.HomePagecardBody {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: minmax(auto, 73%) auto;
-}
-
-.newTask {
-    // position: fixed;
-    height: 310px;
-    width: 285px;
-}
-
-.creationTaskStatusMessage {
-    position: absolute;
-    left: 50%;
-    font-size: 30px;
-    font-family: 'InterMedium';
-    transform: translate(-50%, 0%);
-}
-
-.tasksBody {
-    display: grid;
-    gap: 20px;
-    width: 100%;
 }
