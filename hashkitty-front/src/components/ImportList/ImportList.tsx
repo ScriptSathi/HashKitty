@@ -4,7 +4,7 @@ import BackgroundBlur from '../ui/BackgroundBlur/BackGroundBlur';
 import './ImportList.scss';
 import { Utils } from '../../Utils';
 import { newListFormData } from '../../types/TComponents';
-import { ErrorHandlingCreateHashlist } from '../../ErrorHandlingCreateHashlist';
+import { ErrorHandlingCreateList } from '../../ErrorHandlingCreateList';
 import { GenericForm } from '../../types/TForm';
 import { newListInputsError } from '../../types/TErrorHandling';
 import { InputName } from '../Inputs/Inputs';
@@ -20,13 +20,10 @@ type ImportListProps = {
         'hashtypes' | 'hashlist' | 'templateTasks' | 'attackModes'
     >;
     toggleFn: () => void;
-    handleImportHasSucced: () => void;
+    handleImportHasSucced: (message: string, isError: boolean) => void;
 };
 
-type ImportListState = {
-    onErrorImport: string;
-} & newListFormData &
-    GenericForm<newListInputsError>;
+type ImportListState = {} & newListFormData & GenericForm<newListInputsError>;
 
 const defaultFormData = {
     formName: '',
@@ -37,24 +34,17 @@ export default class ImportList extends Component<
     ImportListProps,
     ImportListState
 > {
-    private inputsError: ErrorHandlingCreateHashlist;
-    private hashTypeId: number;
+    private inputsError: ErrorHandlingCreateList;
+    private uploadUrl: string;
 
     constructor(props: ImportListProps) {
         super(props);
-        this.inputsError = new ErrorHandlingCreateHashlist();
-        this.hashTypeId = -1;
+        this.inputsError = new ErrorHandlingCreateList();
         this.state = {
-            hashtypes: [],
             inputsErrorCheck: this.inputsError.results,
             formHasErrors: false,
-            onErrorImport: '',
             ...defaultFormData,
         };
-    }
-
-    public async componentDidMount(): Promise<void> {
-        this.displayErrorMessageOnImport();
     }
 
     public render() {
@@ -71,17 +61,8 @@ export default class ImportList extends Component<
                         }}
                         className="ImportList__formBody"
                     >
-                        <p
-                            className={
-                                this.state.onErrorImport.length > 0
-                                    ? 'title noMargin'
-                                    : 'title'
-                            }
-                        >
+                        <p className="title">
                             Import a list of {this.props.type}
-                        </p>
-                        <p className="title ImportList__importError">
-                            {this.state.onErrorImport}
                         </p>
                         <div className="grid2Fr">
                             <div>
@@ -146,21 +127,16 @@ export default class ImportList extends Component<
             const value = Utils.santizeInput(event);
             this.setState({
                 [target.name]: value,
-            } as Pick<newListFormData, keyof newListFormData>);
+            } as unknown as newListFormData);
         }
     };
 
     private handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        this.inputsError.analyse(
-            {
-                formName: this.state.formName,
-                formList: this.state.formList || undefined,
-            },
-            {
-                hashtypes: this.state.hashtypes,
-            }
-        );
+        this.inputsError.analyse({
+            formName: this.state.formName,
+            formList: this.state.formList || undefined,
+        });
         this.setState({
             inputsErrorCheck: this.inputsError.results,
             formHasErrors: this.inputsError.hasErrors,
@@ -188,17 +164,19 @@ export default class ImportList extends Component<
                 let isError = true;
                 if (res.success) isError = false;
                 this.props.handleImportHasSucced(res.message, isError);
-                this.state.toggleNewTask();
-                if (res.success) {
-                    this.props.handleImportHasSucced();
-                } else {
-                    this.displayErrorMessageOnImport();
-                }
+                this.props.toggleFn();
             });
     }
 
-    private displayErrorMessageOnImport(): void {
-        this.setState({ onErrorImport: 'An error occured' });
-        setTimeout(() => this.setState({ onErrorImport: '' }), 3000);
+    private setElement(
+        type: keyof Omit<
+            TDBData,
+            'hashtypes' | 'hashlist' | 'templateTasks' | 'attackModes'
+        >
+    ) {
+        switch (type) {
+            case 'potfiles':
+                this.uploadUrl = Constants.POST;
+        }
     }
 }

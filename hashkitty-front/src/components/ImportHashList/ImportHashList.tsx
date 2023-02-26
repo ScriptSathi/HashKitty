@@ -133,8 +133,9 @@ export default class ImportHashList extends Component<
         const form = new FormData();
         if (this.state.formHashlist) {
             form.append('fileName', this.state.formName);
+            form.append('type', 'hashlist');
             form.append('file', this.state.formHashlist);
-            form.append('hashTypeId', `${this.hashTypeId}`);
+            form.append('hashTypeId', this.hashTypeId.toString());
         }
         return form;
     }
@@ -193,15 +194,11 @@ export default class ImportHashList extends Component<
             body: this.form,
             ...Constants.mandatoryFetchOptions,
         };
-        fetch(Constants.apiPOSTAddHashlist, requestOptions)
+        fetch(Constants.apiPOSTAddList, requestOptions)
             .then(response => {
                 return response.json();
             })
             .then(res => {
-                let isError = true;
-                if (res.success) isError = false;
-                this.props.handleImportHasSucced(res.message, isError);
-                this.state.toggleNewTask();
                 if (res.success) {
                     this.props.handleImportHasSucced();
                 } else {
