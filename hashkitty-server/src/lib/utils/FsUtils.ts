@@ -3,7 +3,7 @@ import { logger } from './Logger';
 import { Constants } from '../Constants';
 import path = require('path');
 import { UploadedFile } from 'express-fileupload';
-import { TUploadFileName } from '../types/TApi';
+import { UploadFileType } from '../types/TApi';
 
 export class FsUtils {
     public static listFileInDir(path: string): string[] {
@@ -20,10 +20,34 @@ export class FsUtils {
         return [];
     }
 
+    public static getFileTypeData(fileType: UploadFileType): {
+        [fileType in
+            | 'isWordlist'
+            | 'isPotfile'
+            | 'isRule'
+            | 'isMask'
+            | 'isHashlist']: boolean;
+    } & { path: string } {
+        const type = {
+            isWordlist: fileType === 'wordlist',
+            isPotfile: fileType === 'potfile',
+            isRule: fileType === 'rule',
+            isMask: fileType === 'mask',
+            isHashlist: fileType === 'hashlist',
+        };
+        let path = '';
+        if (type.isWordlist) path = Constants.wordlistPath;
+        if (type.isPotfile) path = Constants.potfilesPath;
+        if (type.isRule) path = Constants.rulesPath;
+        if (type.isMask) path = Constants.masksPath;
+        if (type.isHashlist) path = Constants.hashlistsPath;
+        return { ...type, ...{ path } };
+    }
+
     public static async uploadFile(
         file: UploadedFile,
         fileName: string,
-        fileType: TUploadFileName
+        fileType: UploadFileType
     ): Promise<void> {
         let baseDir = '';
         switch (fileType) {
