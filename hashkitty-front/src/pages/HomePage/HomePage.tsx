@@ -53,13 +53,13 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                 }
                 message={this.state.taskCreationMessage}
             >
-                <div className="SplitTasks">
-                    <div className="HomepageLeftBox">
+                <div className="HomePage__splitTasks">
+                    <div className="HomePage__splitTasks__leftBox">
                         <div className="Title">
                             <p className="noMarginTop">Running tasks</p>
                         </div>
-                        <div className="HomePagecardBody">
-                            <div className="runningTasks">
+                        <div className="HomePage__cardBody">
+                            <div className="HomePage__runningTasks">
                                 <TasksBody
                                     tasks={this.state.tasks}
                                     handleRefreshTasks={this.loadTasks.bind(
@@ -69,7 +69,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                             </div>
                             <div>
                                 <img
-                                    className="newTask"
+                                    className="HomePage__newTask"
                                     src={newTask}
                                     alt="create a new task"
                                     onClick={this.toggleNewTask}
@@ -77,11 +77,11 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
                             </div>
                         </div>
                     </div>
-                    <div className="HomePageRightBox">
+                    <div className="HomePage__splitTasks__rightBox">
                         <div className="Title">
                             <p className="noMarginTop">Ended tasks</p>
                         </div>
-                        <div className="tasksBody">
+                        <div className="HomePage__splitTasks__tasksBody">
                             <TasksBody
                                 handleRefreshTasks={this.handleRefreshTasks}
                                 tasks={this.state.endedTasks}
@@ -146,7 +146,7 @@ export default class HomePage extends Component<HomePageProps, HomePageState> {
         this.setState({
             taskCreationMessage: (
                 <p
-                    className={`fontMedium creationTaskStatusMessage ${
+                    className={`fontMedium HomePage__creationTaskStatusMessage ${
                         isError ? 'colorRed' : 'colorGreen'
                     }`}
                 >
