@@ -101,4 +101,9 @@ export type TWorkloadProfile = {
     powerConsumation: string;
 };
 
-export type TUploadFileName = 'rule' | 'potfile' | 'wordlist' | 'hashlist';
+export type UploadFileType =
+    | 'rule'
+    | 'mask'
+    | 'wordlist'
+    | 'hashlist'
+    | 'potfile';

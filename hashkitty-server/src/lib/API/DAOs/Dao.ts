@@ -118,30 +118,6 @@ export class Dao {
         // TODO Remove deleted wordlists (the filter above is working)
     }
 
-    public async reloadHashlistInDB(): Promise<void> {
-        // TODO THIS IS TEMPORARY !!!!!!!!
-        const filesInDir = FsUtils.listFileInDir(Constants.hashlistsPath);
-        const hashlistsInDb = await this.db.getRepository(Hashlist).find();
-        const missingInDb = filesInDir.filter(file => {
-            return !hashlistsInDb.find(elem => file === elem.name);
-        });
-        missingInDb.map(file => {
-            const wl = new Hashlist();
-            wl.name = file;
-            wl.description = '';
-            wl.hashTypeId = 168;
-            try {
-                this.db.getRepository(Hashlist).save(wl);
-            } catch (e) {
-                logger.error('An error occured', e);
-            }
-        });
-        // const dbElemToDelete = wordlistInDb.filter(
-        //     x => !filesInDir.includes(x.name)
-        // );
-        // TODO Remove deleted wordlists (the filter above is working)
-    }
-
     public async taskExistById(id: number): Promise<boolean> {
         return await this.db.getRepository(Task).exist({
             where: {

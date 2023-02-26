@@ -1,5 +1,5 @@
 import { ApiOptionsFormData } from '../types/TDAOs';
-import { AddHashlist, TaskUpdate, TemplateTaskUpdate } from '../types/TRoutes';
+import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
 import { Options } from '../ORM/entity/Options';
 import { Dao } from './DAOs/Dao';
 import { TemplateTask } from '../ORM/entity/TemplateTask';
@@ -9,12 +9,14 @@ import { FsUtils } from '../utils/FsUtils';
 import { Constants } from '../Constants';
 import { Hashlist } from '../ORM/entity/Hashlist';
 import { HashType } from '../ORM/entity/HashType';
+import { UploadFileType } from '../types/TApi';
 
 export class Sanitizer {
     public hasSucceded: boolean;
     public isAnUpdate: boolean;
     public errorMessage: string;
     private dao: Dao;
+    private list: UploadFile;
     private options: Options;
     private task: Task;
     private templateTask: TemplateTask;
@@ -22,6 +24,7 @@ export class Sanitizer {
 
     constructor(dao: Dao) {
         this.dao = dao;
+        this.list = { fileName: '' };
         this.options = new Options();
         this.task = new Task();
         this.templateTask = new TemplateTask();
@@ -72,9 +75,16 @@ export class Sanitizer {
         await this.prepareOptions(form.options);
     }
 
-    public async analyseHashlist(form: AddHashlist): Promise<void> {
-        this.hashlist.name = this.sanitizeText(form.fileName, 'fileName');
-        await this.checkHashType(form.hashTypeId);
+    public async analyseList(
+        form: UploadFile & { type: UploadFileType; hashTypeId?: number }
+    ): Promise<void> {
+        const name = this.sanitizeText(form.fileName, 'fileName');
+        if (form.hashTypeId && form.type === 'hashlist') {
+            this.hashlist.name = name;
+            await this.checkHashType(form.hashTypeId);
+        } else {
+            this.list.fileName = name;
+        }
     }
 
     public getTask(): Task {
@@ -87,6 +97,10 @@ export class Sanitizer {
 
     public getTemplateTask(): TemplateTask {
         return this.templateTask;
+    }
+
+    public getList(): UploadFile {
+        return this.list;
     }
 
     public removeSpecialCharInString(input: string): string {

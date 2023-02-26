@@ -32,6 +32,7 @@ export class Constants {
         'outputs'
     );
     public static readonly rulesPath = path.join(Constants.baseDir, 'rules');
+    public static readonly masksPath = path.join(Constants.baseDir, 'masks');
     public static readonly restorePath = path.join(
         Constants.baseDir,
         'restore'

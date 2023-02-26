@@ -6,8 +6,13 @@ import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { Dao } from './DAOs/Dao';
-import { TTask } from '../types/TApi';
-import { AddHashlist, TaskUpdate, TemplateTaskUpdate } from '../types/TRoutes';
+import { TTask, UploadFileType } from '../types/TApi';
+import {
+    AddHashlist,
+    TaskUpdate,
+    TemplateTaskUpdate,
+    UploadFile,
+} from '../types/TRoutes';
 import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
 import { UploadedFile } from 'express-fileupload';
@@ -187,49 +192,6 @@ export class RouteHandler {
         }
     };
 
-    public addHashlist = async (
-        req: ReceivedRequest<AddHashlist>,
-        res: ResponseSend
-    ): Promise<void> => {
-        const body: AddHashlist = req.body;
-        const sanitizer = new Sanitizer(this.dao);
-        await sanitizer.analyseHashlist(body);
-        if (!body || !req.files || Object.keys(req.files).length === 0) {
-            res.status(400).json({
-                message: 'No files were uploaded.',
-            });
-            return;
-        }
-        if (!sanitizer.hasSucceded) {
-            res.status(200).json({
-                message: Dao.UnexpectedError,
-                error: `[ERROR]: ${sanitizer.errorMessage}`,
-            });
-            return;
-        }
-        try {
-            const hashlist = sanitizer.getHashlist();
-            const respMessage = `File ${hashlist.name} uploaded, successfully, and hashlist added correctly !`;
-            await FsUtils.uploadFile(
-                req.files.file as UploadedFile,
-                hashlist.name,
-                'hashlist'
-            );
-            await this.dao.hashlist.update(hashlist);
-            res.status(200).json({
-                success: respMessage,
-                message: respMessage,
-            });
-            logger.info(respMessage);
-        } catch (err) {
-            res.status(500).json({
-                error: err,
-                message: 'An error occurred',
-            });
-            logger.error(err);
-        }
-    };
-
     public taskResults = (
         req: ReceivedRequest<ReqFileResults>,
         res: ResponseSend
@@ -270,11 +232,57 @@ export class RouteHandler {
         throw new Error('PAS ENCORE FAIT'); //TODO
     };
 
-    public updateFile = async (
+    public uploadList = async (
         req: ReceivedRequest,
         res: ResponseSend
     ): Promise<void> => {
-        console.dir(req.files); //TODO
+        const body: UploadFile & {
+            type: UploadFileType;
+            hashTypeId?: number;
+        } = req.body;
+        const typeData = FsUtils.getFileTypeData(body.type);
+        const sanitizer = new Sanitizer(this.dao);
+        await sanitizer.analyseList(body);
+        if (!body || !req.files || Object.keys(req.files).length === 0) {
+            res.status(400).json({
+                message: 'No files were uploaded.',
+            });
+            return;
+        }
+        if (!sanitizer.hasSucceded) {
+            res.status(200).json({
+                message: Dao.UnexpectedError,
+                error: `[ERROR]: ${sanitizer.errorMessage}`,
+            });
+            return;
+        }
+        try {
+            let name = '';
+            if (typeData.isHashlist) {
+                const hashlist = sanitizer.getHashlist();
+                await this.dao.hashlist.update(hashlist);
+                name = hashlist.name;
+            } else {
+                name = sanitizer.getList().fileName;
+            }
+            const respMessage = `File ${name} uploaded, successfully`;
+            await FsUtils.uploadFile(
+                req.files.file as UploadedFile,
+                name,
+                body.type
+            );
+            res.status(200).json({
+                success: respMessage,
+                message: respMessage,
+            });
+            logger.info(respMessage);
+        } catch (err) {
+            res.status(500).json({
+                error: err,
+                message: 'An error occurred',
+            });
+            logger.error(err);
+        }
     };
 
     public deleteTemplate = async (
@@ -497,7 +505,6 @@ export class RouteHandler {
     ): Promise<void> => {
         try {
             await this.dao.reloadWordlistInDB();
-            await this.dao.reloadHashlistInDB();
             res.status(200).json({
                 message: '',
                 success: 'Update successfully',

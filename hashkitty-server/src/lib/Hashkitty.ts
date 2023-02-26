@@ -44,6 +44,7 @@ export class Hashkitty {
             Constants.hashlistsPath,
             Constants.restorePath,
             Constants.outputFilePath,
+            Constants.masksPath,
         ];
         for (const dir of listsPaths) {
             if (!fs.existsSync(dir)) {
