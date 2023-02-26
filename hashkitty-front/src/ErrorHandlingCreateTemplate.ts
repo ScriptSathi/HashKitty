@@ -74,10 +74,8 @@ export class ErrorHandlingCreateTemplate extends ErrorHandling<
         const find = list.find(elem => {
             return elem.name === name;
         });
-        if (find) {
+        if (find || name === '' || name.startsWith('*')) {
             this.results.formWordlistName = this.defaultField;
-        } else if (name === '') {
-            this.results.formWordlistName = this.requieredFields;
         } else {
             this.results.formWordlistName = this.wrongData;
         }

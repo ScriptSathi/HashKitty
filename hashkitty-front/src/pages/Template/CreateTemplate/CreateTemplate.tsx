@@ -6,10 +6,14 @@ import { Constants } from '../../../Constants';
 import { Utils } from '../../../Utils';
 import {
     InputAttackModes,
+    InputBreakpointTemp,
+    InputCPUOnly,
+    InputKernelOpti,
     InputName,
     InputPotfiles,
     InputRules,
     InputWordlist,
+    InputWorkloadProfiles,
 } from '../../../components/Inputs/Inputs';
 import { ErrorHandlingCreateTemplate } from '../../../ErrorHandlingCreateTemplate';
 import { THashlist, TemplateTask, TAttackMode } from '../../../types/TypesORM';
@@ -75,33 +79,17 @@ export default class CreateTemplate extends Component<
 
     public render() {
         return (
-            <div>
+            <>
                 <BackgroundBlur {...this.backgroundBlurProps}>
-                    <div className="createTemplateBody">
-                        <div
-                            style={
-                                this.state.activePage === 0
-                                    ? { height: 450 }
-                                    : { height: 750 }
-                            }
-                        >
-                            <div className="createTemplateContentBody">
+                    <div className="createTaskBody">
+                        <div className="contentBody">
+                            <div className="">
                                 <p className="title">New Template</p>
                                 <form
                                     onSubmit={this.handleSubmit}
                                     className="formBody"
                                 >
-                                    <div className="">
-                                        <InputName {...this.inputNameProps} />
-                                    </div>
-                                    <article
-                                        className="CarouselBody"
-                                        style={
-                                            this.state.activePage === 0
-                                                ? { height: 300 }
-                                                : { height: 500 }
-                                        }
-                                    >
+                                    <article className="CarouselBody">
                                         <this.Pages />
                                     </article>
                                     <this.Buttons />
@@ -111,7 +99,7 @@ export default class CreateTemplate extends Component<
                     </div>
                 </BackgroundBlur>
                 <ImportList {...this.importListProps} />
-            </div>
+            </>
         );
     }
 
@@ -345,13 +333,8 @@ export default class CreateTemplate extends Component<
                     <Button type="button" onClick={this.prevFormStep}>
                         previous
                     </Button>
-                    <Button
-                        type="submit"
-                        onClick={(e: unknown) =>
-                            this.handleSubmit(e as FormEvent<HTMLFormElement>)
-                        }
-                    >
-                        Create template
+                    <Button type="submit" onClick={this.nextFormStep}>
+                        Next
                     </Button>
                 </div>
             );
@@ -383,7 +366,7 @@ export default class CreateTemplate extends Component<
             case 0:
                 return (
                     <>
-                        <InputWordlist {...inputOptions} />
+                        <InputWordlist {...inputOptions} required={false} />
                         <InputRules {...inputOptions} />
                         <InputPotfiles {...inputOptions} />
                     </>
@@ -447,22 +430,35 @@ export default class CreateTemplate extends Component<
                 biggerFonts: true,
             };
             return (
-                <div
-                    className={`sectionTemplate contentTopCenter ${
-                        this.state.activePage === 0 ? 'active' : 'inactive'
-                    }`}
-                >
-                    <InputAttackModes {...inputAttackModesProps} />
+                <>
+                    <div className="">
+                        <InputName {...this.inputNameProps} />
+                    </div>
+                    <div className="sectionTemplate contentTopCenter active marginTop5">
+                        <InputAttackModes {...inputAttackModesProps} />
+                    </div>
+                </>
+            );
+        } else if (this.state.activePage === 1) {
+            return (
+                <div className="flexColumn gap10 width100P active">
+                    <this.PageTwo />
                 </div>
             );
         } else {
+            const inputOptions = {
+                state: this.state,
+                handleInputChange: this.handleInputChange,
+            };
             return (
-                <div
-                    className={`flexColumn alignCenter width100P ${
-                        this.state.activePage === 1 ? 'active' : 'inactive'
-                    }`}
-                >
-                    <this.PageTwo />
+                <div className="flexColumn gap10 width100P active">
+                    <InputCPUOnly {...inputOptions} />
+                    <InputKernelOpti
+                        state={this.state}
+                        handleInputChange={this.handleInputChange}
+                    />
+                    <InputBreakpointTemp {...inputOptions} />
+                    <InputWorkloadProfiles {...inputOptions} />
                 </div>
             );
         }
