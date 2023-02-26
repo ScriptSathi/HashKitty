@@ -7,11 +7,11 @@ import { inputDatalist } from './TInputs';
 import { GenericForm } from '../../types/TForm';
 import { fieldError } from '../../types/TErrorHandling';
 import { TDBData } from '../../types/TypesORM';
-import { newTHashlistFormData, newTaskFormData } from '../../types/TComponents';
+import { newHashlistFormData, newTaskFormData } from '../../types/TComponents';
 import Button from '../ui/Button/Button';
 
 type InputsState<
-    formName extends keyof newTaskFormData | keyof newTHashlistFormData,
+    formName extends keyof newTaskFormData | keyof newHashlistFormData,
     extraData = undefined
 > = extraData &
     GenericForm<Record<formName, fieldError> & Record<'formName', fieldError>>;
@@ -379,7 +379,7 @@ export const InputHashtypes = ({
 }: {
     state: InputsState<
         'formHashtypeName',
-        Pick<newTHashlistFormData, 'formHashtypeName'> &
+        Pick<newHashlistFormData, 'formHashtypeName'> &
             Pick<TDBData, 'hashtypes'>
     >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;

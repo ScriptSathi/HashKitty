@@ -1,4 +1,4 @@
-import { newTHashlistFormData } from './types/TComponents';
+import { newHashlistFormData } from './types/TComponents';
 import { THashType } from './types/TypesORM';
 import { ErrorHandling } from './ErrorHandling';
 import {
@@ -15,7 +15,7 @@ export class ErrorHandlingCreateHashlist extends ErrorHandling<
     }
 
     public analyse(
-        form: newTHashlistFormData,
+        form: newHashlistFormData,
         dbData: {
             hashtypes: THashType[];
         }

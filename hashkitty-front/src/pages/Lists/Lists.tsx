@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, ReactElement } from 'react';
 
 import Frame from '../../components/Frame/Frame';
 import Button from '../../components/ui/Button/Button';
@@ -6,6 +6,7 @@ import './Lists.scss';
 import { Utils } from '../../Utils';
 import { THashlist } from '../../types/TypesORM';
 import ImportList from '../../components/ImportList/ImportList';
+import ImportHashList from '../../components/ImportHashList/ImportHashList';
 
 type ListsState = {
     hashlists: THashlist[];
@@ -14,6 +15,7 @@ type ListsState = {
     rules: string[];
     maskFiles: string[];
     hashlistCreationToggle: boolean;
+    importListSuccessMessage: ReactElement;
 };
 
 type ListsProps = {};
@@ -23,6 +25,7 @@ export default class Lists extends Component<ListsProps, ListsState> {
         super(props);
         this.state = {
             hashlistCreationToggle: false,
+            importListSuccessMessage: <></>,
             hashlists: [],
             wordlists: [],
             potfiles: [],
@@ -37,21 +40,16 @@ export default class Lists extends Component<ListsProps, ListsState> {
 
     public render() {
         return (
-            <Frame>
+            <Frame message={this.state.importListSuccessMessage}>
                 <div className="List__main">
                     <div>
                         <this.HashlistsFrame />
                     </div>
-                    <div>
-                        <Button onClick={this.toggleHashlistCreation}>
-                            Import
-                        </Button>
-                    </div>
                 </div>
-                <ImportList
+                <ImportHashList
                     isToggled={this.state.hashlistCreationToggle}
                     toggleFn={this.toggleHashlistCreation}
-                    handleImportHasSucced={this.importHashlistSuccess}
+                    handleImportHasSucced={this.importListSuccess}
                 />
             </Frame>
         );
@@ -64,14 +62,20 @@ export default class Lists extends Component<ListsProps, ListsState> {
     private HashlistsFrame = (): JSX.Element => {
         return (
             <>
-                <div className="List__hashlistFrame fontMedium">
-                    <p>Name</p>
-                    <p>Hash type</p>
-                    <p>Cracked passwords amount</p>
+                <div className="List__hashlist flex spaceBtw">
+                    <p className="title noMargin">Hashlists</p>
+                    <Button onClick={this.toggleHashlistCreation}>
+                        Import
+                    </Button>
+                </div>
+                <div className="List__hashlist__items fontMedium">
+                    <p className="Title2">Name</p>
+                    <p className="Title2">Hash type</p>
+                    <p className="Title2">Cracked passwords</p>
                 </div>
                 {this.state.hashlists.map(hashList => (
                     <div
-                        className="List__hashlistFrame List__item fontMedium"
+                        className="List__hashlist__items List__item fontMedium"
                         key={hashList.id}
                     >
                         <p>{hashList.name}</p>
@@ -91,5 +95,25 @@ export default class Lists extends Component<ListsProps, ListsState> {
         this.setState({
             hashlistCreationToggle: !this.state.hashlistCreationToggle,
         });
+    };
+
+    private importListSuccess = (message: string, isError = false) => {
+        this.fetchData();
+        this.setState({
+            importListSuccessMessage: (
+                <p
+                    className={`fontMedium creationTaskStatusMessage ${
+                        isError ? 'colorRed' : 'colorGreen'
+                    }`}
+                >
+                    {message}
+                </p>
+            ),
+        });
+        setTimeout(() => {
+            this.setState({
+                importListSuccessMessage: <></>,
+            });
+        }, 5000);
     };
 }

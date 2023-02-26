@@ -25,7 +25,7 @@ import {
 } from '../../../types/TComponents';
 import { CreateTemplateProps, CreateTemplateState } from './TCreateTemplate';
 import Button from '../../../components/ui/Button/Button';
-import ImportList from '../../../components/ImportList/ImportList';
+import ImportHashList from '../../../components/ImportHashList/ImportHashList';
 import BackgroundBlur from '../../../components/ui/BackgroundBlur/BackGroundBlur';
 import { RequestUtils, StandardResponse } from '../../../RequestUtils';
 
@@ -98,7 +98,7 @@ export default class CreateTemplate extends Component<
                         </div>
                     </div>
                 </BackgroundBlur>
-                <ImportList {...this.importListProps} />
+                <ImportHashList {...this.importListProps} />
             </>
         );
     }
@@ -320,7 +320,7 @@ export default class CreateTemplate extends Component<
         if (this.state.activePage === 0) {
             return (
                 <Button
-                    type="submit"
+                    type="button"
                     className="submitInputCreateTask"
                     onClick={this.nextFormStep}
                 >
@@ -333,7 +333,7 @@ export default class CreateTemplate extends Component<
                     <Button type="button" onClick={this.prevFormStep}>
                         previous
                     </Button>
-                    <Button type="submit" onClick={this.nextFormStep}>
+                    <Button type="button" onClick={this.nextFormStep}>
                         Next
                     </Button>
                 </div>
