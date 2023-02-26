@@ -1,12 +1,25 @@
-.gridList {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
+.List {
+    &__main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
 
-.itemList {
-    border: 4px solid;
-    width: 80%;
-    border-radius: 50px;
-    padding: 0 20px;
-    margin: 10px 0;
+    &__item {
+        border: 4px solid;
+        border-radius: 50px;
+    }
+    
+    &__hashlistFrame {
+        width: 700px;
+        padding: 0 20px;
+        margin: 10px 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+
+        & > p {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
 }

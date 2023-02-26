@@ -147,12 +147,14 @@ export const RenderAdvancedConfigButton = ({
 export const InputWordlist = ({
     state,
     handleInputChange,
+    required = true,
 }: {
     state: InputsState<
         'formWordlistName',
         Pick<TDBData, 'wordlists'> & Pick<newTaskFormData, 'formWordlistName'>
     >;
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
+    required?: boolean;
 }) => {
     return (
         <label className="noMarginBottom labelsTitles">
@@ -173,7 +175,7 @@ export const InputWordlist = ({
                 handleInputChange={(e: ChangeEvent<HTMLInputElement>) =>
                     handleInputChange(e)
                 }
-                required
+                required={required}
                 formValue={state.formWordlistName}
             />
         </label>

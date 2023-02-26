@@ -118,6 +118,9 @@ export default class CreateTask extends Component<
                                         handleOnClick={this.handleTemplateRadio}
                                     />
                                 </div>
+                                <h3 className="marginTop100 fontMedium">
+                                    Advanded configurations
+                                </h3>
                                 <div className="advancedConfigsDivMain">
                                     <div>
                                         <InputRules {...inputOptions} />
@@ -206,7 +209,7 @@ export default class CreateTask extends Component<
                 target.name === 'formWordlistName' &&
                 event.target.value.startsWith('*')
             ) {
-                value = '*';
+                value = event.target.value;
             }
             if (target.name === 'formWorkloadProfile') {
                 value = parseInt(value as string) || 1;
