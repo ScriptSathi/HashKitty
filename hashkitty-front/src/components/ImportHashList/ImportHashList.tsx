@@ -1,46 +1,44 @@
 import React, { ChangeEvent, Component, FormEvent } from 'react';
 
 import BackgroundBlur from '../ui/BackgroundBlur/BackGroundBlur';
-import './ImportList.scss';
+import './ImportHashList.scss';
 import { Utils } from '../../Utils';
-import { newListFormData } from '../../types/TComponents';
+import { newHashlistFormData } from '../../types/TComponents';
 import { ErrorHandlingCreateHashlist } from '../../ErrorHandlingCreateHashlist';
 import { GenericForm } from '../../types/TForm';
-import { newListInputsError } from '../../types/TErrorHandling';
-import { InputName } from '../Inputs/Inputs';
-import { TDBData } from '../../types/TypesORM';
+import { newHashlistInputsError } from '../../types/TErrorHandling';
+import { InputHashtypes, InputName } from '../Inputs/Inputs';
+import { TDBData, THashType } from '../../types/TypesORM';
 import { Constants } from '../../Constants';
 import DragNDrop from '../ui/DragNDrop/DragNDrop';
 import Button from '../ui/Button/Button';
 
-type ImportListProps = {
+type ImportHashListProps = {
     isToggled: boolean;
-    type: keyof Omit<
-        TDBData,
-        'hashtypes' | 'hashlist' | 'templateTasks' | 'attackModes'
-    >;
     toggleFn: () => void;
     handleImportHasSucced: () => void;
 };
 
-type ImportListState = {
+type ImportHashListState = {
     onErrorImport: string;
-} & newListFormData &
-    GenericForm<newListInputsError>;
+} & newHashlistFormData &
+    GenericForm<newHashlistInputsError> &
+    Pick<TDBData, 'hashtypes'>;
 
 const defaultFormData = {
     formName: '',
-    formList: undefined,
+    formHashtypeName: '',
+    formHashlist: undefined,
 };
 
-export default class ImportList extends Component<
-    ImportListProps,
-    ImportListState
+export default class ImportHashList extends Component<
+    ImportHashListProps,
+    ImportHashListState
 > {
     private inputsError: ErrorHandlingCreateHashlist;
     private hashTypeId: number;
 
-    constructor(props: ImportListProps) {
+    constructor(props: ImportHashListProps) {
         super(props);
         this.inputsError = new ErrorHandlingCreateHashlist();
         this.hashTypeId = -1;
@@ -54,7 +52,12 @@ export default class ImportList extends Component<
     }
 
     public async componentDidMount(): Promise<void> {
-        this.displayErrorMessageOnImport();
+        const hashtypes = await Utils.fetchListWithEndpoint<THashType>(
+            Constants.apiGetHashTypes
+        );
+        this.setState({
+            hashtypes,
+        });
     }
 
     public render() {
@@ -64,12 +67,12 @@ export default class ImportList extends Component<
                 toggleFn={this.props.toggleFn}
                 centerContent
             >
-                <div className="ImportList__cardBody">
+                <div className="ImportHashList__cardBody">
                     <form
                         onSubmit={e => {
                             this.handleSubmit(e);
                         }}
-                        className="ImportList__formBody"
+                        className="ImportHashList__formBody"
                     >
                         <p
                             className={
@@ -78,9 +81,9 @@ export default class ImportList extends Component<
                                     : 'title'
                             }
                         >
-                            Import a list of {this.props.type}
+                            Import a list of hashes
                         </p>
-                        <p className="title ImportList__importError">
+                        <p className="title ImportHashList__importError">
                             {this.state.onErrorImport}
                         </p>
                         <div className="grid2Fr">
@@ -89,31 +92,35 @@ export default class ImportList extends Component<
                                     state={this.state}
                                     handleInputChange={this.handleInputChange}
                                 />
+                                <InputHashtypes
+                                    state={this.state}
+                                    handleInputChange={this.handleInputChange}
+                                />
                             </div>
                             <div className="marginLeft30 marginMinus5Up">
                                 <p
                                     className={
                                         this.state.formHasErrors &&
-                                        this.state.inputsErrorCheck.formList
+                                        this.state.inputsErrorCheck.formHashlist
                                             .isError
                                             ? 'isError labelsTitles noMargin'
                                             : 'hideBlock noMargin'
                                     }
                                 >
                                     {
-                                        this.state.inputsErrorCheck.formList
+                                        this.state.inputsErrorCheck.formHashlist
                                             .message
                                     }
                                 </p>
                                 <DragNDrop setFile={this.setFile} />
                             </div>
                         </div>
-                        <div className="ImportList__button">
+                        <div className="ImportHashList__button">
                             <Button
                                 type="submit"
-                                className="ImportList__submit"
+                                className="ImportHashList__submit"
                             >
-                                Import list
+                                Import Hashlist
                             </Button>
                         </div>
                     </form>
@@ -124,15 +131,16 @@ export default class ImportList extends Component<
 
     private get form(): FormData {
         const form = new FormData();
-        if (this.state.formList) {
+        if (this.state.formHashlist) {
             form.append('fileName', this.state.formName);
-            form.append('file', this.state.formList);
+            form.append('file', this.state.formHashlist);
+            form.append('hashTypeId', `${this.hashTypeId}`);
         }
         return form;
     }
 
-    private setFile = (formList: File): void => {
-        this.setState({ formList });
+    private setFile = (formHashlist: File): void => {
+        this.setState({ formHashlist });
     };
 
     private handleInputChange = (
@@ -146,7 +154,7 @@ export default class ImportList extends Component<
             const value = Utils.santizeInput(event);
             this.setState({
                 [target.name]: value,
-            } as Pick<newListFormData, keyof newListFormData>);
+            } as Pick<newHashlistFormData, keyof Omit<newHashlistFormData, 'formHashlist'>>);
         }
     };
 
@@ -155,7 +163,8 @@ export default class ImportList extends Component<
         this.inputsError.analyse(
             {
                 formName: this.state.formName,
-                formList: this.state.formList || undefined,
+                formHashlist: this.state.formHashlist || undefined,
+                formHashtypeName: this.state.formHashtypeName,
             },
             {
                 hashtypes: this.state.hashtypes,
@@ -166,7 +175,11 @@ export default class ImportList extends Component<
             formHasErrors: this.inputsError.hasErrors,
         });
         if (!this.inputsError.hasErrors) {
-            if (this.state.formList) {
+            const hashType = this.state.hashtypes.find(hashType => {
+                return this.state.formHashtypeName.includes(hashType.name);
+            });
+            if (hashType && this.state.formHashlist) {
+                this.hashTypeId = hashType.id;
                 this.submitForm();
             } else {
                 //TODO No reference found

@@ -15,10 +15,15 @@ export type newTaskFormData = {
 
 export type templateFormData = Omit<newTaskFormData, 'formHashlistName'>;
 
-export type newTHashlistFormData = {
+export type newHashlistFormData = {
     formHashlist?: File;
     formName: string;
     formHashtypeName: string;
+};
+
+export type newListFormData = {
+    formList?: File;
+    formName: string;
 };
 
 export type ApiTaskFormData = {

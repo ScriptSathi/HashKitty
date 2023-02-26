@@ -58,6 +58,11 @@ body {
     padding-left: 5px;
 }
 
+.Title2 {
+    font-family: InterBold;
+    font-size: 20px;
+}
+
 .noMarginTop {
     margin-top: 0px;
 }
@@ -164,4 +169,17 @@ body {
 
 .marginTop100 {
     margin-top: 100px;
+}
+
+.marginLeft30 {
+    margin-left: 30px;
+}
+
+.marginMinus5Up {
+    margin-top: -8px;
+}
+
+.grid2Fr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }

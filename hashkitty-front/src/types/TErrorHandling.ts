@@ -22,10 +22,16 @@ export type HashlistKeyErrors =
     | 'formName'
     | 'formHashtypeName';
 
+export type ListKeyErrors = 'formList' | 'formName';
+
 export type newTaskInputsError = {
     [key in CreateTaskKeyErrors]: fieldError;
 };
 
 export type newHashlistInputsError = {
     [key in HashlistKeyErrors]: fieldError;
+};
+
+export type newListInputsError = {
+    [key in ListKeyErrors]: fieldError;
 };

@@ -27,7 +27,7 @@ import {
 } from '../../../types/TComponents';
 import { CreateTaskProps, CreateTaskState } from './TCreateTask';
 import Button from '../../../components/ui/Button/Button';
-import ImportList from '../../../components/ImportList/ImportList';
+import ImportHashList from '../../../components/ImportHashList/ImportHashList';
 import BackgroundBlur from '../../../components/ui/BackgroundBlur/BackGroundBlur';
 
 const defaultFormData = {
@@ -97,7 +97,7 @@ export default class CreateTask extends Component<
                                 }}
                                 className="formBody"
                             >
-                                <div className="mandatoryBody">
+                                <div className="grid2Fr">
                                     <div>
                                         <InputName {...inputOptions} />
                                         <br />
@@ -160,7 +160,7 @@ export default class CreateTask extends Component<
                         </div>
                     </div>
                 </BackgroundBlur>
-                <ImportList
+                <ImportHashList
                     isToggled={this.state.hashlistCreationToggle}
                     toggleFn={this.toggleHashlistCreation}
                     handleImportHasSucced={this.importHashlistSuccess}
