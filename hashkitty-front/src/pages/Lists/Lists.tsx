@@ -5,8 +5,9 @@ import Button from '../../components/ui/Button/Button';
 import './Lists.scss';
 import { Utils } from '../../Utils';
 import { THashlist } from '../../types/TypesORM';
-import ImportList from '../../components/ImportList/ImportList';
 import ImportHashList from '../../components/ImportHashList/ImportHashList';
+import ListItem from './ListItem/ListItem';
+import ImportList from '../../components/ImportList/ImportList';
 
 type ListsState = {
     hashlists: THashlist[];
@@ -16,6 +17,9 @@ type ListsState = {
     maskFiles: string[];
     hashlistCreationToggle: boolean;
     importListSuccessMessage: ReactElement;
+    wordlistCreationToggle: boolean;
+    potfileCreationToggle: boolean;
+    ruleCreationToggle: boolean;
 };
 
 type ListsProps = {};
@@ -31,6 +35,9 @@ export default class Lists extends Component<ListsProps, ListsState> {
             potfiles: [],
             rules: [],
             maskFiles: [],
+            wordlistCreationToggle: false,
+            potfileCreationToggle: false,
+            ruleCreationToggle: false,
         };
     }
 
@@ -45,11 +52,46 @@ export default class Lists extends Component<ListsProps, ListsState> {
                     <div>
                         <this.HashlistsFrame />
                     </div>
+                    <div>
+                        <this.ListFrame
+                            list={this.state.wordlists}
+                            listType="Wordlists"
+                            importFn={this.toggleWordlistCreation}
+                        />
+                        <this.ListFrame
+                            list={this.state.rules}
+                            listType="Potfiles"
+                            importFn={this.togglPotfileCreation}
+                        />
+                        <this.ListFrame
+                            list={this.state.rules}
+                            listType="Rules"
+                            importFn={this.toggleRuleCreation}
+                        />
+                    </div>
                 </div>
                 <ImportHashList
                     isToggled={this.state.hashlistCreationToggle}
                     toggleFn={this.toggleHashlistCreation}
                     handleImportHasSucced={this.importListSuccess}
+                />
+                <ImportList
+                    isToggled={this.state.wordlistCreationToggle}
+                    toggleFn={this.toggleWordlistCreation}
+                    handleImportHasSucced={this.importListSuccess}
+                    type={'wordlists'}
+                />
+                <ImportList
+                    isToggled={this.state.ruleCreationToggle}
+                    toggleFn={this.toggleRuleCreation}
+                    handleImportHasSucced={this.importListSuccess}
+                    type={'rules'}
+                />
+                <ImportList
+                    isToggled={this.state.potfileCreationToggle}
+                    toggleFn={this.togglPotfileCreation}
+                    handleImportHasSucced={this.importListSuccess}
+                    type={'potfiles'}
                 />
             </Frame>
         );
@@ -62,20 +104,20 @@ export default class Lists extends Component<ListsProps, ListsState> {
     private HashlistsFrame = (): JSX.Element => {
         return (
             <>
-                <div className="List__hashlist flex spaceBtw">
+                <div className="List__lists flex spaceBtw">
                     <p className="title noMargin">Hashlists</p>
                     <Button onClick={this.toggleHashlistCreation}>
                         Import
                     </Button>
                 </div>
-                <div className="List__hashlist__items fontMedium">
+                <div className="List__lists__items List__margin fontMedium">
                     <p className="Title2">Name</p>
                     <p className="Title2">Hash type</p>
                     <p className="Title2">Cracked passwords</p>
                 </div>
                 {this.state.hashlists.map(hashList => (
                     <div
-                        className="List__hashlist__items List__item fontMedium"
+                        className="List__lists__items List__item List__margin fontMedium"
                         key={hashList.id}
                     >
                         <p>{hashList.name}</p>
@@ -91,29 +133,64 @@ export default class Lists extends Component<ListsProps, ListsState> {
         );
     };
 
+    private ListFrame = ({
+        list,
+        listType,
+        importFn,
+    }: {
+        list: string[];
+        listType: string;
+        importFn: () => void;
+    }) => {
+        return (
+            <>
+                <div className="List__lists flex spaceBtw">
+                    <p className="title noMargin">{listType}</p>
+                    <Button onClick={importFn}>Import</Button>
+                </div>
+                <div className="fontMedium List__ListFrame">
+                    <p className="Title2">Name</p>
+                </div>
+                {list.length > 0 ? (
+                    list.map(name => <ListItem name={name} />)
+                ) : (
+                    <p className="fontMedium Main__alignCenter">
+                        No {listType.toLowerCase()} found
+                    </p>
+                )}
+            </>
+        );
+    };
+
     private toggleHashlistCreation = () => {
         this.setState({
             hashlistCreationToggle: !this.state.hashlistCreationToggle,
         });
     };
 
-    private importListSuccess = (message: string, isError = false) => {
-        this.fetchData();
+    private toggleWordlistCreation = () => {
         this.setState({
-            importListSuccessMessage: (
-                <p
-                    className={`fontMedium creationTaskStatusMessage ${
-                        isError ? 'colorRed' : 'colorGreen'
-                    }`}
-                >
-                    {message}
-                </p>
-            ),
+            wordlistCreationToggle: !this.state.wordlistCreationToggle,
         });
-        setTimeout(() => {
-            this.setState({
-                importListSuccessMessage: <></>,
-            });
-        }, 5000);
+    };
+
+    private toggleRuleCreation = () => {
+        this.setState({
+            ruleCreationToggle: !this.state.ruleCreationToggle,
+        });
+    };
+
+    private togglPotfileCreation = () => {
+        this.setState({
+            potfileCreationToggle: !this.state.potfileCreationToggle,
+        });
+    };
+
+    private importListSuccess = () => {
+        this.setState({
+            importListSuccessMessage: <p>Successfull import</p>,
+        });
+        this.fetchData();
+        this.toggleHashlistCreation();
     };
 }

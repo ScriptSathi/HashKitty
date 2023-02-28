@@ -30,6 +30,15 @@
     font-weight: 500;
 }
 
+.Main {
+
+    &__alignCenter {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
 .mainHover:hover{
     color: $hover-color;
 }

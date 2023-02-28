@@ -2,6 +2,7 @@
     &__main {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        gap: 100px;
     }
 
     &__item {
@@ -9,13 +10,13 @@
         border-radius: 50px;
     }
     
-    &__hashlist {
-        width: 700px;
+    &__lists {
+        max-width: 700px;
 
         &__items {
-            margin: 10px 0;
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
+            margin: 10px 0;
 
             & > p {
                 display: flex;
@@ -23,5 +24,11 @@
                 justify-content: center;
             }
         }
+    }
+
+    &__ListFrame {
+        margin: 10px 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
     }
 }
