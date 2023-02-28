@@ -388,7 +388,5 @@ export default class CreateTask extends Component<
             wordlists,
             attackModes,
         });
-        console.log('aaaaaaaaaaaaaaaaaaaaaaaaa');
-        console.log(hashlists);
     }
 }

@@ -61,9 +61,7 @@ export default class ImportList extends Component<
                         }}
                         className="ImportList__formBody"
                     >
-                        <p className="title">
-                            Import a list of {this.props.type}
-                        </p>
+                        <p className="title">Import a {this.props.type}</p>
                         <div className="grid2Fr">
                             <div>
                                 <InputName
@@ -108,6 +106,7 @@ export default class ImportList extends Component<
         if (this.state.formList) {
             form.append('fileName', this.state.formName);
             form.append('file', this.state.formList);
+            form.append('type', this.props.type);
         }
         return form;
     }
@@ -156,7 +155,7 @@ export default class ImportList extends Component<
             body: this.form,
             ...Constants.mandatoryFetchOptions,
         };
-        fetch(Constants.apiPOSTAddHashlist, requestOptions)
+        fetch(Constants.apiPOSTAddList, requestOptions)
             .then(response => {
                 return response.json();
             })
@@ -166,17 +165,5 @@ export default class ImportList extends Component<
                 this.props.handleImportHasSucced(res.message, isError);
                 this.props.toggleFn();
             });
-    }
-
-    private setElement(
-        type: keyof Omit<
-            TDBData,
-            'hashtypes' | 'hashlist' | 'templateTasks' | 'attackModes'
-        >
-    ) {
-        switch (type) {
-            case 'potfiles':
-                this.uploadUrl = Constants.POST;
-        }
     }
 }
