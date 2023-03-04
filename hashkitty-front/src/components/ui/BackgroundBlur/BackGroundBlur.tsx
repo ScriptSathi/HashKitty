@@ -1,58 +1,56 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import './BackGroundBlur.scss';
 
 interface BackgroundBlurProps {
-    children: React.ReactNode;
-    isToggled: boolean;
-    centerContent: boolean;
-    toggleFn: () => void | Promise<void>;
+   children: React.ReactNode;
+   isToggled: boolean;
+   centerContent: boolean;
+   toggleFn: () => void | Promise<void>;
 }
 
 interface BackgroundBlurState {
-    isMouseOver: boolean;
+   isMouseOver: boolean;
 }
 
 export default class BackgroundBlur extends Component<
-    BackgroundBlurProps,
-    BackgroundBlurState
+   BackgroundBlurProps,
+   BackgroundBlurState
 > {
-    public state: BackgroundBlurState = {
-        isMouseOver: false,
-    };
+   public state: BackgroundBlurState = {
+      isMouseOver: false,
+   };
 
-    public render() {
-        document.body.className = 'noMargin';
-        return (
-            <div
-                className={this.props.isToggled ? 'backgroundBlur' : ''}
-                onClick={
-                    this.state.isMouseOver ? () => {} : this.props.toggleFn
-                }
-            >
-                {this.props.isToggled ? (
-                    <div
-                        onMouseEnter={this.onMouseEnterCantClick}
-                        onMouseLeave={this.onMouseLeaveCanClick}
-                    >
-                        {this.props.children}
-                    </div>
-                ) : (
-                    ''
-                )}
-            </div>
-        );
-    }
+   public render() {
+      document.body.className = 'noMargin';
+      return (
+         <div
+            className={this.props.isToggled ? 'backgroundBlur' : ''}
+            onClick={this.state.isMouseOver ? () => {} : this.props.toggleFn}
+         >
+            {this.props.isToggled ? (
+               <div
+                  onMouseEnter={this.onMouseEnterCantClick}
+                  onMouseLeave={this.onMouseLeaveCanClick}
+               >
+                  {this.props.children}
+               </div>
+            ) : (
+               ''
+            )}
+         </div>
+      );
+   }
 
-    private onMouseEnterCantClick: () => void = () => {
-        this.setState({
-            isMouseOver: true,
-        });
-    };
+   private onMouseEnterCantClick: () => void = () => {
+      this.setState({
+         isMouseOver: true,
+      });
+   };
 
-    private onMouseLeaveCanClick: () => void = () => {
-        this.setState({
-            isMouseOver: false,
-        });
-    };
+   private onMouseLeaveCanClick: () => void = () => {
+      this.setState({
+         isMouseOver: false,
+      });
+   };
 }

@@ -4,19 +4,19 @@ import { GenericForm } from '../../../types/TForm';
 import { TDBData } from '../../../types/TypesORM';
 
 export type CreateTaskState = {
-    toggleNewTask: () => void;
-    hashlistCreationToggle: boolean;
-    isMouseIn: boolean;
-    templateCheckboxIsChecked: boolean;
-    templateTaskCheckBoxId: number;
-    importHashlistSuccessMessage: string;
+   toggleNewTask: () => void;
+   hashlistCreationToggle: boolean;
+   isMouseIn: boolean;
+   templateCheckboxIsChecked: boolean;
+   templateTaskCheckBoxId: number;
+   importHashlistSuccessMessage: string;
 } & newTaskFormData &
-    GenericForm<newTaskInputsError> &
-    Omit<TDBData, 'hashtypes'>;
+   GenericForm<newTaskInputsError> &
+   Omit<TDBData, 'hashtypes'>;
 
 export interface CreateTaskProps {
-    handleTaskCreation: (message: string, isError?: boolean) => void;
-    toggleNewTask: () => void;
-    isToggled: boolean;
-    // toggleImportHashlist: () => void;
+   handleTaskCreation: (message: string, isError?: boolean) => void;
+   toggleNewTask: () => void;
+   isToggled: boolean;
+   // toggleImportHashlist: () => void;
 }
