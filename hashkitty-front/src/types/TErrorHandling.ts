@@ -1,37 +1,37 @@
 export type fieldError = {
-    isError: boolean;
-    message: string;
-    itemId: number;
+   isError: boolean;
+   message: string;
+   itemId: number;
 };
 
 export type CreateTaskKeyErrors =
-    | 'formAttackModeId'
-    | 'formRuleName'
-    | 'formMaskQuery'
-    | 'formPotfileName'
-    | 'formKernelOpti'
-    | 'formWordlistName'
-    | 'formWorkloadProfile'
-    | 'formBreakpointGPUTemperature'
-    | 'formCpuOnly'
-    | 'formHashlistName'
-    | 'formName';
+   | 'formAttackModeId'
+   | 'formRuleName'
+   | 'formMaskQuery'
+   | 'formPotfileName'
+   | 'formKernelOpti'
+   | 'formWordlistName'
+   | 'formWorkloadProfile'
+   | 'formBreakpointGPUTemperature'
+   | 'formCpuOnly'
+   | 'formHashlistName'
+   | 'formName';
 
 export type HashlistKeyErrors =
-    | 'formHashlist'
-    | 'formName'
-    | 'formHashtypeName';
+   | 'formHashlist'
+   | 'formName'
+   | 'formHashtypeName';
 
 export type ListKeyErrors = 'formList' | 'formName';
 
 export type newTaskInputsError = {
-    [key in CreateTaskKeyErrors]: fieldError;
+   [key in CreateTaskKeyErrors]: fieldError;
 };
 
 export type newHashlistInputsError = {
-    [key in HashlistKeyErrors]: fieldError;
+   [key in HashlistKeyErrors]: fieldError;
 };
 
 export type newListInputsError = {
-    [key in ListKeyErrors]: fieldError;
+   [key in ListKeyErrors]: fieldError;
 };

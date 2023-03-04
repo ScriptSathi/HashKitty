@@ -1,44 +1,45 @@
 {
   "name": "hashkitty-front",
   "version": "0.1.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && tailwind -i ./src/tailwind.css -o ./dist/tailwind.css",
+    "tailwind": "tailwindcss -i ./src/tailwind.css -o ./dist/tailwind.css --watch",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts,.tsx",
+    "fix": "eslint . --ext .ts,.tsx --fix"
+  },
   "dependencies": {
     "humanize-duration": "^3.27.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
-    "react-router-dom": "^6.4.5",
-    "react-scripts": "^5.0.1",
-    "sass": "^1.56.2",
-    "web-vitals": "^2.1.4"
+    "react-router-dom": "^6.8.2"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.1",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.8",
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.9",
     "@types/react-dropzone": "^5.1.0",
     "@types/react-router-dom": "^5.3.3",
     "gts": "^3.1.1",
-    "typescript": "^4.9.4"
-  },
-  "scripts": {
-    "lint": "gts lint",
-    "clean": "gts clean",
-    "compile": "tsc -v && tsc --pretty",
-    "compile-watch": "tsc --pretty -w",
-    "fix": "gts fix",
-    "lint-fix": "eslint 'src/**/*.ts' --fix",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
+    "@vitejs/plugin-react-swc": "^3.0.0",
+    "eslint": "^8.35.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^2.8.4",
+    "sass": "^1.58.3",
+    "tailwindcss": "^3.2.7",
+    "typescript": "^4.9.3",
+    "vite": "^4.1.0"
   },
   "browserslist": {
     "production": [
