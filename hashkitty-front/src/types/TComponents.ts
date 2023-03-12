@@ -1,29 +1,27 @@
-export type newTaskFormData = {
-   formName: string;
-   formHashlistName: string;
-   formAttackModeId: number;
-   formCpuOnly: boolean;
-   formRuleName: string;
-   formMaskQuery: string;
-   formMaskFileName: string;
-   formPotfileName: string;
-   formKernelOpti: boolean;
-   formWordlistName: string;
-   formWorkloadProfile: number;
-   formBreakpointGPUTemperature: number;
+export type CreateTaskForm = {
+   name: string;
+   hashlistName: string;
+   attackModeId: number;
+   cpuOnly: boolean;
+   ruleName: string;
+   maskQuery: string;
+   maskFileName: string;
+   potfileName: string;
+   kernelOpti: boolean;
+   wordlistName: string;
+   workloadProfile: number;
+   breakpointGPUTemperature: number;
 };
 
-export type templateFormData = Omit<newTaskFormData, 'formHashlistName'>;
+export type TemplateForm = Omit<CreateTaskForm, 'fashlistName'>;
 
-export type newHashlistFormData = {
-   formHashlist?: File;
-   formName: string;
-   formHashtypeName: string;
-};
+export type ImportHashlistFormData = {
+   hashtypeName: string;
+} & ImportListFormData;
 
-export type newListFormData = {
-   formList?: File;
-   formName: string;
+export type ImportListFormData = {
+   list?: File;
+   name: string;
 };
 
 export type ApiTaskFormData = {
@@ -54,7 +52,7 @@ export type ApiOptionsFormData = {
    maskFilename?: string;
 };
 
-export type itemBase = { name: string; id: number };
+export type ItemBase = { name: string; id: number };
 
 export type TUploadReqBody = {
    hashlist: File;

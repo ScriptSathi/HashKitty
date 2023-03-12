@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
+import { TuseFetch } from '../types/THooks';
 
-export function useFetchList<ItemType>(
-   method: 'GET' | 'POST',
-   url: string,
-   data?: unknown,
+export default function useFetchList<ItemType>({
+   method,
+   url,
+   data,
    headers = {},
-) {
+}: TuseFetch) {
    const [items, setItems] = useState<ItemType[]>([]);
-   const [isLoaded, setIsLoaded] = useState(false);
+   const [isLoading, setIsLoading] = useState(true);
    const [error, setError] = useState(null);
 
    const defaultHeaders = { 'Content-Type': 'application/json' };
@@ -27,13 +28,13 @@ export function useFetchList<ItemType>(
          .then(
             res => {
                setItems(res.success);
-               setIsLoaded(true);
+               setIsLoading(false);
             },
             err => {
-               setIsLoaded(true);
+               setIsLoading(false);
                setError(err);
             },
          );
    }, []);
-   return { items, error, isLoaded };
+   return { items, error, isLoading };
 }

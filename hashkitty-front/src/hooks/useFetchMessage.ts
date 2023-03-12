@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TuseFetch } from '../types/THooks';
 
-export function useFetchMessage({
+export default function useFetchMessage({
    method,
    url,
    data,
@@ -29,10 +29,12 @@ export function useFetchMessage({
          .then(res => {
             if (res.success) {
                setColor('colorGreen');
+            } else {
+               setError(res.error);
             }
             setMessage(res.message);
             setIsLoaded(true);
          });
    }, []);
-   return [items, isLoaded];
+   return { message, isLoaded, color, error };
 }
