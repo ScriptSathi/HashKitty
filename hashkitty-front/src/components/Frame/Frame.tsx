@@ -1,24 +1,47 @@
-import React, { Component, ReactElement } from 'react';
+import { CircularProgress } from '@mui/material';
 
-import Navbar from '../Navbar/Navbar';
-import './Frame.scss';
+import NavBar from '../NavBar/NavBar';
 
-type FrameState = {};
-
-type FrameProps = {
+type PageBodyProps = {
    children: React.ReactNode;
-   className?: string;
-   message?: ReactElement;
+   isLoading?: boolean;
 };
-
-export default class Frame extends Component<FrameProps, FrameState> {
-   public render() {
-      return (
-         <div className={this.props.className}>
-            <Navbar />
-            {this.props.message}
-            <div className="FrameBox">{this.props.children}</div>
-         </div>
-      );
+declare module '@mui/material/styles' {
+   interface Theme {
+      primary: {
+         main: string;
+      };
+      secondary: {
+         main: string;
+      };
+   }
+   interface ThemeOptions {
+      primary: {
+         main: string;
+      };
+      secondary: {
+         main: string;
+      };
    }
 }
+
+export default function PageBody({ children, isLoading }: PageBodyProps) {
+   return (
+      <>
+         <header>
+            <NavBar />
+         </header>
+         <div className="flex justify-center">
+            {isLoading ? (
+               <CircularProgress className="mt-96" />
+            ) : (
+               <main className="block max-w-screen-2xl w-full">{children}</main>
+            )}
+         </div>
+      </>
+   );
+}
+
+PageBody.defaultProps = {
+   isLoading: false,
+};

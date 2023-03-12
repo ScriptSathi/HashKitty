@@ -85,7 +85,7 @@ export type TDBData = {
    potfiles: itemBase[];
 };
 
-export type allListsItems =
+export type AllListsItems =
    | TAttackMode
    | TWordlist
    | THashlist

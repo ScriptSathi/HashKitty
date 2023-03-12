@@ -1,32 +1,18 @@
-import { CSSProperties, Component, HTMLAttributes } from 'react';
-import './Button.scss';
+import { Button as TWButton } from '@material-tailwind/react';
+
+import { HTMLAttributes } from 'react';
 
 type ButtonProps = {
-   children?: React.ReactNode;
-   type?: 'button' | 'reset' | 'submit';
-   className?: string | undefined;
-   name?: string | undefined;
-   style?: CSSProperties | undefined;
-} & HTMLAttributes<HTMLButtonElement>;
+   children: React.ReactNode;
+} & Omit<HTMLAttributes<HTMLButtonElement>, 'color'>;
 
-type ButtonState = {};
-
-export default class Button extends Component<ButtonProps, ButtonState> {
-   public render() {
-      const {
-         children,
-         type = 'button',
-         className = '',
-         name,
-         style,
-         ...otherProps
-      } = this.props;
-      return (
-         <div className={className} style={style}>
-            <button {...otherProps} type={type} className="button" name={name}>
-               {children || 'button'}
-            </button>
-         </div>
-      );
-   }
+export default function Button({ children = undefined, ...args }: ButtonProps) {
+   return (
+      <TWButton
+         className={`min-w-full border-solid border-4 border-orange-600 hover:bg-orange-600 hover:text-white rounded-lg ${args.className}`}
+         {...args}
+      >
+         {children || 'button'}
+      </TWButton>
+   );
 }

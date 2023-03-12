@@ -1,0 +1,56 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import HomePage from './pages/HomePage/HomePage';
+import ErrorPage from './pages/ErrorPage/ErrorPage';
+
+import './assets/styles/main.scss';
+
+const theme = createTheme({
+   palette: {
+      primary: {
+         main: '#FC6F6F',
+      },
+   },
+});
+
+const root = ReactDOM.createRoot(
+   document.getElementById('root') as HTMLElement,
+);
+
+const router = createBrowserRouter([
+   {
+      errorElement: <ErrorPage />,
+      children: [
+         {
+            path: '',
+            element: <HomePage />,
+         },
+         {
+            path: 'home',
+            element: <HomePage />,
+         },
+         {
+            path: 'templates',
+            element: <HomePage />,
+         },
+         {
+            path: 'lists',
+            element: <HomePage />,
+         },
+         {
+            path: 'server-infos',
+            element: <HomePage />,
+         },
+      ],
+   },
+]);
+root.render(
+   <React.StrictMode>
+      <ThemeProvider theme={theme}>
+         <RouterProvider router={router} />
+      </ThemeProvider>
+   </React.StrictMode>,
+);

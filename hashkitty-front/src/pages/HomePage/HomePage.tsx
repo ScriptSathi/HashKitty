@@ -1,167 +1,76 @@
-import { Component, ReactElement } from 'react';
+import { useState } from 'react';
 
-import newTask from '../../assets/images/newTask.svg';
-import '../../assets/styles/main.scss';
-import './HomePage.scss';
-import { TTask } from '../../types/TypesORM';
-import TasksBody from './TasksBody';
-import { Constants } from '../../Constants';
-import CreateTask from './CreateTask/CreateTask';
+import ApiEndpoints from '../../ApiEndpoints';
 import Frame from '../../components/Frame/Frame';
+import CreateCard from '../../components/ui/Cards/CreateCard/CreateCard';
+import RunCard from '../../components/ui/Cards/RunCard/RunCard';
+import EndCard from '../../components/ui/Cards/EndCard/EndCard';
+import useFetchList from '../../hooks/useFetchList';
+import useFetchStatus from '../../hooks/useFetchStatus';
 
-type HomePageState = {
-   taskCreationMessage: ReactElement;
-   newTaskToogle: boolean;
-   taskCreationAdded: boolean;
-   isMouseOvershowResultsCard: boolean;
-   taskCreationError: boolean;
-   taskResultsToggle: boolean;
-   isMouseOverNewTask: boolean;
-   hashlistCreationToggle: boolean;
-   tasks: TTask[];
-   endedTasks: TTask[];
-};
+import { TTask } from '../../types/TypesORM';
+import useIsMobile from '../../hooks/useIsMobile';
+import BackgroundBlur from '../../components/ui/BackgroundBlur/BackGroundBlur';
+import CreateTask from '../../components/CreateTask/CreateTask';
 
-type HomePageProps = {};
+export default function HomePage() {
+   const [isClickedCreation, setIsClickedCreation] = useState(false);
+   const isMobile = useIsMobile({});
+   const { items, isLoading } = useFetchList<TTask>({
+      method: 'GET',
+      url: ApiEndpoints.apiGetTasks,
+   });
+   const { sessionName } = useFetchStatus({
+      url: ApiEndpoints.apiGetStatus,
+   });
+   const [tasks, endedTasks] = items.reduce(
+      ([_tasks, _endedTasks]: TTask[][], element: TTask) =>
+         element.isfinished
+            ? [_tasks, [..._endedTasks, ...[element]]]
+            : [[..._tasks, ...[element]], _endedTasks],
+      [[], []],
+   );
+   const closeTaskCreation = () => setIsClickedCreation(false);
 
-export default class HomePage extends Component<HomePageProps, HomePageState> {
-   public state: HomePageState = {
-      taskCreationAdded: false,
-      taskCreationMessage: <></>,
-      isMouseOvershowResultsCard: false,
-      hashlistCreationToggle: false,
-      taskResultsToggle: false,
-      taskCreationError: false,
-      newTaskToogle: false,
-      isMouseOverNewTask: false,
-      tasks: [],
-      endedTasks: [],
-   };
-
-   public componentDidMount() {
-      this.loadTasks();
-   }
-
-   public render() {
+   if (isMobile && isClickedCreation) {
       return (
-         <Frame
-            className={
-               this.state.newTaskToogle || this.state.taskResultsToggle
-                  ? 'lockScreen'
-                  : ''
-            }
-            message={this.state.taskCreationMessage}
-         >
-            <div className="HomePage__splitTasks">
-               <div className="HomePage__splitTasks__leftBox">
-                  <div className="Title">
-                     <p className="noMarginTop">Running tasks</p>
-                  </div>
-                  <div className="HomePage__cardBody">
-                     <div className="HomePage__runningTasks">
-                        <TasksBody
-                           tasks={this.state.tasks}
-                           handleRefreshTasks={this.loadTasks.bind(this)}
-                        />
-                     </div>
-                     <div>
-                        <img
-                           className="HomePage__newTask"
-                           src={newTask}
-                           alt="create a new task"
-                           onClick={this.toggleNewTask}
-                        />
-                     </div>
-                  </div>
-               </div>
-               <div className="HomePage__splitTasks__rightBox">
-                  <div className="Title">
-                     <p className="noMarginTop">Ended tasks</p>
-                  </div>
-                  <div className="HomePage__splitTasks__tasksBody">
-                     <TasksBody
-                        handleRefreshTasks={this.handleRefreshTasks}
-                        tasks={this.state.endedTasks}
-                        toggleDisplayResults={this.toggleTaskResults}
-                     />
-                  </div>
-               </div>
-            </div>
-            <div id="blur">
-               <CreateTask
-                  handleTaskCreation={this.handleTaskCreation}
-                  toggleNewTask={this.toggleNewTask}
-                  isToggled={this.state.newTaskToogle}
-               />
-            </div>
+         <Frame>
+            <CreateTask closeTaskCreation={closeTaskCreation} />
          </Frame>
       );
    }
-
-   private handleRefreshTasks = (): Promise<void> => {
-      return this.loadTasks();
-   };
-
-   private async loadTasks(): Promise<void> {
-      const allTasks =
-         ((
-            await (
-               await fetch(
-                  Constants.apiGetTasks,
-                  Constants.mandatoryFetchOptions,
-               )
-            ).json()
-         ).success as TTask[]) || [];
-      const [tasks, endedTasks] = allTasks.reduce(
-         ([tasks, endedTasks]: TTask[][], element: TTask) =>
-            element.isfinished
-               ? [tasks, [...endedTasks, ...[element]]]
-               : [[...tasks, ...[element]], endedTasks],
-         [[], []],
-      );
-      this.setState({
-         tasks,
-         endedTasks,
-      });
-   }
-
-   private toggleNewTask: () => void = () => {
-      this.setState({
-         newTaskToogle: !this.state.newTaskToogle,
-      });
-      this.hiddenOverflowOnToggle();
-   };
-
-   private toggleTaskResults: () => void = () => {
-      this.setState({
-         taskResultsToggle: !this.state.taskResultsToggle,
-      });
-      this.hiddenOverflowOnToggle();
-   };
-
-   private handleTaskCreation = (message: string, isError = false) => {
-      this.setState({
-         taskCreationMessage: (
-            <p
-               className={`fontMedium HomePage__creationTaskStatusMessage ${
-                  isError ? 'colorRed' : 'colorGreen'
-               }`}
-            >
-               {message}
-            </p>
-         ),
-      });
-      this.loadTasks();
-      setTimeout(() => {
-         this.setState({
-            taskCreationMessage: <></>,
-         });
-      }, 5000);
-   };
-
-   private hiddenOverflowOnToggle() {
-      this.state.newTaskToogle || this.state.taskResultsToggle
-         ? (document.body.style.overflow = 'visible')
-         : (document.body.style.overflow = 'hidden');
-   }
+   return (
+      <Frame isLoading={isLoading}>
+         <div className="grid grid-cols-2">
+            <div>
+               <h2 className="flex justify-center text-3xl">Runnable tasks</h2>
+               <div className="flex flex-wrap justify-center">
+                  <CreateCard
+                     clickedCreation={[isClickedCreation, setIsClickedCreation]}
+                  />
+                  {tasks.map(task => (
+                     <RunCard
+                        key={task.id}
+                        task={tasks[0]}
+                        isRunning={sessionName === `${task.name}-${task.id}`}
+                     />
+                  ))}
+               </div>
+            </div>
+            <div>
+               <h2 className="flex justify-center text-3xl">Ended tasks</h2>
+               <div className="flex flex-wrap justify-center">
+                  {endedTasks.map(task => (
+                     <EndCard key={task.id} task={task} />
+                  ))}
+               </div>
+            </div>
+         </div>
+         {isClickedCreation && (
+            <BackgroundBlur toggleFn={closeTaskCreation}>
+               <CreateTask closeTaskCreation={closeTaskCreation} />
+            </BackgroundBlur>
+         )}
+      </Frame>
+   );
 }

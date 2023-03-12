@@ -1,6 +1,8 @@
 {
   "name": "hashkitty-front",
-  "version": "0.1.0",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && tailwind -i ./src/tailwind.css -o ./dist/tailwind.css",
@@ -10,19 +12,24 @@
     "fix": "eslint . --ext .ts,.tsx --fix"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@material-tailwind/react": "^1.4.2",
+    "@mui/icons-material": "^5.11.11",
+    "@mui/material": "^5.11.11",
     "humanize-duration": "^3.27.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
-    "react-router-dom": "^6.8.2"
+    "react-router-dom": "^6.8.2",
+    "vite-plugin-svgr": "^2.4.0"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.1",
-    "@types/react-dropzone": "^5.1.0",
-    "@types/react-router-dom": "^5.3.3",
-    "gts": "^3.1.1",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@types/react-dropzone": "^5.1.0",
+    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
     "@vitejs/plugin-react-swc": "^3.0.0",
@@ -40,17 +47,5 @@
     "tailwindcss": "^3.2.7",
     "typescript": "^4.9.3",
     "vite": "^4.1.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }
