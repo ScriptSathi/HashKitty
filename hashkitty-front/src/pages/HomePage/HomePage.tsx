@@ -12,11 +12,18 @@ import { TTask } from '../../types/TypesORM';
 import useIsMobile from '../../hooks/useIsMobile';
 import BackgroundBlur from '../../components/ui/BackgroundBlur/BackGroundBlur';
 import CreateTask from '../../components/CreateTask/CreateTask';
+import ResultsCard from '../../components/TaskResults/TaskResults';
 
 export default function HomePage() {
+   const defaultResults = {
+      isClicked: false,
+      listName: '',
+      listId: -1,
+   };
    const [isClickedCreation, setIsClickedCreation] = useState(false);
+   const [results, setResults] = useState(defaultResults);
    const isMobile = useIsMobile({});
-   const { items, isLoading } = useFetchList<TTask>({
+   const { items, refresh, isLoading } = useFetchList<TTask>({
       method: 'GET',
       url: ApiEndpoints.apiGetTasks,
    });
@@ -31,11 +38,23 @@ export default function HomePage() {
       [[], []],
    );
    const closeTaskCreation = () => setIsClickedCreation(false);
+   const closeResults = () => setResults(defaultResults);
 
    if (isMobile && isClickedCreation) {
       return (
          <Frame>
             <CreateTask closeTaskCreation={closeTaskCreation} />
+         </Frame>
+      );
+   }
+   if (isMobile && results.isClicked) {
+      return (
+         <Frame>
+            <ResultsCard
+               listName={results.listName}
+               listId={results.listId}
+               closeResults={closeResults}
+            />
          </Frame>
       );
    }
@@ -61,7 +80,12 @@ export default function HomePage() {
                <h2 className="flex justify-center text-3xl">Ended tasks</h2>
                <div className="flex flex-wrap justify-center">
                   {endedTasks.map(task => (
-                     <EndCard key={task.id} task={task} />
+                     <EndCard
+                        clickedResults={[results, setResults]}
+                        handleRefresh={refresh}
+                        key={task.id}
+                        task={task}
+                     />
                   ))}
                </div>
             </div>
@@ -69,6 +93,15 @@ export default function HomePage() {
          {isClickedCreation && (
             <BackgroundBlur toggleFn={closeTaskCreation}>
                <CreateTask closeTaskCreation={closeTaskCreation} />
+            </BackgroundBlur>
+         )}
+         {results.isClicked && (
+            <BackgroundBlur toggleFn={closeResults}>
+               <ResultsCard
+                  listName={results.listName}
+                  listId={results.listId}
+                  closeResults={closeResults}
+               />
             </BackgroundBlur>
          )}
       </Frame>

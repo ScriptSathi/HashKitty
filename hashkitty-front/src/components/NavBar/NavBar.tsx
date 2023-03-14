@@ -66,7 +66,7 @@ export default function NavBar() {
    );
 
    return (
-      <TWNavBar className="mx-auto max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4 border-none">
+      <TWNavBar className="mx-auto text-black max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4 border-none">
          <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
             <Link to="/home" className="sm:flex items-center">
                <img className="logoclassName" src={logo} alt="Logo" />
@@ -113,9 +113,21 @@ export default function NavBar() {
                )}
             </IconButton>
          </div>
-         {openNav && <MobileNav animate={{ mount: { opacity: 1, height: `auto`, transition: { duration: 0.3, times: "[0.4, 0, 0.2, 1]" }}}} open={openNav} className="lg:hidden">
-            <div className="container mx-auto">{navList}</div>
-         </MobileNav>}
+         {openNav && (
+            <MobileNav
+               animate={{
+                  mount: {
+                     opacity: 1,
+                     height: `auto`,
+                     transition: { duration: 0.3, times: '[0.4, 0, 0.2, 1]' },
+                  },
+               }}
+               open={openNav}
+               className="lg:hidden"
+            >
+               <div className="container mx-auto">{navList}</div>
+            </MobileNav>
+         )}
       </TWNavBar>
    );
 }

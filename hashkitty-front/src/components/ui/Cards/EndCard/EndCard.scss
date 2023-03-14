@@ -1,0 +1,6 @@
+@import '../../../../assets/styles/variables.scss';
+.EndCard {
+	&__icon:hover {
+		color: $main-color;
+	}
+}

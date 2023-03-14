@@ -9,7 +9,7 @@ export default function useFetchList<ItemType>({
 }: TuseFetch) {
    const [items, setItems] = useState<ItemType[]>([]);
    const [isLoading, setIsLoading] = useState(true);
-   const [error, setError] = useState(null);
+   const [error, setError] = useState<null | unknown>(null);
 
    const defaultHeaders = { 'Content-Type': 'application/json' };
    let reqOptions: RequestInit = {
@@ -22,19 +22,19 @@ export default function useFetchList<ItemType>({
          body: JSON.stringify(data),
       };
    }
+   async function refresh() {
+      const req = await fetch(url, reqOptions);
+      try {
+         const res = await req.json();
+         setItems(res.success);
+         setIsLoading(false);
+      } catch (e) {
+         setIsLoading(false);
+         setError(e);
+      }
+   }
    useEffect(() => {
-      fetch(url, reqOptions)
-         .then(res => res.json())
-         .then(
-            res => {
-               setItems(res.success);
-               setIsLoading(false);
-            },
-            err => {
-               setIsLoading(false);
-               setError(err);
-            },
-         );
+      refresh();
    }, []);
-   return { items, error, isLoading };
+   return { items, refresh, error, isLoading };
 }

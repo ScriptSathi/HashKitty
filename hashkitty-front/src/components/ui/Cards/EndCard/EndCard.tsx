@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 import duration from 'humanize-duration';
@@ -8,16 +9,35 @@ import useDeleteTask from '../../../../hooks/useDeleteTask';
 import ApiEndpoints from '../../../../ApiEndpoints';
 import useFetchStatus from '../../../../hooks/useFetchStatus';
 import useIsMobile from '../../../../hooks/useIsMobile';
+import './EndCard.scss';
 
 type CommonCard = {
    task: TTask;
+   handleRefresh: () => void;
+   clickedResults: [
+      {
+         isClicked: boolean;
+         listName: string;
+         listId: number;
+      },
+      React.Dispatch<
+         React.SetStateAction<{
+            isClicked: boolean;
+            listName: string;
+            listId: number;
+         }>
+      >,
+   ];
 };
 
-export default function EndCard({ task }: CommonCard) {
+export default function EndCard({
+   task,
+   handleRefresh,
+   clickedResults,
+}: CommonCard) {
    const isMobile = useIsMobile({});
-   const { fetchStatus, exitInfo, process, status } = useFetchStatus({
-      url: ApiEndpoints.apiGetStatus,
-   });
+   const [results, setResults] = clickedResults;
+
    const { deleteTask, deleteMessage, isError, isLoading } = useDeleteTask({
       url: ApiEndpoints.apiPOSTDeleteTasks,
       data: task,
@@ -33,7 +53,7 @@ export default function EndCard({ task }: CommonCard) {
    const handleDeletion = async () => {
       await deleteTask();
       if (!isError) {
-         // Do refresh tasks
+         handleRefresh();
       }
    };
 
@@ -47,24 +67,61 @@ export default function EndCard({ task }: CommonCard) {
    return (
       <BaseCard title={task.name} autoResize displayMessage={displayMessage()}>
          <div className="flex flex-col justify-between min-h-full h-full">
-            {!isMobile && (
-               <div>
-                  <Typography
-                     component="p"
-                     variant="body2"
-                     color="text.secondary"
+            <div
+               className={`flex ${
+                  isMobile ? 'justify-end' : 'justify-between'
+               }`}
+            >
+               {!isMobile && (
+                  <div>
+                     <Typography
+                        component="p"
+                        variant="body2"
+                        color="text.secondary"
+                     >
+                        Hash type: {task.hashlistId.hashTypeId.name}
+                     </Typography>
+                     <Typography
+                        component="p"
+                        variant="body2"
+                        color="text.secondary"
+                     >
+                        Hashlist: {task.hashlistId.name}
+                     </Typography>
+                     <Typography
+                        component="p"
+                        variant="body2"
+                        color="text.secondary"
+                     >
+                        Wordlist: {task.options.wordlistId.name}
+                     </Typography>
+                  </div>
+               )}
+               <div className="flex items-center">
+                  <IconButton
+                     disabled={isLoading}
+                     onClick={() =>
+                        !results.isClicked &&
+                        setResults({
+                           isClicked: true,
+                           listId: task.hashlistId.id,
+                           listName: task.hashlistId.name,
+                        })
+                     }
+                     onKeyDown={e =>
+                        e.key === 'Enter' &&
+                        !results.isClicked &&
+                        setResults({
+                           isClicked: true,
+                           listId: task.hashlistId.id,
+                           listName: task.hashlistId.name,
+                        })
+                     }
                   >
-                     Hashlist: {task.hashlistId.name}
-                  </Typography>
-                  <Typography
-                     component="p"
-                     variant="body2"
-                     color="text.secondary"
-                  >
-                     Wordlist: {task.options.wordlistId.name}
-                  </Typography>
+                     <SummarizeIcon className="EndCard__icon" />
+                  </IconButton>
                </div>
-            )}
+            </div>
             <div className="flex justify-between">
                <div>
                   <p className="">Ended Since: {endedSince}</p>
@@ -79,7 +136,7 @@ export default function EndCard({ task }: CommonCard) {
                      onClick={handleDeletion}
                      onKeyDown={e => e.key === 'Delete' && handleDeletion()}
                   >
-                     <DeleteIcon />
+                     <DeleteIcon className="EndCard__icon" />
                   </IconButton>
                </div>
             </div>

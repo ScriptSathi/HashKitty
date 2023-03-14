@@ -120,6 +120,13 @@ export default function RunCard({
                      variant="body2"
                      color="text.secondary"
                   >
+                     Hash type: {task.hashlistId.hashTypeId.name}
+                  </Typography>
+                  <Typography
+                     component="p"
+                     variant="body2"
+                     color="text.secondary"
+                  >
                      Hashlist: {task.hashlistId.name}
                   </Typography>
                   <Typography

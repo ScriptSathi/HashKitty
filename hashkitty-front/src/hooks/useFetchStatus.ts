@@ -38,8 +38,6 @@ type ReturnUseFetchStatus = {
    fetchStatus: () => void;
 };
 
-const hell = 'aaa';
-
 function filterateStatusData(
    status: THashcatRunningStatus,
 ): Omit<Tstatus, 'isRunning'> {
