@@ -36,7 +36,9 @@ export default function BaseCard({
 
    const size = sizingBehaviour ? fullSize : smallSize;
    const titleSize = sizingBehaviour ? 'h5' : 'h6';
-   const contentStyleOnScreenSize = isMobile ? { fontSize: 15 } : {};
+   const contentStyleOnScreenSize = isMobile
+      ? { fontSize: 15, paddingTop: 0 }
+      : { paddingTop: 1 };
    const headerStyleOnScreenSize = isMobile
       ? { fontSize: 20, paddingTop: 10 }
       : { fontSize: 22 };
@@ -53,7 +55,11 @@ export default function BaseCard({
          >
             <div className="flex items-center">
                <CardHeader
-                  style={{ paddingBottom: 0, ...headerStyleOnScreenSize }}
+                  style={{
+                     paddingBottom: 0,
+                     paddingTop: 2,
+                     ...headerStyleOnScreenSize,
+                  }}
                   component={titleSize}
                   disableTypography
                   title={title}
