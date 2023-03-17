@@ -134,11 +134,12 @@ export class Dao {
         });
     }
 
-    public findWordlistByName(name: string): Promise<Wordlist | null> {
+    public findWordlistWhere(where: {
+        name?: string;
+        id?: number;
+    }): Promise<Wordlist | null> {
         return this.db.getRepository(Wordlist).findOne({
-            where: {
-                name,
-            },
+            where: where,
         });
     }
 

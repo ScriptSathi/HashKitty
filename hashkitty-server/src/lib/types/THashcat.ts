@@ -38,16 +38,17 @@ export type THashcatFlags = {
 
 export type ThashcatAllowedFlags = keyof THashcatFlags;
 
-export type ThashcatParams = {
-    [Prop in keyof THashcatFlags]: THashcatFlags[Prop] extends FlagStandard
-        ? THashcatFlags[Prop]
-        : Omit<THashcatFlags[Prop], 'alias'>;
-};
+// export type ThashcatParams = {
+//     [Prop in keyof THashcatFlags]: THashcatFlags[Prop] extends FlagStandard
+//         ? THashcatFlags[Prop]
+//         : Omit<THashcatFlags[Prop], 'alias'>;
+// };
 
 type FlagStandard = {
     alias: string;
     flag: string;
     needAParam: boolean;
+    isRepeatableFlag?: boolean;
     defaultValue?: string;
 };
 
@@ -55,11 +56,11 @@ type FlagWithNoAlias = Omit<FlagStandard, 'alias'>;
 
 export type PartialCmdData = {
     key: ThashcatAllowedFlags;
-    value?: string | number;
+    value?: string | number | string[];
 };
 
 export type CmdData = PartialCmdData & {
-    flagData: ThashcatParams[PartialCmdData['key']];
+    flagData: THashcatFlags[PartialCmdData['key']];
 };
 
 export type THashcatRunningStatus = {
@@ -88,6 +89,9 @@ export type THashcatRunningStatus = {
 
 export type THashcatStatus = {
     processState: 'running' | 'pending' | 'stopped';
-    exitInfo: string;
+    exitInfo: {
+        message: string;
+        isError: boolean;
+    };
     runningStatus: THashcatRunningStatus;
 };

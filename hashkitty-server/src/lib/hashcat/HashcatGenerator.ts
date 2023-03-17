@@ -20,7 +20,7 @@ export class HashcatGenerator {
         this.wordlist = path.join(
             Constants.wordlistPath,
             // Return empty string because Hashcat can use a directory as wordlist
-            this.task.options.wordlistId.name === '*'
+            this.task.options.wordlistId.name.startsWith('*')
                 ? ''
                 : this.task.options.wordlistId.name
         );
@@ -108,9 +108,10 @@ export class HashcatGenerator {
                 key: 'cpuOnly',
             });
         }
-        if (this.task.options.ruleName) {
+        if (this.task.options.rules) {
             flags.push({
                 key: 'rulesFile',
+                value: this.task.options.rules.split(','),
             });
         }
         if (this.task.options.workloadProfileId) {
@@ -128,7 +129,7 @@ export class HashcatGenerator {
     }
 
     private generateCmdFromFlags(flags: CmdData[]): string {
-        return flags.reduce((acc: string, cmdData) => {
+        function buildSingleFlag(cmdData: CmdData, value?: string) {
             let cmd = `--${cmdData.flagData.flag}`;
             if (cmdData.flagData.needAParam) {
                 if (
@@ -137,14 +138,24 @@ export class HashcatGenerator {
                 ) {
                     cmd += `=${cmdData.flagData.defaultValue}`;
                 } else if (cmdData.value !== undefined) {
-                    cmd += `=${cmdData.value}`;
+                    cmd += `=${value || cmdData.value}`;
                 } else {
                     throw new Error(
                         `Parameter needed for ${cmdData.flagData.flag}`
                     );
                 }
             }
-            cmd += ' ';
+            return (cmd += ' ');
+        }
+        return flags.reduce((acc: string, cmdData) => {
+            let cmd = '';
+            if (cmdData.flagData.isRepeatableFlag) {
+                for (const value in cmdData.value as string[]) {
+                    cmd = buildSingleFlag(cmdData, value);
+                }
+            } else {
+                cmd = buildSingleFlag(cmdData);
+            }
             return acc + cmd;
         }, '');
     }

@@ -40,7 +40,7 @@ export class Options {
     CPUOnly!: boolean;
 
     @Column('varchar', { name: 'rule_name', default: '' })
-    ruleName?: string;
+    rules?: string;
 
     @Column('varchar', { name: 'potfile_name', default: '' })
     potfileName?: string;

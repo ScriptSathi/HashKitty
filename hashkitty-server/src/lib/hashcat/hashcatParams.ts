@@ -1,4 +1,4 @@
-import { ThashcatParams } from '../types/THashcat';
+import { THashcatFlags } from '../types/THashcat';
 
 export const hashcatParam = {
     hashType: {
@@ -141,6 +141,7 @@ export const hashcatParam = {
         alias: 'r',
         flag: 'rules-file',
         needAParam: true,
+        isRepeatableFlag: true,
     },
     customCharset1: {
         alias: '1',
@@ -162,4 +163,4 @@ export const hashcatParam = {
         flag: 'custom-charset4',
         needAParam: true,
     },
-} satisfies ThashcatParams;
+} satisfies THashcatFlags;

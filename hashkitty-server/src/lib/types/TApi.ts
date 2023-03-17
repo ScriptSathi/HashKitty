@@ -48,7 +48,7 @@ export type Options = {
     workloadProfileId: TWorkloadProfile;
     kernelOpti: Boolean;
     CPUOnly: Boolean;
-    ruleName?: string;
+    rules?: string;
     potfileName?: string;
     maskQuery?: string;
     maskFilename?: string;

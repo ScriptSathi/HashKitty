@@ -54,11 +54,11 @@ export class RouteHandler {
                 success: true,
             });
         } catch (err) {
-            logger.error(`An error occured while trying to start task: ${err}`);
             res.status(200).json({
                 message: Dao.UnexpectedError,
                 error: `[ERROR]: ${err}`,
             });
+            logger.error(`An error occured while trying to start task: ${err}`);
         }
     };
 
@@ -106,18 +106,17 @@ export class RouteHandler {
     };
 
     public stopHashcat = (_: ReceivedRequest, res: ResponseSend): void => {
+        let message = 'Hashcat is not running';
+        let status = {};
         if (this.hashcat.isRunning) {
             this.hashcat.stop();
-            res.status(200).json({
-                message: 'Hashcat stopped successfully',
-                success: true,
-            });
-        } else {
-            res.status(200).json({
-                status: {},
-                message: 'Hashcat is not running',
-            });
+            message = 'Hashcat stopped successfully';
+            status = this.hashcat.status;
         }
+        res.status(200).json({
+            status,
+            message,
+        });
     };
 
     public deleteTask = async (
@@ -217,9 +216,9 @@ export class RouteHandler {
             });
         } catch (err) {
             logger.debug(err);
-            res.status(400).json({
+            res.status(200).json({
                 passwds: [],
-                message: `file ${req.body.filename} does not exist`,
+                message: `File ${req.body.filename} does not exist`,
             });
         }
     };
@@ -522,31 +521,45 @@ export class RouteHandler {
         _: ReceivedRequest,
         res: ResponseSend
     ): void => {
-        this.getFileInDir(res, Constants.wordlistPath);
+        try {
+            const files = FsUtils.listFileInDir(Constants.wordlistPath);
+            this.getFileInDirResp(res, ['* (All Wordlists)', ...files]);
+        } catch (e) {
+            this.getFileInDirResp(res, [], Constants.wordlistPath, e);
+        }
     };
 
     public getFilesInPotfileDir = (
         _: ReceivedRequest,
         res: ResponseSend
     ): void => {
-        this.getFileInDir(res, Constants.potfilesPath);
+        try {
+            const files = FsUtils.listFileInDir(Constants.potfilesPath);
+            this.getFileInDirResp(res, files);
+        } catch (e) {
+            this.getFileInDirResp(res, [], Constants.potfilesPath, e);
+        }
     };
 
     public getFilesInRulesDir = (
         _: ReceivedRequest,
         res: ResponseSend
     ): void => {
-        this.getFileInDir(res, Constants.rulesPath);
+        try {
+            const files = FsUtils.listFileInDir(Constants.rulesPath);
+            this.getFileInDirResp(res, files);
+        } catch (e) {
+            this.getFileInDirResp(res, [], Constants.rulesPath, e);
+        }
     };
 
-    private getFileInDir(res: ResponseSend, dirPath: string): void {
-        try {
-            const files = FsUtils.listFileInDir(dirPath);
-            res.json({
-                message: '',
-                success: files,
-            });
-        } catch (e) {
+    private getFileInDirResp(
+        res: ResponseSend,
+        files: string[],
+        dirPath?: string,
+        e?: unknown
+    ): void {
+        if (dirPath && e) {
             logger.error(
                 `An error occured while reading dir ${dirPath} - Error: ${e}`
             );
@@ -558,7 +571,12 @@ export class RouteHandler {
                     message: e || 'No message error',
                 },
             });
+            return;
         }
+        res.json({
+            message: '',
+            success: files,
+        });
     }
 
     private responseFail(
