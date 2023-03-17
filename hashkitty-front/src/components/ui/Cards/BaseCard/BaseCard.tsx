@@ -53,13 +53,15 @@ export default function BaseCard({
             }}
             className="h-full w-full"
          >
-            <div className="flex items-center">
+            <div className="flex items-center justify-between">
                <CardHeader
                   style={{
                      paddingBottom: 0,
                      paddingTop: 2,
+                     width: '20vh',
                      ...headerStyleOnScreenSize,
                   }}
+                  className="break-normal"
                   component={titleSize}
                   disableTypography
                   title={title}

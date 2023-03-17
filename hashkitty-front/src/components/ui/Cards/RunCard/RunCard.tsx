@@ -75,7 +75,7 @@ export default function RunCard({
            position: 'static',
         };
    const DisplaySVG = isLoading ? (
-      <CircularProgress size={40} thickness={3} />
+      <CircularProgress size={40} thickness={3} color="secondary" />
    ) : (
       <SvgIcon
          sx={{ height: 30, width: 30 }}

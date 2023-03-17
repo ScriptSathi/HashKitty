@@ -27,3 +27,28 @@ export type THashcatStatus = {
    exitInfo: string;
    runningStatus: THashcatRunningStatus;
 };
+
+type ApiOptionsFormData = {
+   attackModeId: number;
+   breakpointGPUTemperature: number;
+   wordlistName: string;
+   workloadProfileId: number;
+   kernelOpti: boolean;
+   CPUOnly: boolean;
+   rules?: string[];
+   potfileName?: string;
+   maskQuery?: string;
+   maskFilename?: string;
+};
+
+export type TaskUpdate = TBaseCreateTask & {
+   hashlistId: number;
+   options: ApiOptionsFormData;
+   templateTaskId?: number;
+};
+
+type TBaseCreateTask = {
+   id?: number;
+   name: string;
+   description: string;
+};

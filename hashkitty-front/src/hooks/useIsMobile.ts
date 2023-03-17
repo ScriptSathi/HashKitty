@@ -7,7 +7,7 @@ type UseIsMobileProps = {
 export default function useIsMobile({
    callbackOnMobile = () => {},
    callbackOnLargeScreen = () => {},
-}: UseIsMobileProps): boolean {
+}: UseIsMobileProps = {}): boolean {
    const [isMobile, setIsMobile] = useState(window.innerWidth <= 960);
    useEffect(() => {
       window.addEventListener('resize', () => {

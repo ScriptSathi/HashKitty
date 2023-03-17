@@ -1,9 +1,9 @@
 export type CreateTaskForm = {
    name: string;
    hashlistName: string;
-   attackModeId: number;
+   attackModeId: string;
    cpuOnly: boolean;
-   ruleName: string;
+   rules: string[];
    maskQuery: string;
    maskFileName: string;
    potfileName: string;
@@ -11,6 +11,7 @@ export type CreateTaskForm = {
    wordlistName: string;
    workloadProfile: number;
    breakpointGPUTemperature: number;
+   templateId: number;
 };
 
 export type TemplateForm = Omit<CreateTaskForm, 'fashlistName'>;
@@ -46,7 +47,7 @@ export type ApiOptionsFormData = {
    workloadProfileId: number;
    kernelOpti: boolean;
    CPUOnly: boolean;
-   ruleName?: string;
+   rules?: string;
    potfileName?: string;
    maskQuery?: string;
    maskFilename?: string;
@@ -60,3 +61,19 @@ export type TUploadReqBody = {
 };
 
 export type TUploadFileName = 'rule' | 'potfile' | 'wordlist' | 'hashlist';
+
+export type InputStandard = {
+   id: number;
+   label: string;
+};
+
+export type StandardList = {
+   id: number;
+   name: string;
+};
+
+export type RadioOnChangeEvent<E = string> = React.BaseSyntheticEvent<
+   Event,
+   EventTarget & Element,
+   EventTarget & { value: E }
+>;

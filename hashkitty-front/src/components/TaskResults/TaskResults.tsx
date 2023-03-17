@@ -4,6 +4,8 @@ import ApiEndpoints from '../../ApiEndpoints';
 import useFetchPassword from '../../hooks/useFetchPassword';
 import FrameHoverCard from '../ui/Cards/FrameHoveCard/FrameHoverCard';
 import './TaskResuslts.scss';
+import useIsMobile from '../../hooks/useIsMobile';
+import CheckBox from '../ui/Inputs/CheckBox';
 
 type TaskResultsProps = {
    listName: string;
@@ -16,6 +18,7 @@ export default function TaskResults({
    listId,
    closeResults,
 }: TaskResultsProps) {
+   const isMobile = useIsMobile();
    document.body.style.userSelect = 'none';
    const [onlyPasswds, setOnlyPasswds] = useState(false);
    const { passwds, isLoaded, error } = useFetchPassword({
@@ -41,17 +44,15 @@ export default function TaskResults({
          closeFrame={closeResults}
          title={listName}
       >
-         <div className="flex items-center select-none">
-            <input
-               className="flex fontMedium checkBox mt-1 mr-5"
-               type="checkbox"
-               checked={onlyPasswds}
-               onChange={() => setOnlyPasswds(!onlyPasswds)}
-            />
-            <p className="m-0">Show only passwords</p>
-         </div>
+         <CheckBox
+            title="Show only passwords"
+            checked={onlyPasswds}
+            onClick={() => setOnlyPasswds(!onlyPasswds)}
+         />
          <div
-            className={`ml-0 mt-3 bg-black rounded-[2rem] w-full h-full py-3 px-5a select-text ${
+            className={`${
+               isMobile ? 'h-[75vh]' : 'h-[45vh]'
+            } ml-0 mt-3 bg-black rounded-[2rem] w-full py-3 px-5a select-text ${
                isLoaded && error.length <= 0
                   ? 'overflow-y-scroll'
                   : 'flex items-center justify-center'

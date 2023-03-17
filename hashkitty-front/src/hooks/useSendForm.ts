@@ -1,42 +1,34 @@
 import { useState } from 'react';
 import { TuseFetch } from '../types/THooks';
 
-type TuseDeleteTask = Omit<TuseFetch, 'method' | 'data'> & {
-   data: { id: number };
-};
-
-export default function useDeleteTask({
+export default function useSendForm<Form extends object>({
    url,
-   data,
    headers = {},
-}: TuseDeleteTask): {
-   deleteTask: () => void;
-   isDeleted: boolean;
+}: Omit<TuseFetch, 'method' | 'data'>): {
+   sendForm: (data: Form) => void;
+   submitSucced: boolean;
    error: string;
    isLoading: boolean;
 } {
-   const [hasStarted, setHasStarted] = useState(false);
-   const [isLoading, setIsLoading] = useState(true);
+   const [submitSucced, setSubmitSucced] = useState(false);
+   const [isLoading, setIsLoading] = useState(false);
    const [error, setError] = useState('');
 
    const defaultHeaders = { 'Content-Type': 'application/json' };
-   let reqOptions: RequestInit = {
-      method: 'POST',
-      headers: { ...defaultHeaders, ...headers },
-   };
-   if (data) {
-      reqOptions = {
-         ...reqOptions,
+
+   function sendForm(data: Form) {
+      const reqOptions: RequestInit = {
+         method: 'POST',
+         headers: { ...defaultHeaders, ...headers },
          body: JSON.stringify(data),
       };
-   }
-   function deleteTask() {
       setError('');
+      setIsLoading(true);
       fetch(url, reqOptions)
          .then(res => res.json())
          .then(
             res => {
-               if (res.success) setHasStarted(true);
+               if (res.success) setSubmitSucced(true);
                else setError(res.message);
                setIsLoading(false);
             },
@@ -46,5 +38,5 @@ export default function useDeleteTask({
             },
          );
    }
-   return { deleteTask, isDeleted: hasStarted, error, isLoading };
+   return { sendForm, submitSucced, error, isLoading };
 }

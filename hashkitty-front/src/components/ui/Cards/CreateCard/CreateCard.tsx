@@ -26,14 +26,14 @@ export default function CreateCard({
                display: 'flex',
                flexDirection: 'column',
                fontSize: 18,
-               '&:hover': { color: '#FC6F6F' },
+               '&:hover': { color: 'secondary.main' },
             }}
             className="h-full w-full"
             onClick={() => !isClickedCreation && setIsClickedCreation(true)}
          >
             <AddBoxIcon
                fontSize="large"
-               sx={{ '&:hover': { color: '#FC6F6F' } }}
+               sx={{ '&:hover': { color: 'secondary.main' } }}
             />
             Create a new task
          </CardActionArea>
