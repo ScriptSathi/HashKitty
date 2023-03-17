@@ -114,7 +114,7 @@ export class Sanitizer {
         this.breakpointGPUTemperature(options.breakpointGPUTemperature);
         this.checkKernelOptions(options.kernelOpti);
         this.checkCPUOnly(options.CPUOnly);
-        this.checkRules(options.ruleName || '');
+        this.checkRules(options.rules || '');
         this.checkPotfiles(options.potfileName || '');
         this.task.options = this.options;
         this.templateTask.options = this.options;
@@ -126,8 +126,7 @@ export class Sanitizer {
 
     private async checkWordlist(name: string): Promise<void> {
         try {
-            name = name.startsWith('*') ? '*' : name;
-            const wordlist = await this.dao.findWordlistByName(name);
+            const wordlist = await this.dao.findWordlistWhere({ name });
             if (wordlist !== null) {
                 this.options.wordlistId = wordlist.id;
             } else {
@@ -261,13 +260,13 @@ export class Sanitizer {
                         return file === name;
                     })
                 ) {
-                    this.options.ruleName = name;
+                    this.options.rules = name;
                 } else {
-                    throw 'Wrong data provided for ruleName';
+                    throw 'Wrong data provided for rules';
                 }
             }
         } catch (error) {
-            this.unexpectedError('ruleName');
+            this.unexpectedError('rules');
             logger.debug(error);
         }
     }

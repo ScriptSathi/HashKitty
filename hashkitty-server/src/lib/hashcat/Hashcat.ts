@@ -37,7 +37,10 @@ export class Hashcat {
             ? this.listener.state
             : {
                   processState: 'stopped',
-                  exitInfo: '',
+                  exitInfo: {
+                      message: '',
+                      isError: false,
+                  },
                   runningStatus: <THashcatRunningStatus>{},
               };
     }

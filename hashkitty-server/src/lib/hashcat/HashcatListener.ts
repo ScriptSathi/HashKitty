@@ -26,7 +26,10 @@ export class HashcatListener {
         this.handleTaskHasFinnished = handleTaskHasFinnished;
         this.state = {
             processState: 'pending',
-            exitInfo: '',
+            exitInfo: {
+                message: '',
+                isError: false,
+            },
             runningStatus: <THashcatRunningStatus>{},
         };
     }
@@ -90,7 +93,10 @@ export class HashcatListener {
             );
             this.handleTaskHasFinnished(this.task);
         } else {
-            this.state.exitInfo = 'No passwords recovered';
+            this.state.exitInfo = {
+                message: 'No passwords recovered',
+                isError: true,
+            };
             logger.info(
                 'Process: Hashcat ended but no passwords were cracked !'
             );
