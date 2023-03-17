@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeOptions, ThemeProvider } from '@mui/material/styles';
 
 import HomePage from './pages/HomePage/HomePage';
 import ErrorPage from './pages/ErrorPage/ErrorPage';
@@ -11,10 +11,13 @@ import './assets/styles/main.scss';
 const theme = createTheme({
    palette: {
       primary: {
+         main: '#FFFFF',
+      },
+      secondary: {
          main: '#FC6F6F',
       },
    },
-});
+} as ThemeOptions);
 
 const root = ReactDOM.createRoot(
    document.getElementById('root') as HTMLElement,

@@ -1,4 +1,4 @@
-import { itemBase } from './TComponents';
+import { ItemBase } from './TComponents';
 
 export type TTask = {
    id: number;
@@ -9,7 +9,7 @@ export type TTask = {
    lastestModification: string;
    isfinished: number;
    description?: string;
-   templateTaskId?: TemplateTask;
+   templateTaskId?: TTemplate;
    endeddAt?: string | null;
 };
 
@@ -21,13 +21,13 @@ export type Options = {
    workloadProfileId: TWorkloadProfile;
    kernelOpti: boolean;
    CPUOnly: boolean;
-   ruleName?: string;
+   rules?: string;
    potfileName?: string;
    maskQuery?: string;
    maskFilename?: string;
 };
 
-export type TemplateTask = {
+export type TTemplate = {
    id: number;
    name: string;
    description?: string;
@@ -77,17 +77,17 @@ export type TWorkloadProfile = {
 
 export type TDBData = {
    hashtypes: THashType[];
-   hashlist: THashlist[];
-   wordlists: itemBase[];
-   templateTasks: TemplateTask[];
-   rules: itemBase[];
+   hashlists: THashlist[];
+   wordlists: ItemBase[];
+   templates: TTemplate[];
+   rules: ItemBase[];
    attackModes: TAttackMode[];
-   potfiles: itemBase[];
+   potfiles: ItemBase[];
 };
 
 export type AllListsItems =
    | TAttackMode
    | TWordlist
    | THashlist
-   | TemplateTask
+   | TTemplate
    | TTask;

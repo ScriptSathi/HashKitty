@@ -37,7 +37,10 @@ export default function HomePage() {
             : [[..._tasks, ...[element]], _endedTasks],
       [[], []],
    );
-   const closeTaskCreation = () => setIsClickedCreation(false);
+   const closeTaskCreation = () => {
+      setIsClickedCreation(false);
+      refresh();
+   };
    const closeResults = () => setResults(defaultResults);
 
    if (isMobile && isClickedCreation) {
@@ -58,9 +61,16 @@ export default function HomePage() {
          </Frame>
       );
    }
+
+   document.body.style.overflow = isClickedCreation ? 'hidden' : 'visible';
+
    return (
       <Frame isLoading={isLoading}>
-         <div className="grid grid-cols-2">
+         <div
+            className={`grid grid-cols-2 ${
+               isClickedCreation ? 'overflow-hidden' : ''
+            }`}
+         >
             <div>
                <h2 className="flex justify-center text-3xl">Runnable tasks</h2>
                <div className="flex flex-wrap justify-center">
@@ -70,7 +80,7 @@ export default function HomePage() {
                   {tasks.map(task => (
                      <RunCard
                         key={task.id}
-                        task={tasks[0]}
+                        task={task}
                         isRunning={sessionName === `${task.name}-${task.id}`}
                      />
                   ))}
