@@ -4,7 +4,7 @@ import ApiEndpoints from '../../ApiEndpoints';
 import useFetchPassword from '../../hooks/useFetchPassword';
 import FrameHoverCard from '../ui/Cards/FrameHoveCard/FrameHoverCard';
 import './TaskResuslts.scss';
-import useIsMobile from '../../hooks/useIsMobile';
+import useScreenSize from '../../hooks/useScreenSize';
 import CheckBox from '../ui/Inputs/CheckBox';
 
 type TaskResultsProps = {
@@ -18,7 +18,7 @@ export default function TaskResults({
    listId,
    closeResults,
 }: TaskResultsProps) {
-   const isMobile = useIsMobile();
+   const { isMobile, isTablette } = useScreenSize();
    document.body.style.userSelect = 'none';
    const [onlyPasswds, setOnlyPasswds] = useState(false);
    const { passwds, isLoaded, error } = useFetchPassword({
@@ -51,8 +51,8 @@ export default function TaskResults({
          />
          <div
             className={`${
-               isMobile ? 'h-[75vh]' : 'h-[45vh]'
-            } ml-0 mt-3 bg-black rounded-[2rem] w-full py-3 px-5a select-text ${
+               isMobile || isTablette ? 'h-[75vh]' : 'h-[45vh]'
+            } ml-0 mt-3 bg-black rounded-[2rem] w-full py-3 px-5 select-text ${
                isLoaded && error.length <= 0
                   ? 'overflow-y-scroll'
                   : 'flex items-center justify-center'

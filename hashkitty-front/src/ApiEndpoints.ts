@@ -23,4 +23,5 @@ export default class ApiEndpoints {
    public static readonly apiGetHashTypes: string = `${this.apiUrl}/hashtypes`;
    public static readonly apiPOSTTaskResults: string = `${this.apiUrl}/results`;
    public static readonly apiPOSTAddList: string = `${this.apiUrl}/list`;
+   public static readonly apiNotifications: string = `${this.apiUrl}/notifications`;
 }

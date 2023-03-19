@@ -24,6 +24,7 @@ export default function CheckBox<T extends object>({
             checked={checked}
             {...((register && register(name || ('' as FieldPath<T>))) || {})}
             onClick={onClick}
+            onChange={() => {}}
          />
          <p className="m-0">{title}</p>
       </div>

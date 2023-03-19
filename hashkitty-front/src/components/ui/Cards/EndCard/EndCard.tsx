@@ -7,7 +7,7 @@ import { TTask } from '../../../../types/TypesORM';
 import BaseCard from '../BaseCard/BaseCard';
 import useDeleteTask from '../../../../hooks/useDeleteTask';
 import ApiEndpoints from '../../../../ApiEndpoints';
-import useIsMobile from '../../../../hooks/useIsMobile';
+import useScreenSize from '../../../../hooks/useScreenSize';
 import './EndCard.scss';
 
 type CommonCard = {
@@ -34,7 +34,7 @@ export default function EndCard({
    handleRefresh,
    clickedResults,
 }: CommonCard) {
-   const isMobile = useIsMobile({});
+   const { isMobile, isTablette } = useScreenSize({});
    const [results, setResults] = clickedResults;
 
    const { deleteTask, deleteMessage, isError, isLoading } = useDeleteTask({
@@ -78,10 +78,10 @@ export default function EndCard({
          <div className="flex flex-col justify-between min-h-full h-full">
             <div
                className={`flex ${
-                  isMobile ? 'justify-around' : 'justify-between'
+                  isMobile || isTablette ? 'justify-around' : 'justify-between'
                }`}
             >
-               {!isMobile && (
+               {!(isMobile || isTablette) && (
                   <div>
                      <Typography
                         component="p"
@@ -130,11 +130,11 @@ export default function EndCard({
                      <SummarizeIcon className="EndCard__icon" />
                   </IconButton>
                </div>
-               {isMobile && displayDeleteBtn()}
+               {isMobile || (isTablette && displayDeleteBtn())}
             </div>
             <div
                className={`flex justify-between ${
-                  isMobile ? 'text-[1.5vh]' : 'text-base'
+                  isMobile || isTablette ? 'text-[1.5vh]' : 'text-base'
                }`}
             >
                <div>
@@ -144,7 +144,7 @@ export default function EndCard({
                      {task.hashlistId.numberOfCrackedPasswords}
                   </p>
                </div>
-               {!isMobile && (
+               {!(isMobile || isTablette) && (
                   <div className="flex items-center">{displayDeleteBtn()}</div>
                )}
             </div>

@@ -7,7 +7,7 @@ import {
 } from 'react-hook-form';
 import { CardContent } from '@mui/material';
 import FrameHoverCard from '../ui/Cards/FrameHoveCard/FrameHoverCard';
-import useIsMobile from '../../hooks/useIsMobile';
+import useScreenSize from '../../hooks/useScreenSize';
 import { CreateTaskForm } from '../../types/TComponents';
 
 interface Props<T extends FieldValues> {
@@ -25,7 +25,7 @@ export default function CreateFrame({
    children,
    formMethods,
 }: Props<CreateTaskForm>): ReactElement {
-   const isMobile = useIsMobile();
+   const { isMobile, isTablette } = useScreenSize();
 
    return (
       <FormProvider {...formMethods}>
@@ -41,7 +41,10 @@ export default function CreateFrame({
                      height: '50%',
                      overflowY: 'scroll',
                   }}
-                  style={{ marginLeft: 0, height: isMobile ? '74vh' : '45vh' }}
+                  style={{
+                     marginLeft: 0,
+                     height: isMobile || isTablette ? '74vh' : '45vh',
+                  }}
                >
                   {children}
                </CardContent>

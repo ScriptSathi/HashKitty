@@ -9,6 +9,20 @@ import ErrorPage from './pages/ErrorPage/ErrorPage';
 import './assets/styles/main.scss';
 
 const theme = createTheme({
+   components: {
+      MuiSwitch: {
+         styleOverrides: {
+            track: {
+               backgroundColor: 'black',
+            },
+            root: {
+               '& .MuiSwitch-colorSecondary': {
+                  color: 'black',
+               },
+            },
+         },
+      },
+   },
    palette: {
       primary: {
          main: '#FFFFF',

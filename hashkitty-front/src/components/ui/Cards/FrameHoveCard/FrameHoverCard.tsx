@@ -2,7 +2,7 @@ import { Card, CardActions, CardHeader } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode } from 'react';
 import useOnKeyPress from '../../../../hooks/useOnKeyPress';
-import useIsMobile from '../../../../hooks/useIsMobile';
+import useScreenSize from '../../../../hooks/useScreenSize';
 
 type FrameHoverCardProps = {
    title: string;
@@ -20,9 +20,9 @@ export default function FrameHoverCard({
    className,
 }: FrameHoverCardProps) {
    useOnKeyPress('Escape', closeFrame);
-   const isMobile = useIsMobile();
+   const { isMobile, isTablette } = useScreenSize();
 
-   if (isMobile) {
+   if (isMobile || isTablette) {
       return (
          <>
             <div className={`relative box-border m-5 ${className}`}>
