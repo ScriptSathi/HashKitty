@@ -3,15 +3,15 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class Wordlist {
-    @PrimaryGeneratedColumn()
-    id!: number;
+   @PrimaryGeneratedColumn()
+   id!: number;
 
-    @Column('varchar', { nullable: false })
-    name!: string;
+   @Column('varchar', { nullable: false })
+   name!: string;
 
-    @Column('varchar', { default: '' })
-    description?: string;
+   @Column('varchar', { default: '' })
+   description?: string;
 
-    @Column('varchar', { nullable: false })
-    path!: string;
+   @Column('varchar', { nullable: false })
+   path!: string;
 }
