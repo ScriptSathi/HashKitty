@@ -3,136 +3,144 @@ import { logger } from '../utils/Logger';
 import { THashcatRunningStatus, THashcatStatus } from '../types/THashcat';
 import { TTask } from '../types/TApi';
 import { TProcessStdout } from '../utils/Processus';
+import { Events } from '../utils/Events';
 
 type THashcatListenerProperties = {
-    worker: Worker;
-    task: TTask;
-    handleTaskHasFinnished: (task: TTask) => void;
+   worker: Worker;
+   task: TTask;
+   handleTaskHasFinnished: (task: TTask) => void;
+   notify: Events['notify'];
 };
 
 export class HashcatListener {
-    public state: THashcatStatus;
-    private task: TTask;
-    private hashcatWorker: Worker;
-    private handleTaskHasFinnished: (task: TTask) => void;
+   public state: THashcatStatus;
+   private task: TTask;
+   private hashcatWorker: Worker;
+   private handleTaskHasFinnished: (task: TTask) => void;
+   private notify: Events['notify'];
 
-    constructor({
-        worker,
-        task,
-        handleTaskHasFinnished,
-    }: THashcatListenerProperties) {
-        this.hashcatWorker = worker;
-        this.task = task;
-        this.handleTaskHasFinnished = handleTaskHasFinnished;
-        this.state = {
-            processState: 'pending',
-            exitInfo: {
-                message: '',
-                isError: false,
-            },
-            runningStatus: <THashcatRunningStatus>{},
-        };
-    }
+   constructor({
+      worker,
+      task,
+      handleTaskHasFinnished,
+      notify,
+   }: THashcatListenerProperties) {
+      this.hashcatWorker = worker;
+      this.task = task;
+      this.handleTaskHasFinnished = handleTaskHasFinnished;
+      this.state = {
+         processState: 'pending',
+         exitInfo: {
+            message: '',
+            isError: false,
+         },
+         runningStatus: <THashcatRunningStatus>{},
+      };
+      this.notify = notify;
+   }
 
-    public listen = (processStdout: TProcessStdout) => {
-        if (
-            Object.keys(this.state.runningStatus).length > 0 ||
-            this.isProcessSendStatus(processStdout)
-        ) {
-            this.state.processState = 'running';
-        }
-        if (this.isProcessExited(processStdout)) {
-            this.state.processState = 'stopped';
-            this.onExitProcess(processStdout);
-        } else if (this.isProcessSendStatus(processStdout)) {
-            this.state.runningStatus = <THashcatRunningStatus>(
-                processStdout.status
+   public listen = (processStdout: TProcessStdout) => {
+      if (
+         Object.keys(this.state.runningStatus).length > 0 ||
+         this.isProcessSendStatus(processStdout)
+      ) {
+         this.state.processState = 'running';
+      }
+      if (this.isProcessExited(processStdout)) {
+         this.state.processState = 'stopped';
+         this.onExitProcess(processStdout);
+      } else if (this.isProcessSendStatus(processStdout)) {
+         this.state.runningStatus = <THashcatRunningStatus>processStdout.status;
+      } else {
+         if (this.isProcessSendArrayInfo(processStdout)) {
+            logger.debug(
+               '\n-------------------Hashcat warning-------------------\n' +
+                  processStdout.anyOutput +
+                  '\n---------------------------------------------------------'
             );
-        } else {
-            if (this.isProcessSendArrayInfo(processStdout)) {
-                logger.debug(
-                    '\n-------------------Hashcat warning-------------------\n' +
-                        processStdout.anyOutput +
-                        '\n---------------------------------------------------------'
-                );
-            } else {
-                logger.debug('Message from stdout: ' + processStdout.anyOutput);
-            }
-        }
-    };
+         } else {
+            logger.debug('Message from stdout: ' + processStdout.anyOutput);
+         }
+      }
+   };
 
-    private onExitProcess(processStdout: TProcessStdout): void {
-        switch (processStdout.exit.message) {
-            case 'exit':
-                this.handleTaskHasFinnished(this.task);
-                break;
-            case 'exhausted':
-                this.onExhaustedExit();
-                break;
-            case 'error':
-                logger.debug('Status: Error');
-                break;
-            default:
-                logger.debug(
-                    `Unexpected process exit: ${processStdout.exit.message}`
-                );
-        }
-        this.stopListener();
-    }
-
-    private onExhaustedExit(): void {
-        const [nbOfCrackedPasswords, amountOfPasswords] = this.state
-            .runningStatus.recovered_hashes || [0, 0];
-        logger.debug('Status: Exhausted');
-        if (nbOfCrackedPasswords > 0) {
-            this.task.hashlistId.numberOfCrackedPasswords =
-                nbOfCrackedPasswords;
-            logger.info(
-                'Process: Hashcat ended and cracked ' +
-                    `${nbOfCrackedPasswords}/${amountOfPasswords} passwords`
-            );
+   private onExitProcess(processStdout: TProcessStdout): void {
+      switch (processStdout.exit.message) {
+         case 'exit':
             this.handleTaskHasFinnished(this.task);
-        } else {
-            this.state.exitInfo = {
-                message: 'No passwords recovered',
-                isError: true,
-            };
-            logger.info(
-                'Process: Hashcat ended but no passwords were cracked !'
+            break;
+         case 'exhausted':
+            this.onExhaustedExit();
+            break;
+         case 'error':
+            this.notify(
+               'error',
+               `Process: ${this.task.name} ended with an error !`
             );
-        }
-    }
-
-    private isProcessExited(processStdout: TProcessStdout): boolean {
-        try {
-            return (
-                processStdout.exit.message !== '' &&
-                processStdout.exit.code >= 0
+            logger.debug('Status: Error');
+            break;
+         default:
+            this.notify(
+               'error',
+               `Unexpected process exit: ${processStdout.exit.message}`
             );
-        } catch (e) {
-            return false;
-        }
-    }
+      }
+      this.stopListener();
+   }
 
-    private isProcessSendStatus(processStdout: TProcessStdout): boolean {
-        try {
-            return Object.keys(processStdout.status).length > 0;
-        } catch (e) {
-            return false;
-        }
-    }
+   private onExhaustedExit(): void {
+      const [nbOfCrackedPasswords, amountOfPasswords] = this.state.runningStatus
+         .recovered_hashes || [0, 0];
+      logger.debug('Status: Exhausted');
+      if (nbOfCrackedPasswords > 0) {
+         this.task.hashlistId.numberOfCrackedPasswords = nbOfCrackedPasswords;
+         this.notify(
+            'success',
+            'Process: Hashcat ended and cracked ' +
+               `${nbOfCrackedPasswords}/${amountOfPasswords} passwords`
+         );
+         this.handleTaskHasFinnished(this.task);
+      } else {
+         this.state.exitInfo = {
+            message: 'No passwords recovered',
+            isError: true,
+         };
+         this.notify(
+            'warning',
+            `Process: ${this.task.name} ended but no passwords were cracked !`
+         );
+      }
+   }
 
-    private isProcessSendArrayInfo(processStdout: TProcessStdout): boolean {
-        try {
-            return (processStdout.anyOutput as string).match(/\n/g) !== null;
-        } catch (e) {
-            return false;
-        }
-    }
+   private isProcessExited(processStdout: TProcessStdout): boolean {
+      try {
+         return (
+            processStdout.exit.message !== '' && processStdout.exit.code >= 0
+         );
+      } catch (e) {
+         return false;
+      }
+   }
 
-    private stopListener(): void {
-        this.state.processState = 'stopped';
-        this.state.runningStatus = <THashcatRunningStatus>{};
-        this.hashcatWorker.terminate();
-    }
+   private isProcessSendStatus(processStdout: TProcessStdout): boolean {
+      try {
+         return Object.keys(processStdout.status).length > 0;
+      } catch (e) {
+         return false;
+      }
+   }
+
+   private isProcessSendArrayInfo(processStdout: TProcessStdout): boolean {
+      try {
+         return (processStdout.anyOutput as string).match(/\n/g) !== null;
+      } catch (e) {
+         return false;
+      }
+   }
+
+   private stopListener(): void {
+      this.state.processState = 'stopped';
+      this.state.runningStatus = <THashcatRunningStatus>{};
+      this.hashcatWorker.terminate();
+   }
 }
