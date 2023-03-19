@@ -1,18 +1,16 @@
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Hashlist } from '../../ORM/entity/Hashlist';
 import { IDaoSub } from './IDaoSub';
 
 export class DaoHashlist implements IDaoSub<Hashlist> {
-    private db: DataSource;
+    private db: Repository<Hashlist>;
 
     constructor(db: DataSource) {
-        this.db = db;
+        this.db = db.getRepository(Hashlist);
     }
 
     public getAll(): Promise<Hashlist[]> {
-        return this.db
-            .getRepository(Hashlist)
-            .find({ relations: ['hashTypeId'] });
+        return this.db.find({ relations: ['hashTypeId'] });
     }
 
     public create(hashlist: Hashlist): Promise<Hashlist> {
@@ -25,15 +23,15 @@ export class DaoHashlist implements IDaoSub<Hashlist> {
         isModification = true
     ): Promise<Hashlist> {
         if (isModification) hashlist.lastestModification = new Date();
-        return this.db.getRepository(Hashlist).save(hashlist);
+        return this.db.save(hashlist);
     }
 
     public deleteById(id: number): void {
-        this.db.getRepository(Hashlist).delete(id);
+        this.db.delete(id);
     }
 
     public async getById(id: number): Promise<Hashlist> {
-        const hashlist = await this.db.getRepository(Hashlist).findOne({
+        const hashlist = await this.db.findOne({
             where: { id },
             relations: ['hashTypeId'],
         });

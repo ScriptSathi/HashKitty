@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mysql
--- Généré le : dim. 08 jan. 2023 à 09:52
+-- Généré le : dim. 19 mars 2023 à 11:01
 -- Version du serveur : 8.0.30
--- Version de PHP : 8.0.26
+-- Version de PHP : 8.0.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -62,6 +62,19 @@ CREATE TABLE `hash_type` (
   `description` varchar(255) DEFAULT NULL,
   `type_number` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='The hash types enable by hashcat';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `notification`
+--
+
+CREATE TABLE `notification` (
+  `id` int NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` varchar(10) NOT NULL,
+  `message` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -167,6 +180,12 @@ ALTER TABLE `hash_type`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Index pour la table `notification`
+--
+ALTER TABLE `notification`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Index pour la table `options`
 --
 ALTER TABLE `options`
@@ -223,6 +242,12 @@ ALTER TABLE `hashlist`
 -- AUTO_INCREMENT pour la table `hash_type`
 --
 ALTER TABLE `hash_type`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `notification`
+--
+ALTER TABLE `notification`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --

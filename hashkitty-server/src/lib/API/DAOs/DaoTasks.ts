@@ -1,11 +1,12 @@
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { IDaoSub } from './IDaoSub';
 import { Task } from '../../ORM/entity/Task';
 import { Options } from '../../ORM/entity/Options';
 
 export class DaoTasks implements IDaoSub<Task> {
-    private db: DataSource;
+    private db: Repository<Task>;
+    private option: Repository<Options>;
     private dbRelations = {
         relations: [
             'options',
@@ -19,11 +20,12 @@ export class DaoTasks implements IDaoSub<Task> {
     };
 
     constructor(db: DataSource) {
-        this.db = db;
+        this.db = db.getRepository(Task);
+        this.option = db.getRepository(Options);
     }
 
     public async getAll(): Promise<Task[]> {
-        const tasks = await this.db.getRepository(Task).find(this.dbRelations);
+        const tasks = await this.db.find(this.dbRelations);
         return tasks.sort((a, b) => {
             return (
                 new Date(b.lastestModification).valueOf() -
@@ -38,11 +40,11 @@ export class DaoTasks implements IDaoSub<Task> {
     }
 
     public deleteById(id: number): void {
-        this.db.getRepository(Task).delete(id);
+        this.db.delete(id);
     }
 
     public async getById(id: number): Promise<Task> {
-        const task = await this.db.getRepository(Task).findOne({
+        const task = await this.db.findOne({
             where: { id },
             ...this.dbRelations,
         });
@@ -52,16 +54,16 @@ export class DaoTasks implements IDaoSub<Task> {
     public async update(task: Task): Promise<Task> {
         task.lastestModification = new Date();
         task.options = await this.updateOptions(task.options);
-        return this.db.getRepository(Task).save(task);
+        return this.db.save(task);
     }
 
     public registerTaskEnded(task: Task): Promise<Task> {
         task.isfinished = true;
         task.endeddAt = new Date();
-        return this.db.getRepository(Task).save(task);
+        return this.db.save(task);
     }
 
     private updateOptions(options: Options): Promise<Options> {
-        return this.db.getRepository(Options).save(options);
+        return this.option.save(options);
     }
 }

@@ -29,6 +29,7 @@ export class ApiRouter {
         this.router.get('/tasks', this.routeHandler.getTasks);
         this.router.get('/tasks/:id', this.routeHandler.getTaskById);
         this.router.get('/rules', this.routeHandler.getFilesInRulesDir);
+        this.router.get('/notifications', this.routeHandler.getNotifications);
         this.router.post('/start', this.routeHandler.execHashcat);
         this.router.post('/restore', this.routeHandler.restoreHashcat);
         this.router.post('/template', this.routeHandler.updateTemplateTask);
@@ -38,5 +39,9 @@ export class ApiRouter {
         this.router.post('/list', this.routeHandler.uploadList);
         this.router.post('/hashlist/delete', this.routeHandler.deleteHashlist);
         this.router.post('/results', this.routeHandler.taskResults);
+        this.router.delete(
+            '/notifications',
+            this.routeHandler.deleteNotifications
+        );
     }
 }
