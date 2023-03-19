@@ -10,7 +10,7 @@ export default class FormatList {
 
    public static attackMode(list: TAttackMode[]): TAttackMode[] {
       return list.reduce((acc: TAttackMode[], { name, mode, id }) => {
-         return [...acc, { name: `${id} - ${name}`, mode, id }];
+         return [...acc, { name: `${mode} - ${name}`, mode, id }];
       }, []);
    }
 

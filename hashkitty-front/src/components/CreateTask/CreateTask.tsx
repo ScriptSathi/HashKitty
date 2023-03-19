@@ -114,8 +114,8 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
             </Button>
          }
       >
-         <div className="flex justify-between">
-            <section className="flex flex-col flex-wrap justify-between">
+         <div className="flex justify-between gap-2 flex-wrap">
+            <section className="flex flex-col flex-wrap gap-2 justify-between">
                <TextField
                   {...register('name', {
                      maxLength: {
@@ -174,13 +174,13 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
          </div>
          <div className="mt-[5rem]">
             <h3 className="text-lg mb-[2rem]">Advanced configurations</h3>
-            <div className="flex justify-between">
-               <section className="flex flex-col flex-nowrap justify-between">
+            <div className="flex justify-between flex-wrap gap-2">
+               <section className="flex flex-col gap-2 justify-between">
                   <Autocomplete<string>
                      disablePortal
                      required
                      options={FormatList.standard(wordlists)}
-                     sx={{ width: 300 }}
+                     sx={{ maxWidth: 300 }}
                      renderInput={params => (
                         <TextField
                            error={
@@ -202,7 +202,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         setValue('wordlistName', value || '');
                      }}
                   />
-                  <FormControl sx={{ width: 300 }}>
+                  <FormControl sx={{ maxWidth: 300 }}>
                      <InputLabel id="rules">Rules</InputLabel>
                      <Select
                         labelId="rules"

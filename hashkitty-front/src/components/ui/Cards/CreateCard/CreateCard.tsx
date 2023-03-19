@@ -1,14 +1,14 @@
 import { CardActionArea, Card } from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 
-import useIsMobile from '../../../../hooks/useIsMobile';
+import useScreenSize from '../../../../hooks/useScreenSize';
 
 export default function CreateCard({
    clickedCreation: [isClickedCreation, setIsClickedCreation],
 }: {
    clickedCreation: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 }) {
-   const isMobile = useIsMobile({});
+   const { isMobile, isTablette } = useScreenSize({});
 
    const fullSize = {
       width: 400,
@@ -18,7 +18,7 @@ export default function CreateCard({
       width: 250,
       height: 150,
    };
-   const size = isMobile ? smallSize : fullSize;
+   const size = isMobile || isTablette ? smallSize : fullSize;
    return (
       <Card sx={{ ...size, borderRadius: '1rem', maxWidth: 345, margin: 1 }}>
          <CardActionArea

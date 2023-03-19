@@ -91,3 +91,10 @@ export type AllListsItems =
    | THashlist
    | TTemplate
    | TTask;
+
+export type TNotification = {
+   id: number;
+   message: string;
+   status: 'success' | 'error' | 'warning' | 'info';
+   createdAt: string;
+};

@@ -1,7 +1,7 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { CardActions, CardHeader } from '@mui/material';
-import useIsMobile from '../../../../hooks/useIsMobile';
+import useScreenSize from '../../../../hooks/useScreenSize';
 
 type TBaseCard = {
    children: React.ReactNode;
@@ -21,7 +21,7 @@ export default function BaseCard({
    autoResize,
    displayMessage,
 }: TBaseCard) {
-   const isMobile = useIsMobile({});
+   const { isTablette, isMobile } = useScreenSize({});
 
    const fullSize = {
       width: 400,
@@ -32,16 +32,20 @@ export default function BaseCard({
       height: 150,
    };
    const sizingBehaviour =
-      bigCard && autoResize === null ? bigCard : autoResize && !isMobile;
+      bigCard && autoResize === null
+         ? bigCard
+         : autoResize && !(isTablette || isMobile);
 
    const size = sizingBehaviour ? fullSize : smallSize;
    const titleSize = sizingBehaviour ? 'h5' : 'h6';
-   const contentStyleOnScreenSize = isMobile
-      ? { fontSize: 15, paddingTop: 0 }
-      : { paddingTop: 1 };
-   const headerStyleOnScreenSize = isMobile
-      ? { fontSize: 20, paddingTop: 10 }
-      : { fontSize: 22 };
+   const contentStyleOnScreenSize =
+      isTablette || isMobile
+         ? { fontSize: 15, paddingTop: 0 }
+         : { paddingTop: 1 };
+   const headerStyleOnScreenSize =
+      isTablette || isMobile
+         ? { fontSize: 20, paddingTop: 10 }
+         : { fontSize: 22 };
    return (
       <Card sx={{ ...size, borderRadius: '1rem', maxWidth: 345, margin: 1 }}>
          <CardActions
@@ -71,7 +75,7 @@ export default function BaseCard({
                      displayMessage && displayMessage.isError
                         ? 'text-red-500'
                         : 'text-green-500'
-                  } ${isMobile ? 'text-sm' : 'text-base'}`}
+                  } ${isTablette || isMobile ? 'text-sm' : 'text-base'}`}
                >
                   {displayMessage?.message}
                </p>

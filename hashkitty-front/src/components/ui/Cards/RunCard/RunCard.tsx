@@ -12,7 +12,7 @@ import { ReactComponent as StopSVG } from '../../../../assets/images/stopTask.sv
 
 import './RunCard.scss';
 import useStopTask from '../../../../hooks/useStopTask';
-import useIsMobile from '../../../../hooks/useIsMobile';
+import useScreenSize from '../../../../hooks/useScreenSize';
 
 type CommonCard = {
    task: TTask;
@@ -23,7 +23,7 @@ export default function RunCard({
    task,
    isRunning: initIsRunning,
 }: CommonCard) {
-   const isMobile = useIsMobile({});
+   const { isTablette, isMobile } = useScreenSize({});
    const [isLoading, setIsLoading] = useState(false);
    const { fetchStatus, exitInfo, process, status } = useFetchStatus({
       url: ApiEndpoints.apiGetStatus,
@@ -113,7 +113,7 @@ export default function RunCard({
    return (
       <BaseCard title={task.name} autoResize displayMessage={displayMessage()}>
          <div className="flex flex-col justify-between min-h-full h-full">
-            {!isMobile && (
+            {!(isTablette || isMobile) && (
                <div>
                   <Typography
                      component="p"
