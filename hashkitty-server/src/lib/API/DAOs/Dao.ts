@@ -16,6 +16,7 @@ import { Constants } from '../../Constants';
 import { logger } from '../../utils/Logger';
 import { Migration } from '../../ORM/Migration';
 import { HashType } from '../../ORM/entity/HashType';
+import { DaoNotification } from './DaoNotification';
 
 export class Dao {
     public static get UnexpectedError(): string {
@@ -85,6 +86,7 @@ export class Dao {
     public templateTask: DaoTemplateTasks;
     public attackMode: DaoAttackMode;
     public hashType: DaoHashType;
+    public notification: DaoNotification;
 
     constructor(db: DataSource) {
         this.db = db;
@@ -93,6 +95,7 @@ export class Dao {
         this.hashlist = new DaoHashlist(db);
         this.attackMode = new DaoAttackMode(db);
         this.hashType = new DaoHashType(db);
+        this.notification = new DaoNotification(db);
     }
 
     public async reloadWordlistInDB(): Promise<void> {

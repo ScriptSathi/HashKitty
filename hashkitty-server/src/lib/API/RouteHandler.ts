@@ -7,12 +7,7 @@ import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { Dao } from './DAOs/Dao';
 import { TTask, UploadFileType } from '../types/TApi';
-import {
-    AddHashlist,
-    TaskUpdate,
-    TemplateTaskUpdate,
-    UploadFile,
-} from '../types/TRoutes';
+import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
 import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
 import { UploadedFile } from 'express-fileupload';
@@ -551,6 +546,20 @@ export class RouteHandler {
         } catch (e) {
             this.getFileInDirResp(res, [], Constants.rulesPath, e);
         }
+    };
+
+    public deleteNotifications = (
+        req: ReceivedRequest,
+        res: ResponseSend
+    ): void => {
+        throw new Error('Method not implemented.');
+    };
+
+    public getNotifications = (
+        req: ReceivedRequest,
+        res: ResponseSend
+    ): void => {
+        throw new Error('Method not implemented.');
     };
 
     private getFileInDirResp(

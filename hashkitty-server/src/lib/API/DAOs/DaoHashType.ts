@@ -1,37 +1,24 @@
 import { IDaoSub } from './IDaoSub';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { HashType } from '../../ORM/entity/HashType';
 
 export class DaoHashType implements IDaoSub<HashType> {
-    private db: DataSource;
+    private db: Repository<HashType>;
 
     constructor(db: DataSource) {
-        this.db = db;
+        this.db = db.getRepository(HashType);
     }
 
     public getAll(): Promise<HashType[]> {
-        return this.db.getRepository(HashType).find();
+        return this.db.find();
     }
 
     public create(hashType: HashType): Promise<HashType> {
-        return this.db.getRepository(HashType).save(hashType);
-    }
-
-    public deleteById(id: number): void {
-        id;
-        return; // Nothing to do here
+        return this.db.save(hashType);
     }
 
     public async getById(id: number): Promise<HashType> {
-        const hashType = await this.db
-            .getRepository(HashType)
-            .findOne({ where: { id } });
+        const hashType = await this.db.findOne({ where: { id } });
         return hashType === null ? new HashType() : hashType;
-    }
-
-    public update(reqBody: HashType): Promise<HashType> {
-        return new Promise(() => {
-            reqBody;
-        }); // Nothing to do here
     }
 }

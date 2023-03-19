@@ -1,18 +1,20 @@
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { TemplateTask } from '../../ORM/entity/TemplateTask';
 import { IDaoSub } from './IDaoSub';
 import { Options } from '../../ORM/entity/Options';
 
 export class DaoTemplateTasks implements IDaoSub<TemplateTask> {
-    private db: DataSource;
+    private db: Repository<TemplateTask>;
+    private option: Repository<Options>;
 
     constructor(db: DataSource) {
-        this.db = db;
+        this.db = db.getRepository(TemplateTask);
+        this.option = db.getRepository(Options);
     }
 
     public getAll(): Promise<TemplateTask[]> {
-        return this.db.getRepository(TemplateTask).find({
+        return this.db.find({
             relations: [
                 'options',
                 'options.wordlistId',
@@ -28,11 +30,11 @@ export class DaoTemplateTasks implements IDaoSub<TemplateTask> {
     }
 
     public deleteById(id: number): void {
-        this.db.getRepository(TemplateTask).delete(id);
+        this.db.delete(id);
     }
 
     public async getById(id: number): Promise<TemplateTask> {
-        const templateTask = await this.db.getRepository(TemplateTask).findOne({
+        const templateTask = await this.db.findOne({
             where: { id },
             relations: [
                 'options',
@@ -47,10 +49,10 @@ export class DaoTemplateTasks implements IDaoSub<TemplateTask> {
     public async update(templateTask: TemplateTask): Promise<TemplateTask> {
         templateTask.lastestModification = new Date();
         templateTask.options = await this.updateOptions(templateTask.options);
-        return this.db.getRepository(TemplateTask).save(templateTask);
+        return this.db.save(templateTask);
     }
 
     private updateOptions(options: Options): Promise<Options> {
-        return this.db.getRepository(Options).save(options);
+        return this.option.save(options);
     }
 }

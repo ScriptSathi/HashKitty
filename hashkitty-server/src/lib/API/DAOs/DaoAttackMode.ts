@@ -1,37 +1,24 @@
 import { AttackMode } from '../../ORM/entity/AttackMode';
 import { IDaoSub } from './IDaoSub';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 export class DaoAttackMode implements IDaoSub<AttackMode> {
-    private db: DataSource;
+    private db: Repository<AttackMode>;
 
     constructor(db: DataSource) {
-        this.db = db;
+        this.db = db.getRepository(AttackMode);
     }
 
     public getAll(): Promise<AttackMode[]> {
-        return this.db.getRepository(AttackMode).find();
+        return this.db.find();
     }
 
     public create(attackMode: AttackMode): Promise<AttackMode> {
-        return this.db.getRepository(AttackMode).save(attackMode);
-    }
-
-    public deleteById(id: number): void {
-        id;
-        return; // Nothing to do here
+        return this.db.save(attackMode);
     }
 
     public async getById(id: number): Promise<AttackMode> {
-        const attackMode = await this.db
-            .getRepository(AttackMode)
-            .findOne({ where: { id } });
+        const attackMode = await this.db.findOne({ where: { id } });
         return attackMode === null ? new AttackMode() : attackMode;
-    }
-
-    public update(attackMode: AttackMode): Promise<AttackMode> {
-        return new Promise(() => {
-            attackMode;
-        }); // Nothing to do here
     }
 }
