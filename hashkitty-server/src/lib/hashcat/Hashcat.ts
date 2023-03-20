@@ -57,27 +57,14 @@ export class Hashcat {
    public exec(task: TTask): void {
       const generator = new HashcatGenerator(task);
       this.cmd = generator.generateStartCmd();
-      this.currentJobData = {
+      this.registerCurrentJob({
          task,
          outputFilePath: generator.outputFilePath,
-      };
+      });
       if (this.hashlistHaveNeverBeenCracked(task)) {
-         this.hashcatWorker = this.createWorkerThread();
-         this.listener = new HashcatListener({
-            worker: this.hashcatWorker,
-            task,
-            handleTaskHasFinnished: this.handleTaskHasFinnished,
-            notify: this.notify,
-         });
-         this.notify('info', `Starting cracking task : "${task.name}"`);
-         this.hashcatWorker.postMessage(this.cmd);
-         this.listenProcess();
+         this.startListener(task);
       } else {
-         this.notify(
-            'warning',
-            `Task "${task.name} has been ended because the hash list ${task.hashlistId.name} has already been cracked"`
-         );
-         this.handleTaskHasFinnished(task);
+         this.closeTask(task);
       }
    }
 
@@ -90,31 +77,15 @@ export class Hashcat {
 
    public restore(task: TTask): void {
       const generator = new HashcatGenerator(task);
-      this.cmd = generator.generateStartCmd();
-      this.currentJobData = {
+      this.cmd = generator.generateRestoreCmd();
+      this.registerCurrentJob({
          task,
          outputFilePath: generator.outputFilePath,
-      };
+      });
       if (this.hashlistHaveNeverBeenCracked(task)) {
-         this.hashcatWorker = this.createWorkerThread();
-         this.listener = new HashcatListener({
-            worker: this.hashcatWorker,
-            task,
-            handleTaskHasFinnished: this.handleTaskHasFinnished,
-            notify: this.notify,
-         });
-         this.notify(
-            'info',
-            `Starting cracking task : "${task.name}-${task.id}"`
-         );
-         this.hashcatWorker.postMessage(this.cmd);
-         this.listenProcess();
+         this.startListener(task);
       } else {
-         this.notify(
-            'warning',
-            `Task "${task.name} has been ended because the hash list ${task.hashlistId.name} has already been cracked"`
-         );
-         this.handleTaskHasFinnished(task);
+         this.closeTask(task);
       }
    }
 
@@ -164,5 +135,32 @@ export class Hashcat {
             tmpProcess.terminate();
          }, 1000);
       }
+   }
+   private registerCurrentJob({ task, outputFilePath }: currentJobData) {
+      this.currentJobData = {
+         task,
+         outputFilePath,
+      };
+   }
+
+   private startListener(task: TTask) {
+      this.hashcatWorker = this.createWorkerThread();
+      this.listener = new HashcatListener({
+         worker: this.hashcatWorker,
+         task,
+         handleTaskHasFinnished: this.handleTaskHasFinnished,
+         notify: this.notify,
+      });
+      this.notify('info', `Starting cracking task : "${task.name}"`);
+      this.hashcatWorker.postMessage(this.cmd);
+      this.listenProcess();
+   }
+
+   private closeTask(task: TTask) {
+      this.notify(
+         'warning',
+         `Task "${task.name} has been ended because the hash list ${task.hashlistId.name} has already been cracked"`
+      );
+      this.handleTaskHasFinnished(task);
    }
 }
