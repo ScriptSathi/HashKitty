@@ -34,18 +34,18 @@ export class RouteHandler {
       req: ReceivedRequest<ReqID>,
       res: ResponseSend
    ): Promise<void> => {
-      const id = (req.body.id && parseInt(req.body.id)) || undefined;
+      const taskId = (req.body.id && parseInt(req.body.id)) || undefined;
       if (this.hashcat.isRunning) {
          this.responseFail(res, 'Hashcat is already running', 'start');
          return;
       }
-      if (!id || (id && !(await this.dao.taskExistById(id)))) {
-         this.responseFail(res, `There is not task for id ${id}`, 'start');
+      if (!taskId || (taskId && !(await this.dao.taskExistById(taskId)))) {
+         this.responseFail(res, `There is not task for id ${taskId}`, 'start');
          return;
       }
       try {
          this.hashcat.exec(
-            (await this.dao.task.getById(id)) as unknown as TTask
+            (await this.dao.task.getById(taskId)) as unknown as TTask
          );
          res.status(200).json({
             message: 'Hashcat has started successfully',
