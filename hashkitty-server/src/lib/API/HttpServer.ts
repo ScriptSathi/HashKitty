@@ -2,9 +2,9 @@ import * as http from 'http';
 import * as https from 'https';
 import { AddressInfo } from 'net';
 import * as fs from 'fs';
-import * as express from 'express';
-import * as fileUpload from 'express-fileupload';
-import * as cors from 'cors';
+import express from 'express';
+import fileUpload from 'express-fileupload';
+import cors from 'cors';
 
 import { logger } from '../utils/Logger';
 import { IHttpServer, THttpServerConfig } from '../types/TApi';
@@ -48,7 +48,7 @@ export class HttpServer implements IHttpServer {
       return new Promise(resolve => {
          this.server.listen(this.config.port, () => {
             logger.info(
-               `Http server started successfully on port ${this.serverListenPort}`
+               `PID: ${process.pid} - Http server started successfully on port ${this.serverListenPort}`
             );
             resolve();
          });
