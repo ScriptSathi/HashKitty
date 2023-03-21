@@ -11,11 +11,12 @@ export type ResponseSend = Response<ResponseAttr>;
 
 export type ResponseAttr = {
    message: string;
-   success?: unknown;
+   success: boolean;
+   httpCode: number;
    status?: Partial<THashcatStatus>;
    passwds?: string[];
    fail?: string;
-   error?: string | unknown;
+   error?: string;
 };
 
 // ------------------------------ //

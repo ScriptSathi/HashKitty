@@ -136,6 +136,7 @@ export class Hashcat {
          }, 1000);
       }
    }
+
    private registerCurrentJob({ task, outputFilePath }: currentJobData) {
       this.currentJobData = {
          task,

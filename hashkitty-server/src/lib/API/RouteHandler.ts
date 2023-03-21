@@ -6,7 +6,7 @@ import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { Dao } from './DAOs/Dao';
-import { TTask, UploadFileType } from '../types/TApi';
+import { UploadFileType } from '../types/TApi';
 import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
 import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
@@ -18,134 +18,67 @@ import {
    ResponseSend,
 } from '../types/TRoutes';
 import { Events } from '../utils/Events';
+import HashcatController from './Controllers/HashcatController';
+import EntityController from './Controllers/EntityController';
 
 export class RouteHandler {
    public hashcat: Hashcat;
    private dao: Dao;
    private notify: Events['notify'];
+   private hashcatController: HashcatController;
+   private entityController: EntityController;
 
    constructor(db: DataSource) {
       this.dao = new Dao(db);
       this.notify = new Events(this.dao.notification).notify;
       this.hashcat = new Hashcat(this.dao, this.notify);
+      this.hashcatController = new HashcatController(this.dao);
+      this.entityController = new EntityController(this.dao);
    }
 
    public execHashcat = async (
       req: ReceivedRequest<ReqID>,
       res: ResponseSend
    ): Promise<void> => {
-      const taskId = (req.body.id && parseInt(req.body.id)) || undefined;
-      if (this.hashcat.isRunning) {
-         this.responseFail(res, 'Hashcat is already running', 'start');
-         return;
-      }
-      if (!taskId || (taskId && !(await this.dao.taskExistById(taskId)))) {
-         this.responseFail(res, `There is not task for id ${taskId}`, 'start');
-         return;
-      }
-      try {
-         this.hashcat.exec(
-            (await this.dao.task.getById(taskId)) as unknown as TTask
-         );
-         res.status(200).json({
-            message: 'Hashcat has started successfully',
-            success: true,
-         });
-      } catch (err) {
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-         logger.error(`An error occured while trying to start task: ${err}`);
-      }
+      const { id } = req.body;
+      const taskId = parseInt(id) || -1;
+      const { message, success, error, httpCode } =
+         await this.hashcatController.exec('start', taskId);
+      res.status(httpCode).json({ message, success, error, httpCode });
    };
 
    public restoreHashcat = async (
       req: ReceivedRequest<ReqID>,
       res: ResponseSend
    ): Promise<void> => {
-      const id = (req.body.id && parseInt(req.body.id)) || undefined;
-      if (!this.hashcat.isRunning) {
-         if (id && (await this.dao.taskExistById(id))) {
-            try {
-               this.hashcat.restore(
-                  (await this.dao.task.getById(id)) as unknown as TTask
-               );
-               res.status(200).json({
-                  message: 'Hashcat has beed restored successfully',
-                  success: true,
-               });
-            } catch (err) {
-               this.notify(
-                  'error',
-                  `An error occured while trying to restore task: ${
-                     (err as Error).message
-                  }`
-               );
-               res.status(200).json({
-                  message: Dao.UnexpectedError,
-                  error: `[ERROR]: ${err}`,
-               });
-            }
-         } else {
-            this.responseFail(res, `There is not task for id ${id}`, 'restore');
-         }
-      } else {
-         this.responseFail(res, 'Hashcat is already running', 'start');
-      }
+      const { id } = req.body;
+      const taskId = parseInt(id) || -1;
+      const { message, success, error, httpCode } =
+         await this.hashcatController.exec('restore', taskId);
+      res.status(httpCode).json({ message, success, error, httpCode });
    };
 
    public getHashcatStatus = (_: ReceivedRequest, res: ResponseSend): void => {
-      res.status(200).json({
-         message: '',
-         status: this.hashcat.status,
-      });
+      const { message, httpCode, status, success } =
+         this.hashcatController.getStatus();
+      res.status(httpCode).json({ message, httpCode, status, success });
    };
 
    public stopHashcat = (_: ReceivedRequest, res: ResponseSend): void => {
-      let message = 'Hashcat is not running';
-      let status = {};
-      if (this.hashcat.isRunning) {
-         this.hashcat.stop();
-         message = 'Hashcat stopped successfully';
-         status = this.hashcat.status;
-      }
-      res.status(200).json({
-         status,
-         message,
-      });
+      const { message, httpCode, status, success } =
+         this.hashcatController.getStatus();
+      res.status(httpCode).json({ message, httpCode, status, success });
    };
 
    public deleteTask = async (
       req: ReceivedRequest<ReqID>,
       res: ResponseSend
    ): Promise<void> => {
-      const id = (req.body.id && parseInt(req.body.id)) || undefined;
-      if (id && (await this.dao.taskExistById(id))) {
-         try {
-            this.dao.task.deleteById(id);
-            const respMessage = `Task deleted with id ${id} deleted successfully`;
-            res.status(200).json({
-               message: respMessage,
-               success: true,
-            });
-            logger.info(respMessage);
-         } catch (err) {
-            logger.error(
-               `An error occured while trying to delete task: ${err}`
-            );
-            res.status(200).json({
-               message: Dao.UnexpectedError,
-               error: `[ERROR]: ${err}`,
-            });
-         }
-      } else {
-         this.responseFail(
-            res,
-            `There is no tasks with id ${id || 'undefined'}`,
-            'delete'
-         );
-      }
+      const { id } = req.body;
+      const taskId = parseInt(id) || -1;
+      const { message, httpCode, status, success } =
+         await this.entityController.deleteTask(taskId);
+      res.status(httpCode).json({ message, httpCode, status, success });
    };
 
    public updateTask = async (
@@ -270,7 +203,7 @@ export class RouteHandler {
          this.notify('success', respMessage);
       } catch (err) {
          res.status(500).json({
-            error: err,
+            error: err as string,
             message: 'An error occurred',
          });
          logger.error(err);
