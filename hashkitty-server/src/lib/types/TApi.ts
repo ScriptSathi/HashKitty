@@ -1,11 +1,4 @@
-import { ThashcatAllowedFlags } from './THashcat';
-
 export type TEndpoint = 'exec' | 'restore';
-
-export type TflagOption<T = string | number, S = ThashcatAllowedFlags> = {
-   name: S;
-   arg?: T;
-};
 
 export interface ISslConfig {
    use: boolean;

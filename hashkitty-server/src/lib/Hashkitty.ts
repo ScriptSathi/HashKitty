@@ -1,5 +1,7 @@
 import { DataSource } from 'typeorm';
 import * as fs from 'fs-extra';
+import cluster from 'node:cluster';
+import { availableParallelism } from 'node:os';
 
 import { logger } from './utils/Logger';
 import { AppDataSource } from './ORM/data-source';
@@ -13,8 +15,22 @@ export class Hashkitty {
    public async bootstrap(): Promise<void> {
       await this.connectToDb();
       this.createStorageDir();
-      this.db && (await Dao.migrateOnInitDb(this.db));
-      this.db && new HttpServer(Constants.defaultApiConfig, this.db).listen();
+      this.migrateDBIfNeeded();
+      this.startHTTPServer();
+   }
+
+   private migrateDBIfNeeded() {
+      if (this.db) {
+         Dao.migrateOnInitDb(this.db);
+      }
+   }
+
+   private startHTTPServer() {
+      this.parallelizeCpus(() => {
+         if (this.db) {
+            new HttpServer(Constants.defaultApiConfig, this.db).listen();
+         }
+      });
    }
 
    private async connectToDb(): Promise<void> {
@@ -47,10 +63,26 @@ export class Hashkitty {
          Constants.masksPath,
       ];
       for (const dir of listsPaths) {
-         if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-            logger.debug(`Creating ${dir}`);
+         fs.access(dir).catch(() =>
+            fs.mkdir(dir, { recursive: true }, () =>
+               logger.debug(`Creating ${dir}`)
+            )
+         );
+      }
+   }
+
+   private parallelizeCpus(startWorkerTask: () => void) {
+      const numCPUs = availableParallelism();
+      if (cluster.isPrimary) {
+         for (let i = 0; i < numCPUs; i++) {
+            cluster.fork();
          }
+         cluster.on('exit', () => {
+            logger.info(`PID ${process.pid} dies, starting another one`);
+            cluster.fork();
+         });
+      } else {
+         startWorkerTask();
       }
    }
 }
