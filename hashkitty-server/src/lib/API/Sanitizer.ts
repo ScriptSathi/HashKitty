@@ -2,7 +2,6 @@ import { ApiOptionsFormData } from '../types/TDAOs';
 import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
 import { Options } from '../ORM/entity/Options';
 import { Dao } from './DAOs/Dao';
-import { TemplateTask } from '../ORM/entity/TemplateTask';
 import { Task } from '../ORM/entity/Task';
 import { logger } from '../utils/Logger';
 import { FsUtils } from '../utils/FsUtils';
@@ -10,6 +9,7 @@ import { Constants } from '../Constants';
 import { Hashlist } from '../ORM/entity/Hashlist';
 import { HashType } from '../ORM/entity/HashType';
 import { UploadFileType } from '../types/TApi';
+import { TemplateTask } from '../ORM/entity/TemplateTask';
 
 export class Sanitizer {
    public hasSucceded: boolean;
@@ -19,7 +19,7 @@ export class Sanitizer {
    private list: UploadFile;
    private options: Options;
    private task: Task;
-   private templateTask: TemplateTask;
+   private template: TemplateTask;
    private hashlist: Hashlist;
 
    constructor(dao: Dao) {
@@ -27,7 +27,7 @@ export class Sanitizer {
       this.list = { fileName: '' };
       this.options = new Options();
       this.task = new Task();
-      this.templateTask = new TemplateTask();
+      this.template = new TemplateTask();
       this.hashlist = new Hashlist();
       this.hasSucceded = true;
       this.isAnUpdate = false;
@@ -35,15 +35,7 @@ export class Sanitizer {
    }
 
    public async analyseTask(form: TaskUpdate): Promise<void> {
-      if (form.id) {
-         if (await this.dao.taskExistById(form.id)) {
-            this.task = await this.dao.task.getById(form.id);
-            this.options = this.task.options;
-            this.isAnUpdate = true;
-         } else {
-            this.responsesForFailId('task', form.id);
-         }
-      }
+      this.setTaskIfIsUpdate(form.id);
       this.task.name = this.sanitizeText(form.name, 'name', 50);
       this.task.description = this.sanitizeText(
          form.description,
@@ -54,18 +46,18 @@ export class Sanitizer {
       await this.checkHashlist(form.hashlistId);
    }
 
-   public async analyseTemplateTask(form: TemplateTaskUpdate): Promise<void> {
+   public async analyseTemplate(form: TemplateTaskUpdate): Promise<void> {
       if (form.id) {
-         if (await this.dao.templateTaskExistById(form.id)) {
-            this.templateTask = await this.dao.templateTask.getById(form.id);
-            this.options = this.templateTask.options;
+         if (await this.dao.templateExistById(form.id)) {
+            this.template = await this.dao.template.getById(form.id);
+            this.options = this.template.options;
             this.isAnUpdate = true;
          } else {
             this.responsesForFailId('template task', form.id);
          }
       }
-      this.templateTask.name = this.sanitizeText(form.name, 'name', 50);
-      this.templateTask.description = this.sanitizeText(
+      this.template.name = this.sanitizeText(form.name, 'name', 50);
+      this.template.description = this.sanitizeText(
          form.description,
          'description',
          255
@@ -73,13 +65,18 @@ export class Sanitizer {
       await this.prepareOptions(form.options);
    }
 
-   public async analyseList(
-      form: UploadFile & { type: UploadFileType; hashTypeId?: number }
-   ): Promise<void> {
-      const name = this.sanitizeText(form.fileName, 'fileName');
-      if (form.hashTypeId && form.type === 'hashlist') {
+   public async analyseList({
+      type,
+      hashTypeId,
+      fileName,
+   }: UploadFile & {
+      type: UploadFileType;
+      hashTypeId?: number;
+   }): Promise<void> {
+      const name = this.sanitizeText(fileName, 'fileName');
+      if (hashTypeId && type === 'hashlist') {
          this.hashlist.name = name;
-         await this.checkHashType(form.hashTypeId);
+         await this.checkHashType(hashTypeId);
       } else {
          this.list.fileName = name;
       }
@@ -93,8 +90,8 @@ export class Sanitizer {
       return this.hashlist;
    }
 
-   public getTemplateTask(): TemplateTask {
-      return this.templateTask;
+   public getTemplate(): template {
+      return this.template;
    }
 
    public getList(): UploadFile {
@@ -103,6 +100,10 @@ export class Sanitizer {
 
    public removeSpecialCharInString(input: string): string {
       return input.replace(/[^\w._-]/gi, '');
+   }
+
+   public shortenStringByLength(length: number, str: string): string {
+      return str.length > length ? `${str.substring(0, length - 3)}...` : str;
    }
 
    private async prepareOptions(options: ApiOptionsFormData): Promise<void> {
@@ -115,11 +116,7 @@ export class Sanitizer {
       this.checkRules(options.rules || '');
       this.checkPotfiles(options.potfileName || '');
       this.task.options = this.options;
-      this.templateTask.options = this.options;
-   }
-
-   public shortenStringByLength(length: number, str: string): string {
-      return str.length > length ? `${str.substring(0, length - 3)}...` : str;
+      this.template.options = this.options;
    }
 
    private async checkWordlist(name: string): Promise<void> {
@@ -329,11 +326,6 @@ export class Sanitizer {
       this.hasSucceded = false;
    }
 
-   private responsesForDoesNotExistId(failName: string): void {
-      this.errorMessage = `The parameter ${failName} does not exist, please set it`;
-      this.hasSucceded = false;
-   }
-
    private unexpectedError(failParam: string): void {
       this.errorMessage = `An unexpected error occurred with param ${failParam}`;
       this.hasSucceded = false;
@@ -342,5 +334,13 @@ export class Sanitizer {
    private emptyString(failParam: string): void {
       this.errorMessage = `The provided string for ${failParam} is empty`;
       this.hasSucceded = false;
+   }
+
+   private async setTaskIfIsUpdate(id: number | undefined) {
+      if (id) {
+         this.task = await this.dao.task.getById(id);
+         this.options = this.task.options;
+         this.isAnUpdate = true;
+      }
    }
 }

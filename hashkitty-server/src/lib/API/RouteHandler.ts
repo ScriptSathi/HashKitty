@@ -10,7 +10,7 @@ import { UploadFileType } from '../types/TApi';
 import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
 import { FsUtils } from '../utils/FsUtils';
 import { Sanitizer } from './Sanitizer';
-import { UploadedFile } from 'express-fileupload';
+import { FileArray, UploadedFile } from 'express-fileupload';
 import {
    ReceivedRequest,
    ReqFileResults,
@@ -19,21 +19,27 @@ import {
 } from '../types/TRoutes';
 import { Events } from '../utils/Events';
 import HashcatController from './Controllers/HashcatController';
-import EntityController from './Controllers/EntityController';
+import TaskController from './Controllers/TaskController';
+import TemplateController from './Controllers/TemplateController';
+import ListController from './Controllers/ListController';
 
 export class RouteHandler {
    public hashcat: Hashcat;
    private dao: Dao;
    private notify: Events['notify'];
    private hashcatController: HashcatController;
-   private entityController: EntityController;
+   private taskController: TaskController;
+   private templateController: TemplateController;
+   private listController: ListController;
 
    constructor(db: DataSource) {
       this.dao = new Dao(db);
       this.notify = new Events(this.dao.notification).notify;
       this.hashcat = new Hashcat(this.dao, this.notify);
       this.hashcatController = new HashcatController(this.dao);
-      this.entityController = new EntityController(this.dao);
+      this.taskController = new TaskController(this.dao);
+      this.listController = new ListController(this.dao);
+      this.templateController = new TemplateController(this.dao);
    }
 
    public execHashcat = async (
@@ -76,77 +82,28 @@ export class RouteHandler {
    ): Promise<void> => {
       const { id } = req.body;
       const taskId = parseInt(id) || -1;
-      const { message, httpCode, status, success } =
-         await this.entityController.deleteTask(taskId);
-      res.status(httpCode).json({ message, httpCode, status, success });
+      const { message, httpCode, success, error } =
+         await this.taskController.delete(taskId);
+      res.status(httpCode).json({ message, httpCode, success, error });
    };
 
    public updateTask = async (
       req: ReceivedRequest<TaskUpdate>,
       res: ResponseSend
    ): Promise<void> => {
-      try {
-         const sanitizer = new Sanitizer(this.dao);
-         await sanitizer.analyseTask(req.body);
-         if (sanitizer.hasSucceded) {
-            let message = '';
-            if (sanitizer.isAnUpdate) {
-               message = `Task "${req.body.name}" updated successfully`;
-            } else {
-               message = `Task "${req.body.name}" created successfully`;
-            }
-            this.notify('success', message);
-            res.status(200).json({
-               message,
-               success: await this.dao.task.create(sanitizer.getTask()),
-            });
-         } else {
-            this.notify('error', sanitizer.errorMessage);
-            this.responseFail(
-               res,
-               sanitizer.errorMessage,
-               sanitizer.isAnUpdate ? 'update' : 'create'
-            );
-         }
-      } catch (err) {
-         logger.error(`An error occured while trying to create task: ${err}`);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { message, httpCode, success, error } =
+         await this.taskController.update(req.body);
+      res.status(httpCode).json({ message, httpCode, success, error });
    };
 
    public taskResults = (
       req: ReceivedRequest<ReqFileResults>,
       res: ResponseSend
    ): void => {
-      if (!req.body.filename) {
-         res.status(400).json({
-            passwds: [],
-            message: 'You need to submit the filename',
-         });
-         return;
-      }
-      try {
-         const taskResults = fs
-            .readFileSync(
-               path.join(Constants.outputFilePath, req.body.filename)
-            )
-            .toString('utf-8')
-            .split('\n')
-            .filter(line => line);
-         res.status(200).json({
-            passwds: taskResults,
-            message: '',
-         });
-      } catch (err) {
-         logger.debug(err);
-         res.status(200).json({
-            passwds: [],
-            message: `File ${req.body.filename} does not exist`,
-         });
-      }
+      const { filename } = req.body;
+      const { message, httpCode, passwds, success } =
+         this.taskController.results(filename);
+      res.status(httpCode).json({ message, passwds, httpCode, success });
    };
 
    public deleteHashlist(arg0: string, deleteHashlist: any) {
@@ -161,211 +118,99 @@ export class RouteHandler {
       req: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      const body: UploadFile & {
+      const {
+         type,
+         hashTypeId,
+         fileName,
+      }: UploadFile & {
          type: UploadFileType;
          hashTypeId?: number;
       } = req.body;
-      const typeData = FsUtils.getFileTypeData(body.type);
-      const sanitizer = new Sanitizer(this.dao);
-      await sanitizer.analyseList(body);
-      if (!body || !req.files || Object.keys(req.files).length === 0) {
-         res.status(400).json({
-            message: 'No files were uploaded.',
+
+      const fileIsProvided = req.files && Object.keys(req.files).length !== 0;
+      const tooManyFilesSubmitted =
+         req.files && (!req.files.file || Array.isArray(req.files.file));
+      const submittedDataIsNotCorrect =
+         !req.body || !fileIsProvided || tooManyFilesSubmitted;
+      if (submittedDataIsNotCorrect) {
+         const httpCode = 401;
+         res.status(httpCode).json({
+            message: 'The submitted data is not correct',
+            httpCode,
+            success: false,
          });
          return;
       }
-      if (!sanitizer.hasSucceded) {
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${sanitizer.errorMessage}`,
+      const { file } = req.files as FileArray;
+      const { message, httpCode, success, error } =
+         await this.listController.upload({
+            type,
+            hashTypeId,
+            fileName,
+            file: file as UploadedFile,
          });
-         return;
-      }
-      try {
-         let name = '';
-         if (typeData.isHashlist) {
-            const hashlist = sanitizer.getHashlist();
-            await this.dao.hashlist.update(hashlist);
-            name = hashlist.name;
-         } else {
-            name = sanitizer.getList().fileName;
-         }
-         const respMessage = `File ${name} uploaded, successfully`;
-         await FsUtils.uploadFile(
-            req.files.file as UploadedFile,
-            name,
-            body.type
-         );
-         res.status(200).json({
-            success: respMessage,
-            message: respMessage,
-         });
-         this.notify('success', respMessage);
-      } catch (err) {
-         res.status(500).json({
-            error: err as string,
-            message: 'An error occurred',
-         });
-         logger.error(err);
-      }
+      res.status(httpCode).json({ message, httpCode, success, error });
    };
 
    public deleteTemplate = async (
       req: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      const id = (req.body.id && parseInt(req.body.id)) || undefined;
-      if (id && (await this.dao.templateTaskExistById(id))) {
-         try {
-            const message = `Template deleted with id ${id} deleted successfully`;
-            res.status(200).json({
-               success: this.dao.templateTask.deleteById(id),
-               message,
-            });
-            logger.info(message);
-         } catch (err) {
-            logger.error(
-               `An error occured while trying to delete template : ${err}`
-            );
-            res.status(200).json({
-               message: Dao.UnexpectedError,
-               error: `[ERROR]: ${err}`,
-            });
-         }
-      } else {
-         this.responseFail(
-            res,
-            `There is no template with id ${id || 'undefined'}`,
-            'delete'
-         );
-      }
+      const { id } = req.body;
+      const templateId = parseInt(id) || -1;
+      const { message, httpCode, success, error } =
+         await this.templateController.delete(templateId);
+      res.status(httpCode).json({ message, httpCode, success, error });
    };
 
    public updateTemplateTask = async (
       req: ReceivedRequest<TemplateTaskUpdate>,
       res: ResponseSend
    ): Promise<void> => {
-      try {
-         const sanitizer = new Sanitizer(this.dao);
-         await sanitizer.analyseTemplateTask(req.body);
-         if (sanitizer.hasSucceded) {
-            let message = '';
-            if (sanitizer.isAnUpdate) {
-               message = `Template "${req.body.name}" updated successfully`;
-               logger.info(
-                  `Template ${req.body.id} "${req.body.name}" updated successfully`
-               );
-            } else {
-               message = 'New template created successfully';
-               logger.info(message);
-            }
-            res.status(200).json({
-               message,
-               success: await this.dao.templateTask.create(
-                  sanitizer.getTemplateTask()
-               ),
-            });
-         } else {
-            this.responseFail(
-               res,
-               sanitizer.errorMessage,
-               sanitizer.isAnUpdate ? 'update' : 'create'
-            );
-         }
-      } catch (err) {
-         logger.error(`An error occured while trying to create task: ${err}`);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { message, httpCode, success } = await this.taskController.update(
+         req.body
+      );
+      res.status(httpCode).json({ message, httpCode, success });
    };
 
-   public getTemplate = async (
+   public getTemplates = async (
       _: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      try {
-         res.status(200).json({
-            message: '',
-            success: await this.dao.templateTask.getAll(),
-         });
-      } catch (err) {
-         logger.error(err);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { message, httpCode, success, templates } =
+         await this.templateController.getAll();
+      res.status(httpCode).json({ message, httpCode, success, templates });
    };
 
    public getTemplateById = async (
       req: ReceivedRequest<ReqID>,
       res: ResponseSend
    ): Promise<void> => {
-      const id = (req.body.id && parseInt(req.body.id)) || undefined;
-      if (!id || (id && !(await this.dao.templateTaskExistById(id)))) {
-         this.responseFail(
-            res,
-            `There is no template task with id ${id}`,
-            'get',
-            'template task'
-         );
-         return;
-      }
-      try {
-         res.status(200).json({
-            message: '',
-            success: await this.dao.templateTask.getById(id),
-         });
-      } catch (err) {
-         logger.error(err);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { id } = req.body;
+      const templateId = parseInt(id) || -1;
+      const { message, httpCode, success, templates } =
+         await this.templateController.getById(templateId);
+      res.status(httpCode).json({ message, httpCode, success, templates });
    };
 
    public getTasks = async (
       _: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      try {
-         res.status(200).json({
-            message: '',
-            success: await this.dao.task.getAll(),
-         });
-      } catch (err) {
-         logger.error(err);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { message, httpCode, success, tasks } =
+         await this.taskController.getAll();
+      res.status(httpCode).json({ message, httpCode, success, tasks });
    };
 
    public getTaskById = async (
       req: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      const id = (req.body.id && parseInt(req.body.id)) || undefined;
-      if (id && (await this.dao.taskExistById(id))) {
-         try {
-            res.status(200).json({
-               message: '',
-               success: await this.dao.task.getById(id),
-            });
-         } catch (err) {
-            logger.error(err);
-            res.status(200).json({
-               message: Dao.UnexpectedError,
-               error: `[ERROR]: ${err}`,
-            });
-         }
-      } else {
-         this.responseFail(res, `There is no tasks with id ${id}`, 'delete');
-      }
+      const { id } = req.body;
+      const taskId = parseInt(id) || -1;
+      const { message, httpCode, success, tasks } =
+         await this.taskController.getById(taskId);
+      res.status(httpCode).json({ message, httpCode, success, tasks });
    };
 
    public getHashlists = async (

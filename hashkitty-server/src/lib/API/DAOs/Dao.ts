@@ -7,7 +7,7 @@ import { TemplateTask } from '../../ORM/entity/TemplateTask';
 import { Wordlist } from '../../ORM/entity/Wordlist';
 import { WorkloadProfile } from '../../ORM/entity/WorkloadProfile';
 import { DaoTasks } from './DaoTasks';
-import { DaoTemplateTasks } from './DaoTemplateTasks';
+import { DaoTemplate } from './DaoTemplate';
 import { DaoHashlist } from './DaoHashlist';
 import { DaoAttackMode } from './DaoAttackMode';
 import { DaoHashType } from './DaoHashType';
@@ -80,7 +80,7 @@ export class Dao {
    public db: DataSource;
    public task: DaoTasks;
    public hashlist: DaoHashlist;
-   public templateTask: DaoTemplateTasks;
+   public template: DaoTemplate;
    public attackMode: DaoAttackMode;
    public hashType: DaoHashType;
    public notification: DaoNotification;
@@ -88,7 +88,7 @@ export class Dao {
    constructor(db: DataSource) {
       this.db = db;
       this.task = new DaoTasks(db);
-      this.templateTask = new DaoTemplateTasks(db);
+      this.template = new DaoTemplate(db);
       this.hashlist = new DaoHashlist(db);
       this.attackMode = new DaoAttackMode(db);
       this.hashType = new DaoHashType(db);
@@ -126,7 +126,7 @@ export class Dao {
       });
    }
 
-   public async templateTaskExistById(id: number): Promise<boolean> {
+   public async templateExistById(id: number): Promise<boolean> {
       return await this.db.getRepository(TemplateTask).exist({
          where: {
             id: id,
