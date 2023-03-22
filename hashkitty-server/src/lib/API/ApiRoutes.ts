@@ -25,7 +25,7 @@ export class ApiRouter {
       this.router.get('/hashtypes', this.routeHandler.getHashTypes);
       this.router.get('/reload-wordlists', this.routeHandler.reloadWordlists);
       this.router.get('/template/:id', this.routeHandler.getTemplateById);
-      this.router.get('/template', this.routeHandler.getTemplate);
+      this.router.get('/template', this.routeHandler.getTemplates);
       this.router.get('/tasks', this.routeHandler.getTasks);
       this.router.get('/tasks/:id', this.routeHandler.getTaskById);
       this.router.get('/rules', this.routeHandler.getFilesInRulesDir);

@@ -32,7 +32,7 @@ export default class HashcatController {
          };
       }
       if (await this.dao.taskExistById(taskId)) {
-         return GenericController.responseNoCorrespondingTask();
+         return GenericController.responseNoCorrespondingItem('task');
       }
       try {
          const task = (await this.dao.task.getById(taskId)) as unknown as TTask;

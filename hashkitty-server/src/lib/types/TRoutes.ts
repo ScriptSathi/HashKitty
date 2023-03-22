@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { THashcatStatus } from './THashcat';
 import { ApiOptionsFormData, TDaoById, TDaoCreate } from './TDAOs';
+import { TemplateTask } from '../ORM/entity/TemplateTask';
+import { Task } from '../ORM/entity/Task';
 
 export type ReceivedRequest<Body extends { [key: string]: unknown } = {}> =
    Request<{
@@ -15,6 +17,8 @@ export type ResponseAttr = {
    httpCode: number;
    status?: Partial<THashcatStatus>;
    passwds?: string[];
+   templates?: TemplateTask | TemplateTask[];
+   tasks?: Task | Task[];
    fail?: string;
    error?: string;
 };

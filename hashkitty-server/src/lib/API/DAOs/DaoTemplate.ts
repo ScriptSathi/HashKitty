@@ -4,7 +4,7 @@ import { TemplateTask } from '../../ORM/entity/TemplateTask';
 import { IDaoSub } from './IDaoSub';
 import { Options } from '../../ORM/entity/Options';
 
-export class DaoTemplateTasks implements IDaoSub<TemplateTask> {
+export class DaoTemplate implements IDaoSub<TemplateTask> {
    private db: Repository<TemplateTask>;
    private option: Repository<Options>;
 
