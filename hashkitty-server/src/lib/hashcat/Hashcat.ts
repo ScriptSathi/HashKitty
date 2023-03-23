@@ -26,13 +26,13 @@ export class Hashcat {
    private dao: Dao;
    private fsUtils: FsUtils;
    private hashcatWorker: Worker | undefined;
-   private notify: Events['notify'];
+   private sendNotification: Events['sendNotification'];
 
-   constructor(dao: Dao, notify: Events['notify']) {
+   constructor(dao: Dao, sendNotification: Events['sendNotification']) {
       this.cmd = '';
       this.dao = dao;
       this.fsUtils = new FsUtils(Constants.hashlistsPath);
-      this.notify = notify;
+      this.sendNotification = sendNotification;
    }
 
    public get status(): THashcatStatus {
@@ -70,7 +70,7 @@ export class Hashcat {
 
    public stop(): void {
       if (this.hashcatWorker) {
-         this.notify('info', 'Stopping the hashcat process');
+         this.sendNotification('info', 'Stopping the hashcat process');
          this.hashcatWorker.postMessage('exit');
       }
    }
@@ -150,15 +150,15 @@ export class Hashcat {
          worker: this.hashcatWorker,
          task,
          handleTaskHasFinnished: this.handleTaskHasFinnished,
-         notify: this.notify,
+         sendNotification: this.sendNotification,
       });
-      this.notify('info', `Starting cracking task : "${task.name}"`);
+      this.sendNotification('info', `Starting cracking task : "${task.name}"`);
       this.hashcatWorker.postMessage(this.cmd);
       this.listenProcess();
    }
 
    private closeTask(task: TTask) {
-      this.notify(
+      this.sendNotification(
          'warning',
          `Task "${task.name} has been ended because the hash list ${task.hashlistId.name} has already been cracked"`
       );

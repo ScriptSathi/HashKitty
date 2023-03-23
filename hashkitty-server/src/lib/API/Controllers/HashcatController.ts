@@ -7,13 +7,15 @@ import GenericController from './GenericResponse';
 
 export default class HashcatController {
    private dao: Dao;
-   private notify: Events['notify'];
+   private sendNotification: Events['sendNotification'];
    private hashcat: Hashcat;
 
    constructor(dao: Dao) {
       this.dao = dao;
-      this.notify = new Events(this.dao.notification).notify;
-      this.hashcat = new Hashcat(this.dao, this.notify);
+      this.sendNotification = new Events(
+         this.dao.notification
+      ).sendNotification;
+      this.hashcat = new Hashcat(this.dao, this.sendNotification);
    }
 
    public async exec(
@@ -21,7 +23,7 @@ export default class HashcatController {
       taskId: number
    ): Promise<ResponseAttr> {
       if (this.hashcat.isRunning) {
-         this.notify(
+         this.sendNotification(
             'warning',
             'A task is already running, please shut it down before running another one'
          );
@@ -31,7 +33,7 @@ export default class HashcatController {
             success: false,
          };
       }
-      if (await this.dao.taskExistById(taskId)) {
+      if (!(await this.dao.taskExistById(taskId))) {
          return GenericController.responseNoCorrespondingItem('task');
       }
       try {
@@ -48,7 +50,7 @@ export default class HashcatController {
          };
       } catch (e) {
          const errorMsg = `An error occured while trying to start task: ${e}`;
-         this.notify('error', errorMsg);
+         this.sendNotification('error', errorMsg);
          return {
             httpCode: 500,
             message: errorMsg,
@@ -58,7 +60,7 @@ export default class HashcatController {
       }
    }
 
-   public getStatus() {
+   public getStatus(): ResponseAttr {
       return {
          message: '',
          httpCode: 200,
@@ -67,7 +69,7 @@ export default class HashcatController {
       };
    }
 
-   public stop() {
+   public stop(): ResponseAttr {
       if (this.hashcat.isRunning) {
          this.hashcat.stop();
          return {

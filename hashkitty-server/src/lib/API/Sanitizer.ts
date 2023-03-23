@@ -90,7 +90,7 @@ export class Sanitizer {
       return this.hashlist;
    }
 
-   public getTemplate(): template {
+   public getTemplate(): TemplateTask {
       return this.template;
    }
 

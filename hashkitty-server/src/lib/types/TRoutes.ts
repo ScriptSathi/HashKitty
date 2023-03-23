@@ -3,6 +3,10 @@ import { THashcatStatus } from './THashcat';
 import { ApiOptionsFormData, TDaoById, TDaoCreate } from './TDAOs';
 import { TemplateTask } from '../ORM/entity/TemplateTask';
 import { Task } from '../ORM/entity/Task';
+import { Hashlist } from '../ORM/entity/Hashlist';
+import { Notification } from '../ORM/entity/Notification';
+import { AttackMode } from '../ORM/entity/AttackMode';
+import { HashType } from '../ORM/entity/HashType';
 
 export type ReceivedRequest<Body extends { [key: string]: unknown } = {}> =
    Request<{
@@ -17,8 +21,14 @@ export type ResponseAttr = {
    httpCode: number;
    status?: Partial<THashcatStatus>;
    passwds?: string[];
-   templates?: TemplateTask | TemplateTask[];
-   tasks?: Task | Task[];
+   items?:
+      | HashType[]
+      | TemplateTask[]
+      | Task[]
+      | Hashlist[]
+      | Notification[]
+      | AttackMode[]
+      | string[];
    fail?: string;
    error?: string;
 };

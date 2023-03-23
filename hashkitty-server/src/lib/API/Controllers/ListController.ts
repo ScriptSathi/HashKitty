@@ -1,23 +1,20 @@
-import path from 'path';
-import fs from 'fs-extra';
-
-import { Constants } from '../../Constants';
-import { TTask, UploadFileType } from '../../types/TApi';
-import { ResponseAttr, TaskUpdate, UploadFile } from '../../types/TRoutes';
+import { UploadFileType } from '../../types/TApi';
+import { ResponseAttr, UploadFile } from '../../types/TRoutes';
 import { Events } from '../../utils/Events';
 import { Dao } from '../DAOs/Dao';
 import { Sanitizer } from '../Sanitizer';
-import GenericController from './GenericResponse';
 import { FsUtils } from '../../utils/FsUtils';
 import { UploadedFile } from 'express-fileupload';
 
 export default class ListController {
    private dao: Dao;
-   private notify: Events['notify'];
+   private sendNotification: Events['sendNotification'];
 
    constructor(dao: Dao) {
       this.dao = dao;
-      this.notify = new Events(this.dao.notification).notify;
+      this.sendNotification = new Events(
+         this.dao.notification
+      ).sendNotification;
    }
 
    public async upload({
@@ -35,9 +32,9 @@ export default class ListController {
       await sanitizer.analyseList({ type, hashTypeId, fileName });
 
       if (!sanitizer.hasSucceded) {
-         this.notify('error', sanitizer.errorMessage);
+         this.sendNotification('error', sanitizer.errorMessage);
          return {
-            httpCode: 401,
+            httpCode: 400,
             message: sanitizer.errorMessage,
             success: false,
          };
@@ -54,7 +51,7 @@ export default class ListController {
          }
          const respMessage = `File ${name} uploaded, successfully`;
          FsUtils.uploadFile(file, name, type);
-         this.notify('success', respMessage);
+         this.sendNotification('success', respMessage);
          return {
             success: true,
             message: respMessage,
@@ -62,7 +59,47 @@ export default class ListController {
          };
       } catch (err) {
          const message = (err as Error).message || 'An error occurred';
-         this.notify('error', message);
+         this.sendNotification('error', message);
+         return {
+            message,
+            httpCode: 500,
+            success: false,
+         };
+      }
+   }
+
+   public async getAllHashlists(): Promise<ResponseAttr> {
+      try {
+         const items = await this.dao.hashlist.getAll();
+         return {
+            message: '',
+            items,
+            httpCode: 200,
+            success: true,
+         };
+      } catch (err) {
+         const message = (err as Error).message || 'An error occurred';
+         this.sendNotification('error', message);
+         return {
+            message,
+            httpCode: 500,
+            success: false,
+            items: [],
+         };
+      }
+   }
+
+   public async reloadWordlists(): Promise<ResponseAttr> {
+      try {
+         await this.dao.reloadWordlistInDB();
+         return {
+            message: 'Update successfully',
+            success: true,
+            httpCode: 200,
+         };
+      } catch (err) {
+         const message = (err as Error).message || 'An error occurred';
+         this.sendNotification('error', message);
          return {
             message,
             httpCode: 500,

@@ -12,22 +12,24 @@ import { Task } from '../../ORM/entity/Task';
 
 export default class TaskController {
    private dao: Dao;
-   private notify: Events['notify'];
+   private sendNotification: Events['sendNotification'];
 
    constructor(dao: Dao) {
       this.dao = dao;
-      this.notify = new Events(this.dao.notification).notify;
+      this.sendNotification = new Events(
+         this.dao.notification
+      ).sendNotification;
    }
 
    public async delete(taskId: number): Promise<ResponseAttr> {
-      if (await this.dao.taskExistById(taskId)) {
+      if (!(await this.dao.taskExistById(taskId))) {
          return GenericController.responseNoCorrespondingItem('task');
       }
       try {
          const task = (await this.dao.task.getById(taskId)) as unknown as TTask;
          this.dao.task.deleteById(taskId);
          const respMessage = `Task "${task.name}" deleted successfully`;
-         this.notify('success', respMessage);
+         this.sendNotification('success', respMessage);
          return {
             message: respMessage,
             httpCode: 200,
@@ -35,7 +37,7 @@ export default class TaskController {
          };
       } catch (err) {
          const errorMsg = `An error occured while trying to delete task: ${err}`;
-         this.notify('error', errorMsg);
+         this.sendNotification('error', errorMsg);
          return {
             httpCode: 500,
             message: errorMsg,
@@ -56,7 +58,7 @@ export default class TaskController {
             const message = `Task "${task.name}" ${
                sanitizer.isAnUpdate ? 'updated' : 'created'
             } successfully`;
-            this.notify('success', message);
+            this.sendNotification('success', message);
             this.dao.task.create(sanitizer.getTask());
             return {
                message,
@@ -64,15 +66,18 @@ export default class TaskController {
                httpCode: 200,
             };
          } else {
-            this.notify('error', sanitizer.errorMessage);
+            this.sendNotification('error', sanitizer.errorMessage);
             return {
-               httpCode: 401,
+               httpCode: 400,
                message: sanitizer.errorMessage,
                success: false,
             };
          }
       } catch {
-         this.notify('error', 'An error occured while trying to create task');
+         this.sendNotification(
+            'error',
+            'An error occured while trying to create task'
+         );
          return GenericController.unexpectedError();
       }
    }
@@ -81,7 +86,7 @@ export default class TaskController {
       if (!filename) {
          return {
             passwds: [],
-            httpCode: 401,
+            httpCode: 400,
             success: false,
             message: 'You need to submit the filename',
          };
@@ -100,61 +105,61 @@ export default class TaskController {
          };
       } catch {
          const message = `File ${filename} does not exist`;
-         this.notify('error', message);
+         this.sendNotification('error', message);
          return {
             passwds: [],
             message,
             success: true,
-            httpCode: 401,
+            httpCode: 400,
          };
       }
    }
 
    public async getAll(): Promise<ResponseAttr> {
       try {
-         const tasks = await this.dao.task.getAll();
+         const items = await this.dao.task.getAll();
          return {
             message: '',
             success: true,
-            tasks,
+            items,
             httpCode: 200,
          };
       } catch (err) {
          const message = `An unexpected error occured ${
             (err as Error).message
          }`;
-         this.notify('error', message);
+         this.sendNotification('error', message);
          return {
             message,
             success: false,
             httpCode: 500,
-            templates: [],
+            items: [],
          };
       }
    }
 
    public async getById(id: number): Promise<ResponseAttr> {
-      if (await this.dao.taskExistById(id)) {
+      if (!(await this.dao.taskExistById(id))) {
          return GenericController.responseNoCorrespondingItem('task');
       }
       try {
-         const tasks = await this.dao.task.getById(id);
+         const items = [await this.dao.task.getById(id)];
          return {
             message: '',
             success: true,
-            tasks,
+            items,
             httpCode: 200,
          };
       } catch (err) {
          const message = `An unexpected error occured ${
             (err as Error).message
          }`;
-         this.notify('error', message);
+         this.sendNotification('error', message);
          return {
             message,
             success: false,
             httpCode: 500,
-            templates: new Task(),
+            items: [new Task()],
          };
       }
    }
