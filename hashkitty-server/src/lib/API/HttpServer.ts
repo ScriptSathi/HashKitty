@@ -102,7 +102,7 @@ export class HttpServer implements IHttpServer {
             throw err;
          }
       }
-      logger.debug(
+      logger.warn(
          'SSL is disable, the program can not perform HTTPS encryption'
       );
       return http.createServer(this.app);

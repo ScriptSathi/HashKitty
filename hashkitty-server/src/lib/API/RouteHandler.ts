@@ -1,6 +1,3 @@
-import path = require('path');
-import * as fs from 'fs-extra';
-
 import { Hashcat } from '../hashcat/Hashcat';
 import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
@@ -9,7 +6,6 @@ import { Dao } from './DAOs/Dao';
 import { UploadFileType } from '../types/TApi';
 import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
 import { FsUtils } from '../utils/FsUtils';
-import { Sanitizer } from './Sanitizer';
 import { FileArray, UploadedFile } from 'express-fileupload';
 import {
    ReceivedRequest,
@@ -22,24 +18,32 @@ import HashcatController from './Controllers/HashcatController';
 import TaskController from './Controllers/TaskController';
 import TemplateController from './Controllers/TemplateController';
 import ListController from './Controllers/ListController';
+import NotificationController from './Controllers/NotificationController';
+import OptionController from './Controllers/OptionController';
 
 export class RouteHandler {
    public hashcat: Hashcat;
    private dao: Dao;
-   private notify: Events['notify'];
+   private sendNotification: Events['sendNotification'];
    private hashcatController: HashcatController;
    private taskController: TaskController;
    private templateController: TemplateController;
    private listController: ListController;
+   private notificationController: NotificationController;
+   private optionController: OptionController;
 
    constructor(db: DataSource) {
       this.dao = new Dao(db);
-      this.notify = new Events(this.dao.notification).notify;
-      this.hashcat = new Hashcat(this.dao, this.notify);
+      this.sendNotification = new Events(
+         this.dao.notification
+      ).sendNotification;
+      this.hashcat = new Hashcat(this.dao, this.sendNotification);
       this.hashcatController = new HashcatController(this.dao);
       this.taskController = new TaskController(this.dao);
       this.listController = new ListController(this.dao);
       this.templateController = new TemplateController(this.dao);
+      this.notificationController = new NotificationController(this.dao);
+      this.optionController = new OptionController(this.dao);
    }
 
    public execHashcat = async (
@@ -177,9 +181,9 @@ export class RouteHandler {
       _: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      const { message, httpCode, success, templates } =
+      const { message, httpCode, success, items } =
          await this.templateController.getAll();
-      res.status(httpCode).json({ message, httpCode, success, templates });
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public getTemplateById = async (
@@ -188,18 +192,18 @@ export class RouteHandler {
    ): Promise<void> => {
       const { id } = req.body;
       const templateId = parseInt(id) || -1;
-      const { message, httpCode, success, templates } =
+      const { message, httpCode, success, items } =
          await this.templateController.getById(templateId);
-      res.status(httpCode).json({ message, httpCode, success, templates });
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public getTasks = async (
       _: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      const { message, httpCode, success, tasks } =
+      const { message, httpCode, success, items } =
          await this.taskController.getAll();
-      res.status(httpCode).json({ message, httpCode, success, tasks });
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public getTaskById = async (
@@ -208,82 +212,65 @@ export class RouteHandler {
    ): Promise<void> => {
       const { id } = req.body;
       const taskId = parseInt(id) || -1;
-      const { message, httpCode, success, tasks } =
+      const { message, httpCode, success, items } =
          await this.taskController.getById(taskId);
-      res.status(httpCode).json({ message, httpCode, success, tasks });
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public getHashlists = async (
       _: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      try {
-         res.status(200).json({
-            message: '',
-            success: await this.dao.hashlist.getAll(),
-         });
-      } catch (err) {
-         logger.error(err);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { message, httpCode, success, items } =
+         await this.listController.getAllHashlists();
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public getAttackModes = async (
       _: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      try {
-         res.status(200).json({
-            message: '',
-            success: await this.dao.attackMode.getAll(),
-         });
-      } catch (err) {
-         logger.error(err);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { message, httpCode, success, items } =
+         await this.optionController.getAllAttackModes();
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public getHashTypes = async (
       _: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      try {
-         res.status(200).json({
-            message: '',
-            success: await this.dao.hashType.getAll(),
-         });
-      } catch (err) {
-         logger.error(err);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { message, httpCode, success, items } =
+         await this.optionController.getAllHashTypes();
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public reloadWordlists = async (
       _: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      try {
-         await this.dao.reloadWordlistInDB();
-         res.status(200).json({
-            message: '',
-            success: 'Update successfully',
-         });
-      } catch (err) {
-         logger.error(err);
-         res.status(200).json({
-            message: Dao.UnexpectedError,
-            error: `[ERROR]: ${err}`,
-         });
-      }
+      const { message, httpCode, success } =
+         await this.listController.reloadWordlists();
+      res.status(httpCode).json({ message, httpCode, success });
+   };
+
+   public deleteNotifications = async (
+      req: ReceivedRequest,
+      res: ResponseSend
+   ): Promise<void> => {
+      const { id } = req.body;
+      const notificationId = parseInt(id) || -1;
+      const { message, httpCode, success, error } =
+         await this.notificationController.delete(notificationId);
+      res.status(httpCode).json({ message, httpCode, success, error });
+   };
+
+   public getNotifications = async (
+      _: ReceivedRequest,
+      res: ResponseSend
+   ): Promise<void> => {
+      const { message, httpCode, success, items } =
+         await this.notificationController.getAll();
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public getFilesInWordlistDir = (
@@ -322,83 +309,32 @@ export class RouteHandler {
       }
    };
 
-   public deleteNotifications = async (
-      req: ReceivedRequest,
-      res: ResponseSend
-   ): Promise<void> => {
-      const id = (req.body.id && parseInt(req.body.id)) || undefined;
-      if (id && (await this.dao.notificationExistById(id))) {
-         try {
-            const message = `Notification deleted with id ${id} deleted successfully`;
-            res.status(200).json({
-               success: this.dao.notification.deleteById(id),
-               message,
-            });
-            logger.debug(message);
-         } catch (err) {
-            logger.error(
-               `An error occured while trying to delete the notification : ${err}`
-            );
-            res.status(200).json({
-               message: Dao.UnexpectedError,
-               error: `[ERROR]: ${err}`,
-            });
-         }
-      } else {
-         this.responseFail(
-            res,
-            `There is no notification with id ${id || 'undefined'}`,
-            'delete',
-            'notification'
-         );
-      }
-   };
-
-   public getNotifications = async (
-      _: ReceivedRequest,
-      res: ResponseSend
-   ): Promise<void> => {
-      res.status(200).json({
-         success: await this.dao.notification.getAll(),
-         message: '',
-      });
-   };
-
    private getFileInDirResp(
       res: ResponseSend,
-      files: string[],
+      items: string[],
       dirPath?: string,
       e?: unknown
    ): void {
       if (dirPath && e) {
+         const httpCode = 500;
          logger.error(
             `An error occured while reading dir ${dirPath} - Error: ${e}`
          );
          const msgError = `An error occured while reading dir ${dirPath}`;
-         res.status(200).json({
+         res.status(httpCode).json({
             message: msgError,
-            error: {
-               name: msgError,
-               message: e || 'No message error',
-            },
+            items,
+            httpCode,
+            success: true,
          });
          return;
       }
-      res.json({
+      const httpCode = 200;
+      res.status(httpCode).json({
          message: '',
-         success: files,
+         items,
+         httpCode,
+         success: true,
       });
-   }
-
-   private responseFail(
-      res: ResponseSend,
-      message: string,
-      job: string,
-      entity = 'task'
-   ) {
-      res.status(200).json({
-         message,
-      });
-      logger.debug(`Fail to ${job} ${entity} - ${message}`);
    }
 }

@@ -13,10 +13,10 @@ export class Events extends EventEmitter {
       this.addListeners();
    }
 
-   public notify: (event: NotificationType, ...args: string[]) => boolean = (
-      event,
-      ...args
-   ) => {
+   public sendNotification: (
+      event: NotificationType,
+      ...args: string[]
+   ) => boolean = (event, ...args) => {
       return this.emit(event, ...args);
    };
 
@@ -25,27 +25,36 @@ export class Events extends EventEmitter {
       this.on('info', this.onInfo);
       this.on('warning', this.onWarning);
       this.on('error', this.onError);
+      this.on('debug', this.onDebug);
    }
 
    private onError = (message: string, ...debugMessages: string[]) => {
       this.logDebug(...debugMessages);
+      logger.error(message);
       this.notif.create(this.createNotification('error', message));
    };
 
    private onWarning = (message: string, ...debugMessages: string[]) => {
       this.logDebug(...debugMessages);
+      logger.warn(message);
       this.notif.create(this.createNotification('warning', message));
    };
 
    private onInfo = (message: string, ...debugMessages: string[]) => {
       this.logDebug(...debugMessages);
+      logger.info(message);
       this.notif.create(this.createNotification('info', message));
    };
 
    private onSuccess = (message: string, ...debugMessages: string[]) => {
       this.logDebug(...debugMessages);
+      logger.info(message);
       this.notif.create(this.createNotification('success', message));
    };
+
+   private onDebug(...debugMessages: string[]) {
+      this.logDebug(...debugMessages);
+   }
 
    private logDebug(...debugMessages: string[]) {
       for (const message of debugMessages) {

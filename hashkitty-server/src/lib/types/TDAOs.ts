@@ -43,4 +43,9 @@ export type TDaoHashlistCreate = TDaoCreate & {
 };
 export type TDaoHashTypeCreate = { typeNumber: number } & TDaoCreate;
 
-export type NotificationType = 'success' | 'error' | 'warning' | 'info';
+export type NotificationType =
+   | 'success'
+   | 'error'
+   | 'warning'
+   | 'info'
+   | 'debug';

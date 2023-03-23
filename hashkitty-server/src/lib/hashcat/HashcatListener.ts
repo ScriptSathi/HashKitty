@@ -9,7 +9,7 @@ type THashcatListenerProperties = {
    worker: Worker;
    task: TTask;
    handleTaskHasFinnished: (task: TTask) => void;
-   notify: Events['notify'];
+   sendNotification: Events['sendNotification'];
 };
 
 export class HashcatListener {
@@ -17,13 +17,13 @@ export class HashcatListener {
    private task: TTask;
    private hashcatWorker: Worker;
    private handleTaskHasFinnished: (task: TTask) => void;
-   private notify: Events['notify'];
+   private sendNotification: Events['sendNotification'];
 
    constructor({
       worker,
       task,
       handleTaskHasFinnished,
-      notify,
+      sendNotification,
    }: THashcatListenerProperties) {
       this.hashcatWorker = worker;
       this.task = task;
@@ -36,7 +36,7 @@ export class HashcatListener {
          },
          runningStatus: <THashcatRunningStatus>{},
       };
-      this.notify = notify;
+      this.sendNotification = sendNotification;
    }
 
    public listen = (processStdout: TProcessStdout) => {
@@ -73,14 +73,14 @@ export class HashcatListener {
             this.onExhaustedExit();
             break;
          case 'error':
-            this.notify(
+            this.sendNotification(
                'error',
                `Process: ${this.task.name} ended with an error !`
             );
             logger.debug('Status: Error');
             break;
          default:
-            this.notify(
+            this.sendNotification(
                'error',
                `Unexpected process exit: ${processStdout.exit.message}`
             );
@@ -94,7 +94,7 @@ export class HashcatListener {
       logger.debug('Status: Exhausted');
       if (nbOfCrackedPasswords > 0) {
          this.task.hashlistId.numberOfCrackedPasswords = nbOfCrackedPasswords;
-         this.notify(
+         this.sendNotification(
             'success',
             'Process: Hashcat ended and cracked ' +
                `${nbOfCrackedPasswords}/${amountOfPasswords} passwords`
@@ -105,7 +105,7 @@ export class HashcatListener {
             message: 'No passwords recovered',
             isError: true,
          };
-         this.notify(
+         this.sendNotification(
             'warning',
             `Process: ${this.task.name} ended but no passwords were cracked !`
          );
