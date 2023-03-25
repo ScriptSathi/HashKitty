@@ -4,10 +4,10 @@ export default abstract class ErrorHandler<
    FormError extends DefaultFormErrors,
 > {
    public results: FormError = <FormError>{};
-   public hasErrors: boolean;
+   public isValid: boolean;
 
    constructor() {
-      this.hasErrors = false;
+      this.isValid = true;
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars, class-methods-use-this
@@ -24,7 +24,7 @@ export default abstract class ErrorHandler<
    }
 
    protected get requieredFields(): FieldError {
-      this.hasErrors = true;
+      this.isValid = false;
       return {
          isError: true,
          itemId: -1,
@@ -33,7 +33,7 @@ export default abstract class ErrorHandler<
    }
 
    protected get requieredFile(): FieldError {
-      this.hasErrors = true;
+      this.isValid = false;
       return {
          isError: true,
          itemId: -1,
@@ -42,7 +42,7 @@ export default abstract class ErrorHandler<
    }
 
    protected get wrongData(): FieldError {
-      this.hasErrors = true;
+      this.isValid = false;
       return {
          isError: true,
          itemId: -1,

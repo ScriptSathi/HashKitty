@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { TuseFetch } from '../types/THooks';
 
+type SendFormProps<Form> = {
+   data?: Form;
+   formData?: FormData;
+   setHeaders?: boolean;
+};
 export default function useSendForm<Form extends object>({
    url,
-   headers = {},
+   headers: propsHeaders = {},
 }: Omit<TuseFetch, 'method' | 'data'>): {
-   sendForm: (data: Form) => void;
+   sendForm: (form: SendFormProps<Form>, onSuccess?: () => void) => void;
    submitSucced: boolean;
    error: string;
    isLoading: boolean;
@@ -16,11 +21,20 @@ export default function useSendForm<Form extends object>({
 
    const defaultHeaders = { 'Content-Type': 'application/json' };
 
-   function sendForm(data: Form) {
+   function sendForm(
+      {
+         data = undefined,
+         formData = undefined,
+         setHeaders = true,
+      }: SendFormProps<Form>,
+      onSuccess = () => {},
+   ) {
+      const body = data ? JSON.stringify(data) : formData;
+      const headers = setHeaders ? { ...defaultHeaders, ...propsHeaders } : {};
       const reqOptions: RequestInit = {
          method: 'POST',
-         headers: { ...defaultHeaders, ...headers },
-         body: JSON.stringify(data),
+         headers,
+         body,
       };
       setError('');
       setIsLoading(true);
@@ -28,11 +42,15 @@ export default function useSendForm<Form extends object>({
          .then(res => res.json())
          .then(
             res => {
-               if (res.success) setSubmitSucced(true);
-               else setError(res.message);
+               if (res.success) {
+                  setSubmitSucced(true);
+                  onSuccess();
+               } else setError(res.message);
                setIsLoading(false);
             },
-            () => {
+            e => {
+               console.log(e);
+
                setIsLoading(false);
                setError('An unexpected error occured');
             },

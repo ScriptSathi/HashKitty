@@ -10,7 +10,7 @@ export default function useDeleteTask({
    data,
    headers = {},
 }: TuseDeleteTask): {
-   deleteTask: () => void;
+   deleteTask: () => Promise<void>;
    deleteMessage: string;
    isError: boolean;
    isLoading: boolean;

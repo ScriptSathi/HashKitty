@@ -32,7 +32,7 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
    }
 
    public analyse(form: CreateTaskForm): void {
-      this.hasErrors = false;
+      this.isValid = true;
       this.checkName(form.name);
       this.checkTemplate(form.templateId);
       this.checkAttackMode(form.attackModeId);

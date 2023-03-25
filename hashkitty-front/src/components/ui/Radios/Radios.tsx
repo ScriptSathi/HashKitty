@@ -22,6 +22,17 @@ export default function Radios<T extends StandardList, E extends FieldValues>({
    onChangeElem = () => {},
    checkValidation = undefined,
 }: RadiosProps<T, E>) {
+
+   if(list.length === 0) {
+      return (
+         <>
+            <h3 className="ml-[10px] text-lg text-gray-600">{name}</h3>
+            <div className="h-[160px] w-[275px] overflow-y-scroll">
+               <p className="ml-[10px]">No element found</p>
+            </div>
+         </>
+      )
+   }
    return (
       <>
          <h3 className="ml-[10px] text-lg text-gray-600">{name}</h3>

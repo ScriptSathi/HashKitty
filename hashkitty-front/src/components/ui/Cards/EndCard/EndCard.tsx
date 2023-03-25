@@ -41,6 +41,7 @@ export default function EndCard({
       url: ApiEndpoints.apiPOSTDeleteTasks,
       data: task,
    });
+
    const endedSince = duration(
       Date.parse(task.endeddAt || '') - Date.now().valueOf(),
       {
@@ -49,11 +50,14 @@ export default function EndCard({
          units: ['y', 'mo', 'w', 'd', 'h', 'm'],
       },
    );
-   const handleDeletion = async () => {
-      await deleteTask();
-      if (!isError) {
-         handleRefresh();
-      }
+
+   const handleDeletion = () => {
+      deleteTask().then(() => {
+         if (!isError) {
+            // wait the the server to process the deletion before refresh
+            setTimeout(() => handleRefresh(), 500);
+         }
+      });
    };
 
    function displayMessage() {
@@ -130,7 +134,7 @@ export default function EndCard({
                      <SummarizeIcon className="EndCard__icon" />
                   </IconButton>
                </div>
-               {isMobile || (isTablette && displayDeleteBtn())}
+               {(isMobile || isTablette) && displayDeleteBtn()}
             </div>
             <div
                className={`flex justify-between ${

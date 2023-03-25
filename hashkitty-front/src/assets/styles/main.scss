@@ -77,3 +77,7 @@
 		 clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
 	 }
  }
+
+.MuiAutocomplete-option[class*="MuiOutlinedInput-root"] {
+	background: red;
+}

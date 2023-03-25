@@ -16,15 +16,6 @@ export type CreateTaskForm = {
 
 export type TemplateForm = Omit<CreateTaskForm, 'fashlistName'>;
 
-export type ImportHashlistFormData = {
-   hashtypeName: string;
-} & ImportListFormData;
-
-export type ImportListFormData = {
-   list?: File;
-   name: string;
-};
-
 export type ApiTaskFormData = {
    name: string;
    description: string;

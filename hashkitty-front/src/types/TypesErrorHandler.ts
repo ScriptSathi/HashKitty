@@ -1,9 +1,5 @@
-import {
-   CreateTaskForm,
-   ImportHashlistFormData,
-   ImportListFormData,
-   ItemBase,
-} from './TComponents';
+import { ApiImportList } from './TApi';
+import { CreateTaskForm, ItemBase } from './TComponents';
 import { TAttackMode, THashlist } from './TypesORM';
 
 export type FieldError = {
@@ -28,10 +24,6 @@ export type CreateTaskErrors = {
    [key in keyof CreateTaskForm]: FieldError;
 };
 
-export type ImportHashlistErrors = {
-   [key in keyof ImportHashlistFormData]: FieldError;
-};
-
 export type ImportListErrors = {
-   [key in keyof ImportListFormData]: FieldError;
+   [key in keyof ApiImportList]: FieldError;
 };

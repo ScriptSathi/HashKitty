@@ -52,3 +52,20 @@ type TBaseCreateTask = {
    name: string;
    description: string;
 };
+
+export type UploadFileType =
+   | 'rule'
+   | 'mask'
+   | 'wordlist'
+   | 'hashlist'
+   | 'potfile';
+
+type UploadFile = {
+   fileName: string;
+   file: File;
+};
+
+export type ApiImportList = UploadFile & {
+   type: UploadFileType;
+   hashTypeId?: number;
+};
