@@ -14,19 +14,26 @@ export default class FormatList {
       }, []);
    }
 
-   public static hashType(list: THashType[]) {
+   public static hashType(
+      list: THashType[],
+   ): (THashType & { label: string })[] {
       return list.reduce(
-         (acc, elem) => {
-            const data = {
-               label: `${elem.typeNumber} - ${elem.name}`,
-               id: elem.id,
-            };
-            if (acc[0].id < 0) {
-               return [data];
-            }
-            return [...acc, ...[data]];
+         (
+            acc: (THashType & { label: string })[],
+            { name, typeNumber, id, description },
+         ) => {
+            return [
+               ...acc,
+               {
+                  label: `${typeNumber} - ${name}`,
+                  typeNumber,
+                  id,
+                  description,
+                  name,
+               },
+            ];
          },
-         [{ id: -1, label: '' }],
+         [],
       );
    }
 }

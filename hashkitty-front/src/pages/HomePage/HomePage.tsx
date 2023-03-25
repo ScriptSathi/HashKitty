@@ -40,7 +40,8 @@ export default function HomePage() {
    );
    const closeTaskCreation = () => {
       setIsClickedCreation(false);
-      refresh();
+      // Sleep to wait until the backend proccess the creation
+      setTimeout(() => refresh(), 1000);
    };
    const closeResults = () => setResults(defaultResults);
 

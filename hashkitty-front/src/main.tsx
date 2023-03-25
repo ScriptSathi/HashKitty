@@ -9,6 +9,14 @@ import ErrorPage from './pages/ErrorPage/ErrorPage';
 import './assets/styles/main.scss';
 
 const theme = createTheme({
+   palette: {
+      primary: {
+         main: '#FFFFF',
+      },
+      secondary: {
+         main: '#FC6F6F',
+      },
+   },
    components: {
       MuiSwitch: {
          styleOverrides: {
@@ -22,13 +30,15 @@ const theme = createTheme({
             },
          },
       },
-   },
-   palette: {
-      primary: {
-         main: '#FFFFF',
-      },
-      secondary: {
-         main: '#FC6F6F',
+      MuiAutocomplete: {
+         styleOverrides: {
+            option: {
+               '&:hover': {
+                  color: 'white',
+                  backgroundColor: '#FC6F6F !important',
+               },
+            },
+         },
       },
    },
 } as ThemeOptions);

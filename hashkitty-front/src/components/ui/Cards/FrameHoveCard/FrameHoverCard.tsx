@@ -10,6 +10,8 @@ type FrameHoverCardProps = {
    children: ReactNode;
    footer?: ReactNode | undefined;
    className?: string;
+   width?: number;
+   height?: number;
 };
 
 export default function FrameHoverCard({
@@ -18,6 +20,8 @@ export default function FrameHoverCard({
    children,
    footer,
    className,
+   width,
+   height,
 }: FrameHoverCardProps) {
    useOnKeyPress('Escape', closeFrame);
    const { isMobile, isTablette } = useScreenSize();
@@ -69,8 +73,8 @@ export default function FrameHoverCard({
    return (
       <Card
          sx={{
-            width: 800,
-            height: 600,
+            width,
+            height,
             borderRadius: '2rem',
             border: '4px solid',
             maxWidth: 800,
@@ -125,4 +129,6 @@ export default function FrameHoverCard({
 FrameHoverCard.defaultProps = {
    className: '',
    footer: undefined,
+   width: 800,
+   height: 600,
 };

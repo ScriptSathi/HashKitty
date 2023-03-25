@@ -22,17 +22,19 @@ export default function useFetchList<ItemType>({
          body: JSON.stringify(data),
       };
    }
+
    async function refresh() {
       const req = await fetch(url, reqOptions);
       try {
          const res = await req.json();
-         setItems(res.success);
+         setItems(res.items);
          setIsLoading(false);
       } catch (e) {
          setIsLoading(false);
          setError(e);
       }
    }
+
    useEffect(() => {
       refresh();
    }, []);

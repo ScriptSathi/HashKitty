@@ -98,6 +98,7 @@ export default function RunCard({
       }
       return message;
    }
+
    function handleStart() {
       startTask();
       setIsRunning(true);
