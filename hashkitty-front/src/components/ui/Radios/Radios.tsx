@@ -1,29 +1,38 @@
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import { FieldPath, FieldValues, UseFormRegister } from 'react-hook-form';
+import { FieldError, FieldErrors, FieldPath, FieldValues, Path, UseFormRegister } from 'react-hook-form';
 import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
 
-type RadiosProps<T extends StandardList, E extends FieldValues> = {
+type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    list: T[];
-   register: UseFormRegister<E>;
+   register: UseFormRegister<Form>;
    onChangeElem?: (props: {
       event: RadioOnChangeEvent<number>;
       elem: T;
    }) => void;
    name: string;
-   fieldName: FieldPath<E>;
+   fieldName: Path<Form>;
+   errors?: FieldErrors<Form> | undefined;
    checkValidation?: (elem: T) => boolean | undefined;
 };
 
-export default function Radios<T extends StandardList, E extends FieldValues>({
+export default function Radios<T extends StandardList, Form extends FieldValues>({
    list,
    register,
    fieldName,
    name,
+   errors,
    onChangeElem = () => {},
    checkValidation = undefined,
-}: RadiosProps<T, E>) {
+}: RadiosProps<T, Form>) {
 
-   if(list.length === 0) {
+   const errorMessage = () => {
+      if(errors && errors[fieldName]) {
+         return <>{errors[fieldName]?.message}</>;
+      }
+      return <>{''}</>;
+   };
+
+   if (list.length === 0) {
       return (
          <>
             <h3 className="ml-[10px] text-lg text-gray-600">{name}</h3>
@@ -31,11 +40,22 @@ export default function Radios<T extends StandardList, E extends FieldValues>({
                <p className="ml-[10px]">No element found</p>
             </div>
          </>
-      )
+      );
    }
+
    return (
-      <>
-         <h3 className="ml-[10px] text-lg text-gray-600">{name}</h3>
+      <> 
+         <div className='flex'>
+            <h3 className="ml-[10px] text-lg text-gray-600">{name}</h3>
+            <p
+               className="text-red-500 ml-auto mr-[50px] mt-[3px]"
+               style={{
+                  fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
+               }}
+            >
+               {errorMessage()}
+            </p>
+         </div>
          <div className="h-[160px] w-[275px] overflow-y-scroll">
             <RadioGroup
                className="ml-[20px] flex-column"
@@ -75,4 +95,5 @@ export default function Radios<T extends StandardList, E extends FieldValues>({
 Radios.defaultProps = {
    onChangeElem: () => {},
    checkValidation: undefined,
+   errors: undefined,
 };

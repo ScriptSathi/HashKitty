@@ -19,6 +19,7 @@ type TemplateProps = {
    inputWorkloadProfile: TypeSetInput<number | null>;
    inputKernelOpti: TypeSetInput<boolean>;
    inputCpuOnly: TypeSetInput<boolean>;
+   inputMaskQuery: TypeSetInput<string>;
 };
 
 export default function Template({
@@ -32,6 +33,7 @@ export default function Template({
    inputWorkloadProfile: [fieldNameWorkloadProfile, setWorkloadProfile],
    inputCpuOnly: [fieldNameCpuOnly, setCpuOnly],
    inputKernelOpti: [fieldNameKernelOpti, setKernelOpti],
+   inputMaskQuery: [fieldNameMaskQuery, setMaskQuery],
 }: TemplateProps) {
    const { field: fieldWordlist } = useController<CreateTaskForm>({
       control,
@@ -61,6 +63,10 @@ export default function Template({
       control,
       name: fieldNameKernelOpti,
    });
+   const { field: fieldMaskQuery } = useController<CreateTaskForm>({
+      control,
+      name: fieldNameMaskQuery,
+   });
 
    const onChange = ({ elem }: { elem: TTemplate }) => {
       fieldWordlist.onChange(elem.options.wordlistId.name);
@@ -70,6 +76,8 @@ export default function Template({
       fieldAttackMode.onChange(elem.options.attackModeId.id.toString());
       fieldCpuOnly.onChange(elem.options.CPUOnly);
       fieldKernelOpti.onChange(elem.options.kernelOpti);
+      fieldMaskQuery.onChange(elem.options.maskQuery || '');
+      setMaskQuery(elem.options.maskQuery || '');
       setKernelOpti(elem.options.kernelOpti);
       setInputWordlist(elem.options.wordlistId.name);
       setAttackMode(elem.options.attackModeId.id.toString());

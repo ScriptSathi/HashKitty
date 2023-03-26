@@ -27,7 +27,7 @@ export default function useFetchList<ItemType>({
       const req = await fetch(url, reqOptions);
       try {
          const res = await req.json();
-         setItems(res.items);
+         setItems(res.items || []);
          setIsLoading(false);
       } catch (e) {
          setIsLoading(false);

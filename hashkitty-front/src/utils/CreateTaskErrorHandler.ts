@@ -27,6 +27,7 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
             workloadProfileId: 1,
             kernelOpti: false,
             CPUOnly: false,
+            maskQuery: '',
          },
       };
    }
@@ -45,13 +46,14 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
 
       this.finalForm.options.kernelOpti = form.kernelOpti;
       this.finalForm.options.CPUOnly = form.cpuOnly;
+      this.finalForm.options.maskQuery = form.maskQuery;
    }
 
    private checkTemplate(templateId: number) {
       const find = this.dbData.templates.find(elem => {
          return elem.id === templateId;
       });
-      if (!find && templateId < 0) {
+      if (!find && templateId > 0) {
          this.setError('templateId', {
             message: this.wrongData.message,
          });

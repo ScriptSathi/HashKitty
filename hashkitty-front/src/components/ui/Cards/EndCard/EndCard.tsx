@@ -1,6 +1,5 @@
 import Typography from '@mui/material/Typography';
 import SummarizeIcon from '@mui/icons-material/Summarize';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 import duration from 'humanize-duration';
 import { TTask } from '../../../../types/TypesORM';
@@ -8,7 +7,7 @@ import BaseCard from '../BaseCard/BaseCard';
 import useDeleteTask from '../../../../hooks/useDeleteTask';
 import ApiEndpoints from '../../../../ApiEndpoints';
 import useScreenSize from '../../../../hooks/useScreenSize';
-import './EndCard.scss';
+import DeleteButton from '../../Buttons/DeleteButton';
 
 type CommonCard = {
    task: TTask;
@@ -60,25 +59,8 @@ export default function EndCard({
       });
    };
 
-   function displayMessage() {
-      return {
-         message: deleteMessage,
-         isError,
-      };
-   }
-   function displayDeleteBtn() {
-      return (
-         <IconButton
-            disabled={isLoading}
-            onClick={handleDeletion}
-            onKeyDown={e => e.key === 'Delete' && handleDeletion()}
-         >
-            <DeleteIcon className="EndCard__icon" />
-         </IconButton>
-      );
-   }
    return (
-      <BaseCard title={task.name} autoResize displayMessage={displayMessage()}>
+      <BaseCard title={task.name} autoResize>
          <div className="flex flex-col justify-between min-h-full h-full">
             <div
                className={`flex ${
@@ -134,7 +116,12 @@ export default function EndCard({
                      <SummarizeIcon className="EndCard__icon" />
                   </IconButton>
                </div>
-               {(isMobile || isTablette) && displayDeleteBtn()}
+               {(isMobile || isTablette) && (
+                  <DeleteButton
+                     isLoading={isLoading}
+                     handleDeletion={handleDeletion}
+                  />
+               )}
             </div>
             <div
                className={`flex justify-between ${
@@ -149,7 +136,12 @@ export default function EndCard({
                   </p>
                </div>
                {!(isMobile || isTablette) && (
-                  <div className="flex items-center">{displayDeleteBtn()}</div>
+                  <div className="flex items-center">
+                     <DeleteButton
+                        isLoading={isLoading}
+                        handleDeletion={handleDeletion}
+                     />
+                  </div>
                )}
             </div>
          </div>

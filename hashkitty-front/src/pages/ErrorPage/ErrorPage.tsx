@@ -2,7 +2,7 @@ import { useRouteError, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/NavBar/NavBar';
 import { TuseRouteError } from '../../types/THooks';
 import logo from '../../assets/images/CryingKitty.svg';
-import Button from '../../components/ui/Button/Button';
+import Button from '../../components/ui/Buttons/Button';
 
 import './ErrorPage.scss';
 
