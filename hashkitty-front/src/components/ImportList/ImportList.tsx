@@ -1,6 +1,6 @@
 import { TextField, CircularProgress } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import Button from '../ui/Button/Button';
+import Button from '../ui/Buttons/Button';
 import ApiEndpoints from '../../ApiEndpoints';
 import useSendForm from '../../hooks/useSendForm';
 import { ApiImportList, UploadFileType } from '../../types/TApi';
@@ -16,10 +16,7 @@ type ImportListProps = {
    type: UploadFileType;
 };
 
-export default function ImportList({
-   closeImportWindow,
-   type,
-}: ImportListProps) {
+function ImportList({ closeImportWindow, type }: ImportListProps) {
    const { items: hashtypes, isLoading } = useFetchList<THashType>({
       method: 'GET',
       url: ApiEndpoints.apiGetHashTypes,
@@ -144,3 +141,5 @@ export default function ImportList({
       </ImportFrame>
    );
 }
+
+export default ImportList;

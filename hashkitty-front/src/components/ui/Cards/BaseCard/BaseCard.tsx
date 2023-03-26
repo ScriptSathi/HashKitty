@@ -2,14 +2,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { CardActions, CardHeader } from '@mui/material';
 import useScreenSize from '../../../../hooks/useScreenSize';
+import { useState } from 'react';
 
 type TBaseCard = {
    children: React.ReactNode;
+   additionnalBtn?: React.ReactNode | undefined;
    title: string;
-   displayMessage?: {
-      message: string;
-      isError: boolean;
-   };
    bigCard?: boolean;
    autoResize?: boolean | null;
 };
@@ -19,9 +17,10 @@ export default function BaseCard({
    bigCard,
    title,
    autoResize,
-   displayMessage,
+   additionnalBtn,
 }: TBaseCard) {
    const { isTablette, isMobile } = useScreenSize({});
+   const [isMouseOver, setIsMouseOver] = useState(false);
 
    const fullSize = {
       width: 400,
@@ -47,7 +46,11 @@ export default function BaseCard({
          ? { fontSize: 20, paddingTop: 10 }
          : { fontSize: 22 };
    return (
-      <Card sx={{ ...size, borderRadius: '1rem', maxWidth: 345, margin: 1 }}>
+      <Card 
+         sx={{ ...size, borderRadius: '1rem', maxWidth: 345, margin: 1 }}
+         onMouseEnter={() => setIsMouseOver(true)}
+         onMouseLeave={() => setIsMouseOver(false)}
+      >
          <CardActions
             style={{
                display: 'flex',
@@ -57,12 +60,13 @@ export default function BaseCard({
             }}
             className="h-full w-full"
          >
-            <div className="flex items-center justify-between">
+            <div className="flex w-full items-center justify-between">
                <CardHeader
                   style={{
                      paddingBottom: 0,
                      paddingTop: 2,
                      width: '20vh',
+                     height: 40,
                      ...headerStyleOnScreenSize,
                   }}
                   className="break-normal"
@@ -70,15 +74,9 @@ export default function BaseCard({
                   disableTypography
                   title={title}
                />
-               <p
-                  className={`mx-4 ${
-                     displayMessage && displayMessage.isError
-                        ? 'text-red-500'
-                        : 'text-green-500'
-                  } ${isTablette || isMobile ? 'text-sm' : 'text-base'}`}
-               >
-                  {displayMessage?.message}
-               </p>
+               {isMouseOver && additionnalBtn && (
+                  <div className="mr-[20px]">{additionnalBtn}</div>
+               )}
             </div>
             <CardContent
                sx={{
@@ -98,6 +96,7 @@ export default function BaseCard({
 BaseCard.defaultProps = {
    bigCard: true,
    autoResize: null,
+   additionnalBtn: undefined,
    displayMessage: {
       message: '',
       isError: false,

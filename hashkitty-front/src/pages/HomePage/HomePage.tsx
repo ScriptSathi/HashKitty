@@ -99,6 +99,7 @@ export default function HomePage() {
                            <RunCard
                               key={task.id}
                               task={task}
+                              handleRefresh={refresh}
                               isRunning={
                                  sessionName === `${task.name}-${task.id}`
                               }
@@ -129,6 +130,7 @@ export default function HomePage() {
                   {tasks.map(task => (
                      <RunCard
                         key={task.id}
+                        handleRefresh={refresh}
                         task={task}
                         isRunning={sessionName === `${task.name}-${task.id}`}
                      />

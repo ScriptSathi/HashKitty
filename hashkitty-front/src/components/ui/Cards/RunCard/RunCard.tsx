@@ -13,14 +13,18 @@ import { ReactComponent as StopSVG } from '../../../../assets/images/stopTask.sv
 import './RunCard.scss';
 import useStopTask from '../../../../hooks/useStopTask';
 import useScreenSize from '../../../../hooks/useScreenSize';
+import useDeleteTask from '../../../../hooks/useDeleteTask';
+import DeleteButton from '../../Buttons/DeleteButton';
 
 type CommonCard = {
    task: TTask;
    isRunning: boolean;
+   handleRefresh: () => void;
 };
 
 export default function RunCard({
    task,
+   handleRefresh,
    isRunning: initIsRunning,
 }: CommonCard) {
    const { isTablette, isMobile } = useScreenSize({});
@@ -38,6 +42,14 @@ export default function RunCard({
    });
    const { stopTask, stoppedSucced } = useStopTask({
       url: ApiEndpoints.apiGetStop,
+   });
+   const {
+      deleteTask,
+      isError,
+      isLoading: isDeleting,
+   } = useDeleteTask({
+      url: ApiEndpoints.apiPOSTDeleteTasks,
+      data: task,
    });
 
    const [isRunning, setIsRunning] = useState(
@@ -86,19 +98,6 @@ export default function RunCard({
       </SvgIcon>
    );
 
-   function displayMessage() {
-      const message = {
-         message: '',
-         isError: true,
-      };
-      if (exitInfo.message.length > 0) {
-         message.message = exitInfo.message;
-      } else if (startError.length > 0) {
-         message.message = startError;
-      }
-      return message;
-   }
-
    function handleStart() {
       startTask();
       setIsRunning(true);
@@ -111,8 +110,26 @@ export default function RunCard({
       setIsRunning(false);
    }
 
+   const handleDeletion = () => {
+      deleteTask().then(() => {
+         if (!isError) {
+            // wait the the server to process the deletion before refresh
+            setTimeout(() => handleRefresh(), 500);
+         }
+      });
+   };
+
    return (
-      <BaseCard title={task.name} autoResize displayMessage={displayMessage()}>
+      <BaseCard
+         title={task.name}
+         autoResize
+         additionnalBtn={
+            <DeleteButton
+               isLoading={false}
+               handleDeletion={handleDeletion}
+            />
+         }
+      >
          <div className="flex flex-col justify-between min-h-full h-full">
             {!(isTablette || isMobile) && (
                <div>
