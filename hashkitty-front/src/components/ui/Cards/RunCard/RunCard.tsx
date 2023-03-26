@@ -43,11 +43,7 @@ export default function RunCard({
    const { stopTask, stoppedSucced } = useStopTask({
       url: ApiEndpoints.apiGetStop,
    });
-   const {
-      deleteTask,
-      isError,
-      isLoading: isDeleting,
-   } = useDeleteTask({
+   const { deleteTask, isError } = useDeleteTask({
       url: ApiEndpoints.apiPOSTDeleteTasks,
       data: task,
    });
@@ -124,10 +120,7 @@ export default function RunCard({
          title={task.name}
          autoResize
          additionnalBtn={
-            <DeleteButton
-               isLoading={false}
-               handleDeletion={handleDeletion}
-            />
+            <DeleteButton isLoading={false} handleDeletion={handleDeletion} />
          }
       >
          <div className="flex flex-col justify-between min-h-full h-full">

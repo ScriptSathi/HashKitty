@@ -1,8 +1,8 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { CardActions, CardHeader } from '@mui/material';
-import useScreenSize from '../../../../hooks/useScreenSize';
 import { useState } from 'react';
+import useScreenSize from '../../../../hooks/useScreenSize';
 
 type TBaseCard = {
    children: React.ReactNode;
@@ -46,7 +46,7 @@ export default function BaseCard({
          ? { fontSize: 20, paddingTop: 10 }
          : { fontSize: 22 };
    return (
-      <Card 
+      <Card
          sx={{ ...size, borderRadius: '1rem', maxWidth: 345, margin: 1 }}
          onMouseEnter={() => setIsMouseOver(true)}
          onMouseLeave={() => setIsMouseOver(false)}
@@ -97,8 +97,4 @@ BaseCard.defaultProps = {
    bigCard: true,
    autoResize: null,
    additionnalBtn: undefined,
-   displayMessage: {
-      message: '',
-      isError: false,
-   },
 };

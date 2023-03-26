@@ -49,8 +49,6 @@ export default function useSendForm<Form extends object>({
                setIsLoading(false);
             },
             e => {
-               console.log(e);
-
                setIsLoading(false);
                setError('An unexpected error occured');
             },

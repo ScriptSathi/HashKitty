@@ -40,8 +40,6 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
       formState: { errors },
    } = formMethods;
    const onSubmit = (form: ApiImportList) => {
-      console.log(form);
-      console.log(form.file);
       const formVerifier = new ImportListErrorHandler(setError, {
          hashtypes,
       });
@@ -114,7 +112,7 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
                      `${typeNumber} - ${name}`
                   }
                   formName="hashTypeId"
-                  label="Hash lists *"
+                  label="Hash type *"
                   onChange={(_, value) => {
                      setValue('hashTypeId', value?.id || -1);
                   }}

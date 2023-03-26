@@ -18,7 +18,7 @@ function DeleteButton({
          onKeyDown={e => e.key === 'Delete' && handleDeletion()}
          {...args}
       >
-         <DeleteIcon className="DeleteBtn__icon" />
+         <DeleteIcon className="IconBtn__icon" />
       </IconButton>
    );
 }

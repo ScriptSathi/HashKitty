@@ -1,4 +1,4 @@
-import { Autocomplete, Paper, TextField } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import {
    FieldError,
    FieldErrors,

@@ -111,6 +111,7 @@ export class Sanitizer {
       await this.checkWorkloadProfile(options.workloadProfileId);
       await this.checkAttackMode(options.attackModeId);
       this.breakpointGPUTemperature(options.breakpointGPUTemperature);
+      this.checkMaskQuery(options.maskQuery || '');
       this.checkKernelOptions(options.kernelOpti);
       this.checkCPUOnly(options.CPUOnly);
       this.checkRules(options.rules || '');
@@ -202,6 +203,23 @@ export class Sanitizer {
          }
       } catch (error) {
          this.unexpectedError('breakpoint temperature');
+         logger.debug(error);
+      }
+   }
+
+   private checkMaskQuery(mask: string): void {
+      try {
+         if (this.isExpectedType(mask, 'string')) {
+            if (mask.match(/^[\w?]*$/gi)) {
+               this.options.maskQuery = mask;
+            } else {
+               this.incorrectDataSubmitted('breakpointGPUTemperature');
+            }
+         } else {
+            throw 'Wrong data provided for the mask query';
+         }
+      } catch (error) {
+         this.unexpectedError('mask query');
          logger.debug(error);
       }
    }

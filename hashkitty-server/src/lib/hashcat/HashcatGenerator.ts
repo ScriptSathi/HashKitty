@@ -35,11 +35,24 @@ export class HashcatGenerator {
    }
 
    public generateStartCmd(): string {
-      return (
-         `${Constants.defaultBin} ` +
-         this.generateCmdFromFlags(this.prepareStartFlags()) +
-         `${this.hashlist} ${this.wordlist}`
-      );
+      switch (this.task.options.attackModeId.mode) {
+         case 0:
+            return this.generateStraightAttackCmd();
+         case 1:
+            return this.generateCombinationAttackCmd();
+         case 3:
+            return this.generateBruteForceAttackCmd();
+         case 6:
+            return this.generateHybridWordlistAttackCmd();
+         case 7:
+            return this.generateHybridMaskAttackCmd();
+         case 9:
+            return this.generateAssociationAttackCmd();
+         default:
+            throw new Error(
+               `No implementation of the attack mode ${this.task.options.attackModeId.mode}`
+            );
+      }
    }
 
    public generateRestoreCmd(): string {
@@ -165,6 +178,50 @@ export class HashcatGenerator {
             },
          ],
          []
+      );
+   }
+
+   private generateStraightAttackCmd(): string {
+      return (
+         `${Constants.defaultBin} ` +
+         this.generateCmdFromFlags(this.prepareStartFlags()) +
+         `${this.hashlist} ${this.wordlist}`
+      );
+   }
+
+   private generateCombinationAttackCmd(): string {
+      throw new Error('Combination attacks are not implemented yet');
+   }
+
+   private generateBruteForceAttackCmd(): string {
+      return (
+         `${Constants.defaultBin} ` +
+         this.generateCmdFromFlags(this.prepareStartFlags()) +
+         `${this.hashlist} ${this.task.options.maskQuery}`
+      );
+   }
+
+   private generateHybridWordlistAttackCmd(): string {
+      return (
+         `${Constants.defaultBin} ` +
+         this.generateCmdFromFlags(this.prepareStartFlags()) +
+         `${this.hashlist} ${this.wordlist} ${this.task.options.maskQuery}`
+      );
+   }
+
+   private generateHybridMaskAttackCmd(): string {
+      return (
+         `${Constants.defaultBin} ` +
+         this.generateCmdFromFlags(this.prepareStartFlags()) +
+         `${this.hashlist} ${this.task.options.maskQuery} ${this.wordlist}`
+      );
+   }
+
+   private generateAssociationAttackCmd(): string {
+      return (
+         `${Constants.defaultBin} ` +
+         this.generateCmdFromFlags(this.prepareStartFlags()) +
+         `${this.hashlist} ${this.wordlist}`
       );
    }
 }

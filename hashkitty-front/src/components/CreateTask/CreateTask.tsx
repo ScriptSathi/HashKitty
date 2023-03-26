@@ -82,8 +82,6 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    };
 
    const onSubmit = (form: CreateTaskForm) => {
-      console.log(form);
-      
       const formVerifier = new CreateTaskErrorHandler(setError, {
          attackModes,
          templates,
@@ -93,7 +91,6 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
          potfiles,
       });
       formVerifier.analyse(form);
-      console.log(formVerifier)
       if (formVerifier.isValid) {
          sendForm({ data: formVerifier.finalForm });
          if (!isLoadingCreation) {
@@ -223,7 +220,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                            pattern: {
                               value: /^[\w?]*$/gi,
                               message: 'Invalid pattern',
-                           }
+                           },
                         })}
                         error={
                            errors.maskQuery !== undefined &&
@@ -233,7 +230,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         helperText={errors.maskQuery?.message}
                         sx={{ marginTop: 0.5 }}
                         value={inputMaskQuery}
-                        onChange={({ target: { value }}) => {
+                        onChange={({ target: { value } }) => {
                            setInputMaskQuery(value);
                            setValue('maskQuery', value || '');
                         }}
@@ -256,7 +253,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                   </section>
                </div>
                <div className="flex flex-wrap mt-10 flex-col gap-y-3">
-                  <section className='flex flex-wrap gap-2 justify-between'>
+                  <section className="flex flex-wrap gap-2 justify-between">
                      <InputDropdown<string, CreateTaskForm>
                         register={register}
                         options={FormatList.standard(potfiles)}
