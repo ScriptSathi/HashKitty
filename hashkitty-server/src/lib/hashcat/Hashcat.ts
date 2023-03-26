@@ -152,7 +152,7 @@ export class Hashcat {
          handleTaskHasFinnished: this.handleTaskHasFinnished,
          sendNotification: this.sendNotification,
       });
-      this.sendNotification('info', `Starting cracking task : "${task.name}"`);
+      this.sendNotification('info', `Cracking started : "${task.name}"`);
       this.hashcatWorker.postMessage(this.cmd);
       this.listenProcess();
    }

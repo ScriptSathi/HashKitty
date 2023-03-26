@@ -82,7 +82,7 @@ export class HashcatListener {
          default:
             this.sendNotification(
                'error',
-               `Unexpected process exit: ${processStdout.exit.message}`
+               `Unexpected process exit : ${processStdout.exit.message} - code ${processStdout.exit.code}`
             );
       }
       this.stopListener();

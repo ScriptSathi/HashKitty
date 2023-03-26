@@ -78,11 +78,7 @@
 	 }
  }
 
-.MuiAutocomplete-option[class*="MuiOutlinedInput-root"] {
-	background: red;
-}
-
-.DeleteBtn {
+.IconBtn {
 	&__icon:hover {
 		color: $main-color;
 	}

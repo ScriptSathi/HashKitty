@@ -36,7 +36,7 @@ export default function EndCard({
    const { isMobile, isTablette } = useScreenSize({});
    const [results, setResults] = clickedResults;
 
-   const { deleteTask, deleteMessage, isError, isLoading } = useDeleteTask({
+   const { deleteTask, isError, isLoading } = useDeleteTask({
       url: ApiEndpoints.apiPOSTDeleteTasks,
       data: task,
    });
@@ -113,7 +113,7 @@ export default function EndCard({
                         })
                      }
                   >
-                     <SummarizeIcon className="EndCard__icon" />
+                     <SummarizeIcon className="IconBtn__icon" />
                   </IconButton>
                </div>
                {(isMobile || isTablette) && (

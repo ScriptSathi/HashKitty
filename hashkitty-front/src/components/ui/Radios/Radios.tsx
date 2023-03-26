@@ -1,5 +1,10 @@
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import { FieldError, FieldErrors, FieldPath, FieldValues, Path, UseFormRegister } from 'react-hook-form';
+import {
+   FieldErrors,
+   FieldValues,
+   Path,
+   UseFormRegister,
+} from 'react-hook-form';
 import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
 
 type RadiosProps<T extends StandardList, Form extends FieldValues> = {
@@ -15,7 +20,10 @@ type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    checkValidation?: (elem: T) => boolean | undefined;
 };
 
-export default function Radios<T extends StandardList, Form extends FieldValues>({
+export default function Radios<
+   T extends StandardList,
+   Form extends FieldValues,
+>({
    list,
    register,
    fieldName,
@@ -24,12 +32,11 @@ export default function Radios<T extends StandardList, Form extends FieldValues>
    onChangeElem = () => {},
    checkValidation = undefined,
 }: RadiosProps<T, Form>) {
-
    const errorMessage = () => {
-      if(errors && errors[fieldName]) {
-         return <>{errors[fieldName]?.message}</>;
+      if (errors && errors[fieldName]) {
+         return errors[fieldName]?.message as string;
       }
-      return <>{''}</>;
+      return '';
    };
 
    if (list.length === 0) {
@@ -44,8 +51,8 @@ export default function Radios<T extends StandardList, Form extends FieldValues>
    }
 
    return (
-      <> 
-         <div className='flex'>
+      <>
+         <div className="flex">
             <h3 className="ml-[10px] text-lg text-gray-600">{name}</h3>
             <p
                className="text-red-500 ml-auto mr-[50px] mt-[3px]"
