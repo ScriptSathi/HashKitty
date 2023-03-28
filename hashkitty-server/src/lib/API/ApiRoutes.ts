@@ -33,12 +33,12 @@ export class ApiRouter {
       this.router.post('/start', this.routeHandler.execHashcat);
       this.router.post('/restore', this.routeHandler.restoreHashcat);
       this.router.post('/template', this.routeHandler.updateTemplateTask);
-      this.router.post('/template/delete', this.routeHandler.deleteTemplate);
       this.router.post('/tasks', this.routeHandler.updateTask);
-      this.router.post('/tasks/delete', this.routeHandler.deleteTask);
       this.router.post('/list', this.routeHandler.uploadList);
-      this.router.post('/hashlist/delete', this.routeHandler.deleteHashlist);
       this.router.post('/results', this.routeHandler.taskResults);
+      this.router.delete('/tasks', this.routeHandler.deleteTask);
+      this.router.delete('/template', this.routeHandler.deleteTemplate);
+      this.router.delete('/list', this.routeHandler.deleteFile);
       this.router.delete(
          '/notifications',
          this.routeHandler.deleteNotifications

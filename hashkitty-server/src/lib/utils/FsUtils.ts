@@ -44,30 +44,20 @@ export class FsUtils {
       return { ...type, ...{ path } };
    }
 
-   public static async uploadFile(
+   public async countLineInFile(path: string): Promise<number> {
+      //TODO
+      const file = await fs.readFile(path, 'utf-8');
+      console.log(file.toString());
+      return 1;
+   }
+
+   public async uploadFile(
       file: UploadedFile,
       fileName: string,
       fileType: UploadFileType
    ): Promise<void> {
-      let baseDir = '';
-      switch (fileType) {
-         case 'hashlist':
-            baseDir = Constants.hashlistsPath;
-            break;
-         case 'wordlist':
-            baseDir = Constants.wordlistPath;
-            break;
-         case 'rule':
-            baseDir = Constants.rulesPath;
-            break;
-         case 'potfile':
-            baseDir = Constants.potfilesPath;
-            break;
-         default:
-            throw new Error('Wrong data submitted');
-      }
+      const baseDir = this.getFilePathFromType(fileType);
       const uploadPath = path.join(baseDir, fileName);
-
       return new Promise((resolve, reject) => {
          file.mv(uploadPath, (err: Error) => {
             if (err) {
@@ -79,29 +69,48 @@ export class FsUtils {
       });
    }
 
-   public directoryWhereToSavedFile: string;
-   public filePath = '';
-
-   constructor(pathToSavedFile: string) {
-      this.directoryWhereToSavedFile = pathToSavedFile;
+   public deleteFile(fileName: string, fileType: UploadFileType): void {
+      const baseDir = this.getFilePathFromType(fileType);
+      const deletePath = path.join(baseDir, fileName);
+      fs.rm(deletePath)
+         .then(() =>
+            logger.debug(
+               `File ${fileName} from path ${baseDir} deleted successfully`
+            )
+         )
+         .catch(err =>
+            logger.error(
+               `An error occured when deleting ${fileName} from path ${baseDir} - ERROR ${err}`
+            )
+         );
    }
 
-   public async createHashFile(
-      filename: string,
-      data: string[]
-   ): Promise<void> {
-      if (!fs.existsSync(this.directoryWhereToSavedFile)) {
-         await fs.ensureDir(this.directoryWhereToSavedFile);
+   public async fileExist(
+      fileName: string,
+      fileType: UploadFileType
+   ): Promise<boolean> {
+      const baseDir = this.getFilePathFromType(fileType);
+      const existsPath = path.join(baseDir, fileName);
+      try {
+         await fs.access(existsPath);
+         return true;
+      } catch {
+         return false;
       }
-      this.filePath = `${this.directoryWhereToSavedFile}/${filename}`;
-      await fs.writeFile(this.filePath, data.join('\n'));
-      logger.debug(`Writing hash file at location ${this.filePath}`);
    }
 
-   public async countLineInFile(path: string): Promise<number> {
-      //TODO
-      const file = await fs.readFile(path, 'utf-8');
-      console.log(file.toString());
-      return 1;
+   private getFilePathFromType(fileType: UploadFileType): string {
+      switch (fileType) {
+         case 'hashlist':
+            return Constants.hashlistsPath;
+         case 'wordlist':
+            return Constants.wordlistPath;
+         case 'rule':
+            return Constants.rulesPath;
+         case 'potfile':
+            return Constants.potfilesPath;
+         default:
+            throw new Error('Wrong data submitted');
+      }
    }
 }
