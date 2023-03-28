@@ -27,6 +27,10 @@ export class DaoHashlist implements IDaoSub<Hashlist> {
       this.db.delete(id);
    }
 
+   public deleteByName(name: string): void {
+      this.db.delete({ name });
+   }
+
    public async getById(id: number): Promise<Hashlist> {
       const hashlist = await this.db.findOne({
          where: { id },

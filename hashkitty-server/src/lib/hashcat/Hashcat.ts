@@ -24,14 +24,12 @@ export class Hashcat {
    private currentJobData: currentJobData | undefined;
    private cmd: string;
    private dao: Dao;
-   private fsUtils: FsUtils;
    private hashcatWorker: Worker | undefined;
    private sendNotification: Events['sendNotification'];
 
    constructor(dao: Dao, sendNotification: Events['sendNotification']) {
       this.cmd = '';
       this.dao = dao;
-      this.fsUtils = new FsUtils(Constants.hashlistsPath);
       this.sendNotification = sendNotification;
    }
 

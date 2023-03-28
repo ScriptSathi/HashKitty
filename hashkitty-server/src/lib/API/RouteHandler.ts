@@ -110,12 +110,22 @@ export class RouteHandler {
       res.status(httpCode).json({ message, passwds, httpCode, success });
    };
 
-   public deleteHashlist(arg0: string, deleteHashlist: any) {
-      throw new Error('Method not implemented.');
-   }
-
-   public deleteFile = (_: ReceivedRequest, res: ResponseSend): void => {
-      throw new Error('PAS ENCORE FAIT'); //TODO
+   public deleteFile = async (
+      req: ReceivedRequest,
+      res: ResponseSend
+   ): Promise<void> => {
+      const {
+         type,
+         fileName,
+      }: UploadFile & {
+         type: UploadFileType;
+      } = req.body;
+      const { message, httpCode, success, error } =
+         await this.listController.delete({
+            type,
+            fileName,
+         });
+      res.status(httpCode).json({ message, httpCode, success, error });
    };
 
    public uploadList = async (
