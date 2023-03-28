@@ -6,10 +6,12 @@ type SendFormProps<Form> = {
    formData?: FormData;
    setHeaders?: boolean;
 };
+
 export default function useSendForm<Form extends object>({
    url,
+   method = 'POST',
    headers: propsHeaders = {},
-}: Omit<TuseFetch, 'method' | 'data'>): {
+}: Omit<TuseFetch, 'data' | 'method'> & Partial<Pick<TuseFetch, 'method'>>): {
    sendForm: (form: SendFormProps<Form>, onSuccess?: () => void) => void;
    submitSucced: boolean;
    error: string;
@@ -32,7 +34,7 @@ export default function useSendForm<Form extends object>({
       const body = data ? JSON.stringify(data) : formData;
       const headers = setHeaders ? { ...defaultHeaders, ...propsHeaders } : {};
       const reqOptions: RequestInit = {
-         method: 'POST',
+         method,
          headers,
          body,
       };

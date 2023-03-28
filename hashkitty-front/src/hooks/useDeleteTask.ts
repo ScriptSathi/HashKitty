@@ -21,7 +21,7 @@ export default function useDeleteTask({
 
    const defaultHeaders = { 'Content-Type': 'application/json' };
    let reqOptions: RequestInit = {
-      method: 'POST',
+      method: 'DELETE',
       headers: { ...defaultHeaders, ...headers },
    };
    if (data) {

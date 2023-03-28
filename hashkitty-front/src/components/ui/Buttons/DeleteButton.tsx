@@ -1,4 +1,4 @@
-import { IconButton } from '@mui/material';
+import { CircularProgress, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 type DeleteButtonProps = {
@@ -18,7 +18,9 @@ function DeleteButton({
          onKeyDown={e => e.key === 'Delete' && handleDeletion()}
          {...args}
       >
-         <DeleteIcon className="IconBtn__icon" />
+         {isLoading 
+            ? <CircularProgress size={24} color="secondary" />
+            : <DeleteIcon className="IconBtn__icon" />}
       </IconButton>
    );
 }

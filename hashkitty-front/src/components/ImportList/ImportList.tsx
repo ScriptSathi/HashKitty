@@ -17,20 +17,21 @@ type ImportListProps = {
 };
 
 function ImportList({ closeImportWindow, type }: ImportListProps) {
+   const isHashlist = type === 'hashlist';
    const { items: hashtypes, isLoading } = useFetchList<THashType>({
       method: 'GET',
-      url: ApiEndpoints.apiGetHashTypes,
+      url: ApiEndpoints.GET.hashtypes,
    });
    const { sendForm, isLoading: isLoadingCreation } =
       useSendForm<ApiImportList>({
-         url: ApiEndpoints.apiPOSTAddList,
+         url: ApiEndpoints.POST.list,
       });
 
    const formMethods = useForm<ApiImportList>({
       defaultValues: {
          fileName: '',
-         type: 'hashlist',
-         hashTypeId: -1,
+         type,
+         hashTypeId: isHashlist ? -1 : undefined,
       },
    });
    const {
@@ -48,9 +49,9 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
       if (formVerifier.isValid) {
          const formData = new FormData();
          formData.append('fileName', form.fileName);
-         formData.append('type', 'hashlist');
+         formData.append('type', type);
          formData.append('file', form.file, form.file.name);
-         formData.append('hashTypeId', form.hashTypeId?.toString() || '-1');
+         if(isHashlist) formData.append('hashTypeId', form.hashTypeId?.toString() || '-1');
          sendForm({ formData, setHeaders: false }, () => closeImportWindow());
       }
    };
@@ -104,7 +105,7 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
                   helperText={errors.fileName?.message}
                   sx={{ marginTop: 0.5, width: 300 }}
                />
-               <InputDropdown<THashType, ApiImportList>
+               {isHashlist && <InputDropdown<THashType, ApiImportList>
                   register={register}
                   options={hashtypes}
                   errors={errors}
@@ -119,7 +120,7 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
                   isOptionEqualToValue={(option, value) =>
                      option.id === value.id || value === null
                   }
-               />
+               />}
             </section>
             <section>
                <DragNDrop<ApiImportList>

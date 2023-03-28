@@ -10,30 +10,30 @@ export default function useFetchAllList() {
    const { items: hashlists, refresh: refreshHashlists } =
       useFetchList<THashlist>({
          method: 'GET',
-         url: ApiEndpoints.apiGetHashlists,
+         url: ApiEndpoints.GET.hashlists,
       });
    const { items: templates, refresh: refreshTemplates } =
       useFetchList<TTemplate>({
          method: 'GET',
-         url: ApiEndpoints.apiGetTemplate,
+         url: ApiEndpoints.GET.templates,
       });
    const { items: potfiles, refresh: refreshPotfiles } = useFetchList<string>({
       method: 'GET',
-      url: ApiEndpoints.apiGetPotfiles,
+      url: ApiEndpoints.GET.potfiles,
    });
    const { items: rules, refresh: refreshRules } = useFetchList<string>({
       method: 'GET',
-      url: ApiEndpoints.apiGetRules,
+      url: ApiEndpoints.GET.rules,
    });
    const { items: attackModes, refresh: refreshAttacModes } =
       useFetchList<TAttackMode>({
          method: 'GET',
-         url: ApiEndpoints.apiGetAttackModes,
+         url: ApiEndpoints.GET.attackmodes,
       });
    const { items: wordlists, refresh: refreshWordlists } = useFetchList<string>(
       {
          method: 'GET',
-         url: ApiEndpoints.apiGetWordlists,
+         url: ApiEndpoints.GET.wordlists,
       },
    );
 
@@ -64,8 +64,8 @@ export default function useFetchAllList() {
       refresh();
    }, []);
    return {
-      attackModes,
       wordlists: buildItemBase(wordlists),
+      attackModes,
       hashlists,
       templates,
       potfiles: buildItemBase(potfiles),

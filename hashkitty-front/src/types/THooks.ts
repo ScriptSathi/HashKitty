@@ -7,7 +7,7 @@ export type TuseRouteError = {
 };
 
 export type TuseFetch = {
-   method: 'GET' | 'POST';
+   method: 'GET' | 'POST' | 'DELETE';
    url: string;
    data?: unknown;
    headers?: { [key: string]: unknown };
