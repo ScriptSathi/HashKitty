@@ -26,10 +26,10 @@ export default function HomePage() {
    const { isTablette, isMobile } = useScreenSize({});
    const { items, refresh, isLoading } = useFetchList<TTask>({
       method: 'GET',
-      url: ApiEndpoints.apiGetTasks,
+      url: ApiEndpoints.GET.tasks,
    });
    const { sessionName } = useFetchStatus({
-      url: ApiEndpoints.apiGetStatus,
+      url: ApiEndpoints.GET.taskStatus,
    });
    const [tasks, endedTasks] = items.reduce(
       ([_tasks, _endedTasks]: TTask[][], element: TTask) =>

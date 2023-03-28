@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage/HomePage';
 import ErrorPage from './pages/ErrorPage/ErrorPage';
 
 import './assets/styles/main.scss';
+import Lists from './pages/Lists/Lists';
 
 const theme = createTheme({
    palette: {
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
          },
          {
             path: 'lists',
-            element: <HomePage />,
+            element: <Lists />,
          },
          {
             path: 'server-infos',

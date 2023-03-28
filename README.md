@@ -1,4 +1,4 @@
-# [Hashitty](https://github.com/ScriptSathi/HashKitty)
+# [Hashkitty](https://github.com/ScriptSathi/HashKitty)
 
 Hashkitty is another web user interface for Hashcat, fully written in Typescript.
 

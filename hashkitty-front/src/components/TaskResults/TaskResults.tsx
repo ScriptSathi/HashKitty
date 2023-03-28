@@ -23,7 +23,7 @@ export default function TaskResults({
    const [onlyPasswds, setOnlyPasswds] = useState(false);
    const { passwds, isLoaded, error } = useFetchPassword({
       method: 'POST',
-      url: ApiEndpoints.apiPOSTTaskResults,
+      url: ApiEndpoints.POST.taskResults,
       data: {
          filename: `${listName}-${listId}`,
       },

@@ -30,21 +30,21 @@ export default function RunCard({
    const { isTablette, isMobile } = useScreenSize({});
    const [isLoading, setIsLoading] = useState(false);
    const { fetchStatus, exitInfo, process, status } = useFetchStatus({
-      url: ApiEndpoints.apiGetStatus,
+      url: ApiEndpoints.GET.taskStatus,
    });
    const {
       startTask,
       hasStarted,
       error: startError,
    } = useStartTask({
-      url: ApiEndpoints.apiPOSTStart,
+      url: ApiEndpoints.POST.startTask,
       data: task,
    });
    const { stopTask, stoppedSucced } = useStopTask({
-      url: ApiEndpoints.apiGetStop,
+      url: ApiEndpoints.GET.stopTask,
    });
    const { deleteTask, isError } = useDeleteTask({
-      url: ApiEndpoints.apiPOSTDeleteTasks,
+      url: ApiEndpoints.DELETE.task,
       data: task,
    });
 

@@ -20,7 +20,7 @@ export default function Button({
          type={type}
          size={size}
          {...args}
-         className={`${args.className} active:bg-[#FC6F6F] active:text-white bg-black rounded-md hover:bg-white hover:text-black border-solid  border-4 border-black active:border-[#FC6F6F]`}
+         className={`${args.className} flex items-center justify-center active:bg-[#FC6F6F] active:text-white bg-black rounded-md hover:bg-white hover:text-black border-solid  border-4 border-black active:border-[#FC6F6F]`}
       >
          {children || 'button'}
       </TWButton>

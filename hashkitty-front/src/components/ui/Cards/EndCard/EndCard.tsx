@@ -37,7 +37,7 @@ export default function EndCard({
    const [results, setResults] = clickedResults;
 
    const { deleteTask, isError, isLoading } = useDeleteTask({
-      url: ApiEndpoints.apiPOSTDeleteTasks,
+      url: ApiEndpoints.DELETE.task,
       data: task,
    });
 

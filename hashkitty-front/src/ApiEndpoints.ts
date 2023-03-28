@@ -6,22 +6,37 @@ export default class ApiEndpoints {
       import.meta.env?.REACT_APP_API_PORT || '1337';
    public static readonly endpoint = '/api';
    public static readonly apiUrl: string = `http://${this.domaineName}:${this.apiPort}${this.endpoint}`;
-   public static readonly apiGetTasks: string = `${this.apiUrl}/tasks`;
-   public static readonly apiPOSTDeleteTasks: string = `${this.apiUrl}/tasks/delete`;
-   public static readonly apiPOSTDeleteTemplate: string = `${this.apiUrl}/template/delete`;
-   public static readonly apiGetStatus: string = `${this.apiUrl}/status`;
-   public static readonly apiGetHashlists: string = `${this.apiUrl}/hashlists`;
-   public static readonly apiPOSTStart: string = `${this.apiUrl}/start`;
-   public static readonly apiGetStop: string = `${this.apiUrl}/stop`;
-   public static readonly apiPOSTCreateTask: string = `${this.apiUrl}/tasks`;
-   public static readonly apiPOSTCreateTemplate: string = `${this.apiUrl}/template`;
-   public static readonly apiGetTemplate: string = `${this.apiUrl}/template`;
-   public static readonly apiGetRules: string = `${this.apiUrl}/rules`;
-   public static readonly apiGetPotfiles: string = `${this.apiUrl}/potfiles`;
-   public static readonly apiGetWordlists: string = `${this.apiUrl}/wordlists`;
-   public static readonly apiGetAttackModes: string = `${this.apiUrl}/attackmodes`;
-   public static readonly apiGetHashTypes: string = `${this.apiUrl}/hashtypes`;
-   public static readonly apiPOSTTaskResults: string = `${this.apiUrl}/results`;
    public static readonly apiPOSTAddList: string = `${this.apiUrl}/list`;
    public static readonly apiNotifications: string = `${this.apiUrl}/notifications`;
+   public static get GET() {
+      return {
+         notifications: `${this.apiUrl}/notifications`,
+         stopTask: `${this.apiUrl}/stop`,
+         taskStatus: `${this.apiUrl}/status`,
+         wordlists: `${this.apiUrl}/wordlists`,
+         potfiles: `${this.apiUrl}/potfiles`,
+         attackmodes: `${this.apiUrl}/attackmodes`,
+         hashtypes: `${this.apiUrl}/hashtypes`,
+         hashlists: `${this.apiUrl}/hashlists`,
+         rules: `${this.apiUrl}/rules`,
+         tasks: `${this.apiUrl}/tasks`,
+         templates: `${this.apiUrl}/template`,
+      };
+   }
+   public static get DELETE() {
+      return {
+         list: `${this.apiUrl}/list`,
+         task: `${this.apiUrl}/tasks`,
+         template: `${this.apiUrl}/template`,
+      };
+   }
+   public static get POST() {
+      return {
+         list: `${this.apiUrl}/list`,
+         startTask: `${this.apiUrl}/start`,
+         task: `${this.apiUrl}/tasks`,
+         taskResults: `${this.apiUrl}/results`,
+         restore: `${this.apiUrl}/restore`,
+      };
+   }
 }

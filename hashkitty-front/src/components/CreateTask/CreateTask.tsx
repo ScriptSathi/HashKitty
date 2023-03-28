@@ -51,7 +51,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    const [isClickedImport, setIsClickedImport] = useState(false);
 
    const { sendForm, isLoading: isLoadingCreation } = useSendForm<TaskUpdate>({
-      url: ApiEndpoints.apiPOSTCreateTask,
+      url: ApiEndpoints.POST.task,
    });
    const formMethods = useForm<CreateTaskForm>({
       defaultValues: createTaskDefaultValues,
