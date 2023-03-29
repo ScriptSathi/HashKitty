@@ -4,7 +4,8 @@ Hashkitty is another web user interface for Hashcat, fully written in Typescript
 
 ## Disclaimer
 
-This is a first draft so you may encounter bugs
+This is a first draft so you may encounter bugs, or unfinnished things
+The project is not even in it's alpha version, so be patient please 🙏
 
 ## Prerequisites
 

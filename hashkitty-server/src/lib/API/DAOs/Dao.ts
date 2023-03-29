@@ -1,4 +1,9 @@
-import { DataSource, EntityTarget, ObjectLiteral } from 'typeorm';
+import {
+   DataSource,
+   EntityTarget,
+   FindOptionsWhere,
+   ObjectLiteral,
+} from 'typeorm';
 
 import { AttackMode } from '../../ORM/entity/AttackMode';
 import { Hashlist } from '../../ORM/entity/Hashlist';
@@ -18,6 +23,7 @@ import { Migration } from '../../ORM/Migration';
 import { HashType } from '../../ORM/entity/HashType';
 import { DaoNotification } from './DaoNotification';
 import { Notification } from '../../ORM/entity/Notification';
+import { Options, THashlist, TTask, UploadFileType } from '../../types/TApi';
 
 export class Dao {
    public static get UnexpectedError(): string {
@@ -161,8 +167,10 @@ export class Dao {
       });
    }
 
-   public async findHashlistExistById(id: number): Promise<boolean> {
-      return await this.db.getRepository(Hashlist).exist({ where: { id } });
+   public async findHashlistExistWhere(
+      where: FindOptionsWhere<Hashlist>
+   ): Promise<boolean> {
+      return await this.db.getRepository(Hashlist).exist({ where });
    }
 
    public async findHashTypeExistById(id: number): Promise<boolean> {
@@ -171,5 +179,94 @@ export class Dao {
 
    public async notificationExistById(id: number): Promise<boolean> {
       return await this.db.getRepository(Notification).exist({ where: { id } });
+   }
+
+   public async getReferenceOfList(
+      fileType: UploadFileType,
+      searchFileName: string
+   ): Promise<Task[]> {
+      const tasks = await this.task.getAll();
+      switch (fileType) {
+         case 'hashlist': {
+            return tasks.filter(
+               task =>
+                  (task.hashlistId as unknown as THashlist).name ===
+                  searchFileName
+            );
+         }
+         case 'rule': {
+            return tasks.filter(
+               task =>
+                  (task.options as unknown as Options).rules === searchFileName
+            );
+         }
+         case 'potfile': {
+            return tasks.filter(
+               task =>
+                  (task.options as unknown as Options).potfileName ===
+                  searchFileName
+            );
+         }
+         case 'wordlist': {
+            return tasks.filter(task => {
+               const wordlist = (task.options as unknown as Options)
+                  .wordlistId as Wordlist;
+               return wordlist.name === searchFileName;
+            });
+         }
+         default:
+            throw new Error(`The provided fileType ${fileType} is incorrect`);
+      }
+   }
+
+   public nullifyReferences(fileType: UploadFileType, tasks: Task[]) {
+      let nullify: (task: Task) => void;
+      switch (fileType) {
+         case 'hashlist':
+            nullify = this.nullifyHaslist;
+            break;
+         case 'rule':
+            nullify = this.nullifyRules;
+            break;
+         case 'potfile':
+            nullify = this.nullifyPotfile;
+            break;
+         case 'wordlist':
+            nullify = this.nullifyWordlist;
+            break;
+         default:
+            throw new Error(`The provided fileType ${fileType} is incorrect`);
+      }
+      for (const task of tasks) {
+         nullify(task);
+      }
+   }
+
+   private async nullifyWordlist(task: Task): Promise<void> {
+      const name = '* (All Wordlists)';
+      const wordlistReplacement = await this.db
+         .getRepository(Wordlist)
+         .findOne({ where: { name } });
+      task.options.wordlistId = wordlistReplacement?.id || new Wordlist().id;
+      this.task.update(task);
+   }
+
+   private nullifyPotfile(task: Task): void {
+      task.options.potfileName = '';
+      this.task.update(task);
+   }
+
+   private nullifyRules(task: Task): void {
+      task.options.rules = '';
+      this.task.update(task);
+   }
+
+   private nullifyHaslist(task: Task): void {
+      const newHashlist = new Hashlist();
+      newHashlist.hashTypeId = 1;
+      newHashlist.name = 'no hashlist selected';
+      newHashlist.description = `You show this because you have deleted the hashlist used in task ${task.id}`;
+      task.hashlistId = newHashlist.id;
+      this.task.update(task);
    }
 }

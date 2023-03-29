@@ -41,7 +41,7 @@ function AccordionList({
       .substring(0, name.length - 1) as UploadFileType;
    const [isClickedImport, setIsClickedImport] = useState(false);
    const [onDeleteName, setOndeleteName] = useState('');
-   const { sendForm, isLoading } = useSendForm({
+   const { sendForm, isLoading: isDeleting } = useSendForm({
       method: 'DELETE',
       url: ApiEndpoints.DELETE.list,
    });
@@ -55,6 +55,7 @@ function AccordionList({
    const handleDeletion = (fileName: string): void => {
       sendForm({ data: { fileName, type: singularName } });
       setOndeleteName(fileName);
+      setTimeout(() => refreshLists(), 1000);
    };
 
    return (
@@ -62,9 +63,6 @@ function AccordionList({
          <Paper>
             <Accordion expanded={expanded} {...args}>
                <AccordionSummary
-                  sx={{
-                     cursor: '',
-                  }}
                   expandIcon={!expanded && <ExpandMoreIcon />}
                   aria-controls="panel1a-content"
                   id="panel1a-header"
@@ -92,7 +90,7 @@ function AccordionList({
                                     item={item}
                                     handleDeletion={handleDeletion}
                                     isLoading={
-                                       isLoading && onDeleteName === item.name
+                                       isDeleting && onDeleteName === item.name
                                     }
                                  />
                               ))}

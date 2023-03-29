@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, DeleteResult, Repository } from 'typeorm';
 import { Hashlist } from '../../ORM/entity/Hashlist';
 import { IDaoSub } from './IDaoSub';
 
@@ -27,8 +27,8 @@ export class DaoHashlist implements IDaoSub<Hashlist> {
       this.db.delete(id);
    }
 
-   public deleteByName(name: string): void {
-      this.db.delete({ name });
+   public deleteByName(name: string): Promise<DeleteResult> {
+      return this.db.delete({ name });
    }
 
    public async getById(id: number): Promise<Hashlist> {
