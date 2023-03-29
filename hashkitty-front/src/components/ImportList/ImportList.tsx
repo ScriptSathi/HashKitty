@@ -51,7 +51,8 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
          formData.append('fileName', form.fileName);
          formData.append('type', type);
          formData.append('file', form.file, form.file.name);
-         if(isHashlist) formData.append('hashTypeId', form.hashTypeId?.toString() || '-1');
+         if (isHashlist)
+            formData.append('hashTypeId', form.hashTypeId?.toString() || '-1');
          sendForm({ formData, setHeaders: false }, () => closeImportWindow());
       }
    };
@@ -105,22 +106,24 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
                   helperText={errors.fileName?.message}
                   sx={{ marginTop: 0.5, width: 300 }}
                />
-               {isHashlist && <InputDropdown<THashType, ApiImportList>
-                  register={register}
-                  options={hashtypes}
-                  errors={errors}
-                  getOptionLabel={({ name, typeNumber }) =>
-                     `${typeNumber} - ${name}`
-                  }
-                  formName="hashTypeId"
-                  label="Hash type *"
-                  onChange={(_, value) => {
-                     setValue('hashTypeId', value?.id || -1);
-                  }}
-                  isOptionEqualToValue={(option, value) =>
-                     option.id === value.id || value === null
-                  }
-               />}
+               {isHashlist && (
+                  <InputDropdown<THashType, ApiImportList>
+                     register={register}
+                     options={hashtypes}
+                     errors={errors}
+                     getOptionLabel={({ name, typeNumber }) =>
+                        `${typeNumber} - ${name}`
+                     }
+                     formName="hashTypeId"
+                     label="Hash type *"
+                     onChange={(_, value) => {
+                        setValue('hashTypeId', value?.id || -1);
+                     }}
+                     isOptionEqualToValue={(option, value) =>
+                        option.id === value.id || value === null
+                     }
+                  />
+               )}
             </section>
             <section>
                <DragNDrop<ApiImportList>
