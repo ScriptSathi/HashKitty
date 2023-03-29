@@ -1,45 +1,39 @@
-import ApiEndpoints from "../../ApiEndpoints";
-import Frame from "../../components/Frame/Frame";
-import AccordionList from "../../components/ui/AccordionList/AccordionList";
-import useFetchAllList from "../../hooks/useFetchAllLists";
+import Frame from '../../components/Frame/Frame';
+import AccordionList from '../../components/ui/AccordionList/AccordionList';
+import useFetchAllList from '../../hooks/useFetchAllLists';
 
 function Lists() {
-   const {
-      hashlists,
-      potfiles,
-      rules,
-      wordlists,
-      isLoading,
-      refresh,
-   } = useFetchAllList();
+   const { hashlists, potfiles, rules, wordlists, isLoading, refresh } =
+      useFetchAllList();
 
    return (
       <Frame>
-         <h2 className="flex justify-center text-3xl my-[25px]">
-            Lists
-         </h2>
-         <div
-            className="grid justify-around grid-cols-2"
-         >
-            <div>
-               <div className="flex flex-wrap justify-center">
-                  
-               </div>
-            </div>
-            <div className="flex flex-col gap-2">
+         <h2 className="flex justify-center text-3xl my-[25px]">Lists</h2>
+         <div className="grid justify-around grid-cols-2">
+            <div className="w-full px-5">
                <AccordionList
-                  list={wordlists.filter(({ name }) => name !== '* (All Wordlists)')}
-                  name='Wordlists'
+                  expanded
+                  list={hashlists}
+                  name="Hashlists"
+                  refreshLists={refresh}
+               />
+            </div>
+            <div className="flex flex-col gap-2 px-5">
+               <AccordionList
+                  list={wordlists.filter(
+                     ({ name }) => name !== '* (All Wordlists)',
+                  )}
+                  name="Wordlists"
                   refreshLists={refresh}
                />
                <AccordionList
                   list={rules}
-                  name='Rules'
+                  name="Rules"
                   refreshLists={refresh}
                />
                <AccordionList
                   list={potfiles}
-                  name='Potfiles'
+                  name="Potfiles"
                   refreshLists={refresh}
                />
             </div>

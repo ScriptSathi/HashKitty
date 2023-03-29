@@ -18,9 +18,11 @@ function DeleteButton({
          onKeyDown={e => e.key === 'Delete' && handleDeletion()}
          {...args}
       >
-         {isLoading 
-            ? <CircularProgress size={24} color="secondary" />
-            : <DeleteIcon className="IconBtn__icon" />}
+         {isLoading ? (
+            <CircularProgress size={24} color="secondary" />
+         ) : (
+            <DeleteIcon className="IconBtn__icon" />
+         )}
       </IconButton>
    );
 }
