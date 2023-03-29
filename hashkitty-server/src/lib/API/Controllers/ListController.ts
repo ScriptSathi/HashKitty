@@ -5,6 +5,7 @@ import { Dao } from '../DAOs/Dao';
 import { Sanitizer } from '../Sanitizer';
 import { FsUtils } from '../../utils/FsUtils';
 import { UploadedFile } from 'express-fileupload';
+import { logger } from '../../utils/Logger';
 
 export default class ListController {
    private dao: Dao;
@@ -51,7 +52,7 @@ export default class ListController {
          } else {
             name = sanitizer.getList().fileName;
          }
-         const respMessage = `File ${name} uploaded, successfully`;
+         const respMessage = `File ${name} uploaded successfully`;
          this.fsUtils.uploadFile(file, name, type);
          this.sendNotification('success', respMessage);
          return {
@@ -117,6 +118,17 @@ export default class ListController {
       type: UploadFileType;
    }): Promise<ResponseAttr> {
       const fileDoesNotExist = !(await this.fsUtils.fileExist(fileName, type));
+      if (type === 'hashlist') {
+         const hashlistDeletionIsInError =
+            await this.deleteHashlistSpecification(fileName);
+         if (hashlistDeletionIsInError) {
+            return {
+               message: `The file ${fileName} could not be deleted`,
+               httpCode: 400,
+               success: false,
+            };
+         }
+      }
       if (fileDoesNotExist) {
          return {
             message: `The file ${fileName} does not exists`,
@@ -125,9 +137,16 @@ export default class ListController {
          };
       }
 
-      if (type === 'hashlist') this.dao.hashlist.deleteByName(fileName);
+      const tasksWhereListIsReferenced = await this.dao.getReferenceOfList(
+         type,
+         fileName
+      );
+      const listHasReferenceToDeleteInDb =
+         tasksWhereListIsReferenced.length > 0;
+      if (listHasReferenceToDeleteInDb) {
+         this.dao.nullifyReferences(type, tasksWhereListIsReferenced);
+      }
       this.fsUtils.deleteFile(fileName, type);
-
       const message = `File ${fileName} deleted successfully`;
       this.sendNotification('success', message);
       return {
@@ -135,5 +154,27 @@ export default class ListController {
          httpCode: 200,
          success: true,
       };
+   }
+
+   private async deleteHashlistSpecification(
+      fileName: string
+   ): Promise<boolean> {
+      const hashlistExistInDb = await this.dao.findHashlistExistWhere({
+         name: fileName,
+      });
+      let isInError = false;
+      if (hashlistExistInDb) {
+         try {
+            await this.dao.hashlist.deleteByName(fileName);
+         } catch (err) {
+            this.sendNotification(
+               'warning',
+               `Could not delete the hashlist ${fileName}. Please refer to the server logs.`
+            );
+            logger.error(err);
+            isInError = true;
+         }
+      }
+      return isInError;
    }
 }

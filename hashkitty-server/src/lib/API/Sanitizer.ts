@@ -136,7 +136,7 @@ export class Sanitizer {
 
    private async checkHashlist(id: number): Promise<void> {
       try {
-         if (await this.dao.findHashlistExistById(id)) {
+         if (await this.dao.findHashlistExistWhere({ id })) {
             const hashlist = await this.dao.hashlist.getById(id);
             if (hashlist !== null) {
                this.task.hashlistId = hashlist.id;
