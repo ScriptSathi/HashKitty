@@ -223,7 +223,8 @@ export class Dao {
       let nullify: (task: Task) => void;
       switch (fileType) {
          case 'hashlist':
-            nullify = this.nullifyHaslist;
+            // Noop because of constraint with tasks
+            nullify = () => {};
             break;
          case 'rule':
             nullify = this.nullifyRules;
@@ -242,31 +243,22 @@ export class Dao {
       }
    }
 
-   private async nullifyWordlist(task: Task): Promise<void> {
+   private nullifyWordlist = async (task: Task): Promise<void> => {
       const name = '* (All Wordlists)';
       const wordlistReplacement = await this.db
          .getRepository(Wordlist)
          .findOne({ where: { name } });
       task.options.wordlistId = wordlistReplacement?.id || new Wordlist().id;
       this.task.update(task);
-   }
+   };
 
-   private nullifyPotfile(task: Task): void {
+   private nullifyPotfile = (task: Task): void => {
       task.options.potfileName = '';
       this.task.update(task);
-   }
+   };
 
-   private nullifyRules(task: Task): void {
+   private nullifyRules = (task: Task): void => {
       task.options.rules = '';
       this.task.update(task);
-   }
-
-   private nullifyHaslist(task: Task): void {
-      const newHashlist = new Hashlist();
-      newHashlist.hashTypeId = 1;
-      newHashlist.name = 'no hashlist selected';
-      newHashlist.description = `You show this because you have deleted the hashlist used in task ${task.id}`;
-      task.hashlistId = newHashlist.id;
-      this.task.update(task);
-   }
+   };
 }
