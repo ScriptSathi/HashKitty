@@ -1,4 +1,4 @@
-import { UploadFileType } from '../../types/TApi';
+import { ListItem, TTask, UploadFileType } from '../../types/TApi';
 import { ResponseAttr, UploadFile } from '../../types/TRoutes';
 import { Events } from '../../utils/Events';
 import { Dao } from '../DAOs/Dao';
@@ -6,6 +6,8 @@ import { Sanitizer } from '../Sanitizer';
 import { FsUtils } from '../../utils/FsUtils';
 import { UploadedFile } from 'express-fileupload';
 import { logger } from '../../utils/Logger';
+import { Task } from '../../ORM/entity/Task';
+import { Hashlist } from '../../ORM/entity/Hashlist';
 
 export default class ListController {
    private dao: Dao;
@@ -73,7 +75,8 @@ export default class ListController {
 
    public async getAllHashlists(): Promise<ResponseAttr> {
       try {
-         const items = await this.dao.hashlist.getAll();
+         const hashlists = await this.dao.hashlist.getAll();
+         const items = await this.getHashlistsContext(hashlists);
          return {
             message: '',
             items,
@@ -117,7 +120,6 @@ export default class ListController {
    }: UploadFile & {
       type: UploadFileType;
    }): Promise<ResponseAttr> {
-      const fileDoesNotExist = !(await this.fsUtils.fileExist(fileName, type));
       if (type === 'hashlist') {
          const hashlistDeletionIsInError =
             await this.deleteHashlistSpecification(fileName);
@@ -129,14 +131,6 @@ export default class ListController {
             };
          }
       }
-      if (fileDoesNotExist) {
-         return {
-            message: `The file ${fileName} does not exists`,
-            httpCode: 400,
-            success: false,
-         };
-      }
-
       const tasksWhereListIsReferenced = await this.dao.getReferenceOfList(
          type,
          fileName
@@ -145,6 +139,15 @@ export default class ListController {
          tasksWhereListIsReferenced.length > 0;
       if (listHasReferenceToDeleteInDb) {
          this.dao.nullifyReferences(type, tasksWhereListIsReferenced);
+      }
+
+      const fileDoesNotExist = !(await this.fsUtils.fileExist(fileName, type));
+      if (fileDoesNotExist) {
+         return {
+            message: `The file ${fileName} does not exists`,
+            httpCode: 400,
+            success: false,
+         };
       }
       this.fsUtils.deleteFile(fileName, type);
       const message = `File ${fileName} deleted successfully`;
@@ -176,5 +179,22 @@ export default class ListController {
          }
       }
       return isInError;
+   }
+
+   private async getHashlistsContext(items: Hashlist[]): Promise<ListItem[]> {
+      const tasks = await this.dao.task.getAll();
+      return items.reduce((acc, hashlist) => {
+         const hashlistIsBindTo = tasks.filter(
+            task => hashlist.id === task.hashlistId
+         );
+         return [
+            ...acc,
+            {
+               item: hashlist,
+               canBeDeleted: hashlistIsBindTo.length === 0,
+               bindTo: hashlistIsBindTo as unknown as TTask[],
+            },
+         ];
+      }, [] as ListItem[]);
    }
 }
