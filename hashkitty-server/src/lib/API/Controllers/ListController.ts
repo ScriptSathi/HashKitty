@@ -76,7 +76,11 @@ export default class ListController {
    public async getAllHashlists(): Promise<ResponseAttr> {
       try {
          const hashlists = await this.dao.hashlist.getAll();
-         const items = await this.getHashlistsContext(hashlists);
+         const items = await this.dao.getListContext(
+            hashlists,
+            (hashlist, task) => hashlist.id === task.hashlistId.id,
+            true
+         );
          return {
             message: '',
             items,
@@ -179,22 +183,5 @@ export default class ListController {
          }
       }
       return isInError;
-   }
-
-   private async getHashlistsContext(items: Hashlist[]): Promise<ListItem[]> {
-      const tasks = await this.dao.task.getAll();
-      return items.reduce((acc, hashlist) => {
-         const hashlistIsBindTo = tasks.filter(
-            task => hashlist.id === task.hashlistId
-         );
-         return [
-            ...acc,
-            {
-               item: hashlist,
-               canBeDeleted: hashlistIsBindTo.length === 0,
-               bindTo: hashlistIsBindTo as unknown as TTask[],
-            },
-         ];
-      }, [] as ListItem[]);
    }
 }

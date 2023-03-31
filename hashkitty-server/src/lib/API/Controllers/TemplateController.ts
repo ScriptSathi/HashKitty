@@ -4,6 +4,7 @@ import { Dao } from '../DAOs/Dao';
 import { Sanitizer } from '../Sanitizer';
 import GenericController from './GenericResponse';
 import { TemplateTask } from '../../ORM/entity/TemplateTask';
+import { ListItem } from '../../types/TApi';
 
 export default class TemplateController {
    private dao: Dao;
@@ -79,7 +80,11 @@ export default class TemplateController {
 
    public async getAll(): Promise<ResponseAttr> {
       try {
-         const items = await this.dao.template.getAll();
+         const templates = await this.dao.template.getAll();
+         const items = await this.dao.getListContext(
+            templates,
+            (template, task) => task.templateTaskId?.id === template.id
+         );
          return {
             message: '',
             success: true,
@@ -105,7 +110,11 @@ export default class TemplateController {
          return GenericController.responseNoCorrespondingItem('template');
       }
       try {
-         const items = [await this.dao.template.getById(id)];
+         const templates = [await this.dao.template.getById(id)];
+         const items = await this.dao.getListContext(
+            templates,
+            (template, task) => task.templateTaskId?.id === template.id
+         );
          return {
             message: '',
             success: true,
@@ -121,7 +130,13 @@ export default class TemplateController {
             message,
             success: false,
             httpCode: 500,
-            items: [new TemplateTask()],
+            items: [
+               {
+                  item: new TemplateTask(),
+                  canBeDeleted: true,
+                  bindTo: [],
+               },
+            ],
          };
       }
    }

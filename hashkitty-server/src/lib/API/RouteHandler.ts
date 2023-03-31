@@ -3,7 +3,7 @@ import { Constants } from '../Constants';
 import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { Dao } from './DAOs/Dao';
-import { UploadFileType } from '../types/TApi';
+import { ListBase, UploadFileType } from '../types/TApi';
 import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
 import { FsUtils } from '../utils/FsUtils';
 import { FileArray, UploadedFile } from 'express-fileupload';
@@ -288,8 +288,9 @@ export class RouteHandler {
       res: ResponseSend
    ): void => {
       try {
-         const files = FsUtils.listFileInDir(Constants.wordlistPath);
-         this.getFileInDirResp(res, ['* (All Wordlists)', ...files]);
+         const listString = FsUtils.listFileInDir(Constants.wordlistPath);
+         const list = this.buildListBase(['* (All Wordlists)', ...listString]);
+         this.getFileInDirResp(res, list);
       } catch (e) {
          this.getFileInDirResp(res, [], Constants.wordlistPath, e);
       }
@@ -300,8 +301,9 @@ export class RouteHandler {
       res: ResponseSend
    ): void => {
       try {
-         const files = FsUtils.listFileInDir(Constants.potfilesPath);
-         this.getFileInDirResp(res, files);
+         const listString = FsUtils.listFileInDir(Constants.potfilesPath);
+         const list = this.buildListBase(listString);
+         this.getFileInDirResp(res, list);
       } catch (e) {
          this.getFileInDirResp(res, [], Constants.potfilesPath, e);
       }
@@ -312,25 +314,28 @@ export class RouteHandler {
       res: ResponseSend
    ): void => {
       try {
-         const files = FsUtils.listFileInDir(Constants.rulesPath);
-         this.getFileInDirResp(res, files);
+         const listString = FsUtils.listFileInDir(Constants.rulesPath);
+         const list = this.buildListBase(listString);
+         this.getFileInDirResp(res, list);
       } catch (e) {
          this.getFileInDirResp(res, [], Constants.rulesPath, e);
       }
    };
 
-   private getFileInDirResp(
+   private async getFileInDirResp(
       res: ResponseSend,
-      items: string[],
+      list: ListBase[],
       dirPath?: string,
       e?: unknown
-   ): void {
+   ): Promise<void> {
+      const items = await this.dao.getListContext(list, () => false);
       if (dirPath && e) {
          const httpCode = 500;
          logger.error(
             `An error occured while reading dir ${dirPath} - Error: ${e}`
          );
          const msgError = `An error occured while reading dir ${dirPath}`;
+
          res.status(httpCode).json({
             message: msgError,
             items,
@@ -345,6 +350,15 @@ export class RouteHandler {
          items,
          httpCode,
          success: true,
+      });
+   }
+
+   private buildListBase(list: string[]): ListBase[] {
+      return list.map((elem, i) => {
+         return {
+            name: elem,
+            id: i,
+         };
       });
    }
 }

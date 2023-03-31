@@ -1,8 +1,6 @@
-import { AttackMode } from "../ORM/entity/AttackMode";
-import { HashType } from "../ORM/entity/HashType";
-import { Hashlist } from "../ORM/entity/Hashlist";
-import { Notification } from "../ORM/entity/Notification";
-import { Task } from "../ORM/entity/Task";
+import { Hashlist } from '../ORM/entity/Hashlist';
+import { Notification } from '../ORM/entity/Notification';
+import { Task } from '../ORM/entity/Task';
 
 export type TEndpoint = 'exec' | 'restore';
 
@@ -107,15 +105,13 @@ export type UploadFileType =
    | 'hashlist'
    | 'potfile';
 
+export type ListBase = {
+   id: number;
+   name: string;
+};
+
 export type ListItem = {
-   item: 
-   | HashType
-   | TemplateTask
-   | Task
-   | Hashlist
-   | Notification
-   | AttackMode
-   | string;
+   item: Partial<TemplateTask | Hashlist | ListBase>;
    canBeDeleted: boolean;
    bindTo: TTask[];
 };

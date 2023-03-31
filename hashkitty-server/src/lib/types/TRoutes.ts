@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import { THashcatStatus } from './THashcat';
 import { ApiOptionsFormData, TDaoById, TDaoCreate } from './TDAOs';
-import { TemplateTask } from '../ORM/entity/TemplateTask';
 import { Task } from '../ORM/entity/Task';
-import { Hashlist } from '../ORM/entity/Hashlist';
 import { Notification } from '../ORM/entity/Notification';
 import { AttackMode } from '../ORM/entity/AttackMode';
 import { HashType } from '../ORM/entity/HashType';
@@ -22,7 +20,7 @@ export type ResponseAttr = {
    httpCode: number;
    status?: Partial<THashcatStatus>;
    passwds?: string[];
-   items?: ListItem[];
+   items?: (HashType | AttackMode | Task | Notification | ListItem)[];
    fail?: string;
    error?: string;
 };
