@@ -23,7 +23,13 @@ import { Migration } from '../../ORM/Migration';
 import { HashType } from '../../ORM/entity/HashType';
 import { DaoNotification } from './DaoNotification';
 import { Notification } from '../../ORM/entity/Notification';
-import { Options, THashlist, TTask, UploadFileType } from '../../types/TApi';
+import {
+   ListItem,
+   Options,
+   THashlist,
+   TTask,
+   UploadFileType,
+} from '../../types/TApi';
 
 export class Dao {
    public static get UnexpectedError(): string {
@@ -217,6 +223,25 @@ export class Dao {
          default:
             throw new Error(`The provided fileType ${fileType} is incorrect`);
       }
+   }
+
+   public async getListContext<List extends ListItem['item']>(
+      items: List[],
+      filterCallback: (item: List, task: TTask) => boolean,
+      isHashlist = false
+   ): Promise<ListItem[]> {
+      const tasks = (await this.task.getAll()) as unknown as TTask[];
+      return items.reduce((acc, list) => {
+         const listIsBindTo = tasks.filter(task => filterCallback(list, task));
+         return [
+            ...acc,
+            {
+               item: list,
+               canBeDeleted: isHashlist ? listIsBindTo.length === 0 : true,
+               bindTo: listIsBindTo as unknown as TTask[],
+            },
+         ];
+      }, [] as ListItem[]);
    }
 
    public nullifyReferences(fileType: UploadFileType, tasks: Task[]) {
