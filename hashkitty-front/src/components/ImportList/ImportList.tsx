@@ -6,7 +6,7 @@ import useSendForm from '../../hooks/useSendForm';
 import { ApiImportList, UploadFileType } from '../../types/TApi';
 import ImportFrame from './ImportFrame';
 import ImportListErrorHandler from '../../utils/ImportListErrorHandler';
-import useFetchList from '../../hooks/useFetchList';
+import useFetchItems from '../../hooks/useFetchItems';
 import { THashType } from '../../types/TypesORM';
 import DragNDrop from '../ui/DragNDrop/DragNDrop';
 import InputDropdown from '../ui/Inputs/InputDropdown';
@@ -18,7 +18,7 @@ type ImportListProps = {
 
 function ImportList({ closeImportWindow, type }: ImportListProps) {
    const isHashlist = type === 'hashlist';
-   const { items: hashtypes, isLoading } = useFetchList<THashType>({
+   const { items: hashtypes, isLoading } = useFetchItems<THashType>({
       method: 'GET',
       url: ApiEndpoints.GET.hashtypes,
    });

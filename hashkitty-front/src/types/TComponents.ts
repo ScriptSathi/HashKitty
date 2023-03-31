@@ -44,8 +44,6 @@ export type ApiOptionsFormData = {
    maskFilename?: string;
 };
 
-export type ItemBase = { name: string; id: number };
-
 export type TUploadReqBody = {
    hashlist: File;
    filename: string;

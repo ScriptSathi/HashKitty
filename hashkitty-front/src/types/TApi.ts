@@ -1,3 +1,5 @@
+import { THashlist, TTask, TTemplate } from './TypesORM';
+
 export type THashcatRunningStatus = {
    session: string;
    guess: {
@@ -68,4 +70,17 @@ type UploadFile = {
 export type ApiImportList = UploadFile & {
    type: UploadFileType;
    hashTypeId?: number;
+};
+
+export type ListBase = {
+   id: number;
+   name: string;
+};
+
+export type ListItemAvailable = TTemplate | THashlist | ListBase;
+
+export type ListItem<Item extends ListItemAvailable> = {
+   item: Item;
+   canBeDeleted: boolean;
+   bindTo: TTask[];
 };

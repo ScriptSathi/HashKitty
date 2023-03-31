@@ -50,7 +50,7 @@ export default function useSendForm<Form extends object>({
                } else setError(res.message);
                setIsLoading(false);
             },
-            e => {
+            () => {
                setIsLoading(false);
                setError('An unexpected error occured');
             },
