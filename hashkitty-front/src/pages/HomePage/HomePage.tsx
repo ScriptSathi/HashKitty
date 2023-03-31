@@ -6,7 +6,7 @@ import Frame from '../../components/Frame/Frame';
 import CreateCard from '../../components/ui/Cards/CreateCard/CreateCard';
 import RunCard from '../../components/ui/Cards/RunCard/RunCard';
 import EndCard from '../../components/ui/Cards/EndCard/EndCard';
-import useFetchList from '../../hooks/useFetchList';
+import useFetchItems from '../../hooks/useFetchItems';
 import useFetchStatus from '../../hooks/useFetchStatus';
 import useScreenSize from '../../hooks/useScreenSize';
 import BackgroundBlur from '../../components/ui/BackgroundBlur/BackGroundBlur';
@@ -24,7 +24,7 @@ export default function HomePage() {
    const [switchClicked, setSwitchClicked] = useState(false);
    const [results, setResults] = useState(defaultResults);
    const { isTablette, isMobile } = useScreenSize({});
-   const { items, refresh, isLoading } = useFetchList<TTask>({
+   const { items, refresh, isLoading } = useFetchItems<TTask>({
       method: 'GET',
       url: ApiEndpoints.GET.tasks,
    });

@@ -7,7 +7,7 @@ function Lists() {
       useFetchAllList();
 
    return (
-      <Frame>
+      <Frame isLoading={isLoading}>
          <h2 className="flex justify-center text-3xl my-[25px]">Lists</h2>
          <div className="grid justify-around grid-cols-2">
             <div className="w-full px-5">
@@ -21,7 +21,7 @@ function Lists() {
             <div className="flex flex-col gap-2 px-5">
                <AccordionList
                   list={wordlists.filter(
-                     ({ name }) => name !== '* (All Wordlists)',
+                     ({ item: { name } }) => name !== '* (All Wordlists)',
                   )}
                   name="Wordlists"
                   refreshLists={refresh}

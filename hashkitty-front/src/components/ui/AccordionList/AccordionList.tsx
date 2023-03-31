@@ -6,36 +6,37 @@ import {
    Table,
    TableBody,
    TableCell,
-   TableHead,
    TableRow,
    Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
-import { ItemBase } from '../../../types/TComponents';
 import Button from '../Buttons/Button';
 import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
 import ImportList from '../../ImportList/ImportList';
-import { UploadFileType } from '../../../types/TApi';
-import DeleteButton from '../Buttons/DeleteButton';
+import {
+   ListItem,
+   ListItemAvailable,
+   UploadFileType,
+} from '../../../types/TApi';
 import useSendForm from '../../../hooks/useSendForm';
 import ApiEndpoints from '../../../ApiEndpoints';
 import Raw from './Raw';
 
-type AccordionListProps = {
-   list: ItemBase[];
+type AccordionListProps<List extends ListItemAvailable> = {
+   list: ListItem<List>[];
    name: string;
    refreshLists: () => void;
    expanded?: boolean;
 };
 
-function AccordionList({
+function AccordionList<List extends ListItemAvailable>({
    list,
    name,
    refreshLists,
    expanded,
    ...args
-}: AccordionListProps) {
+}: AccordionListProps<List>) {
    const singularName = name
       .toLowerCase()
       .substring(0, name.length - 1) as UploadFileType;
@@ -84,16 +85,25 @@ function AccordionList({
                               <TableRow>
                                  <TableCell>Name</TableCell>
                               </TableRow>
-                              {list.map(item => (
-                                 <Raw
-                                    key={item.name}
-                                    item={item}
-                                    handleDeletion={handleDeletion}
-                                    isLoading={
-                                       isDeleting && onDeleteName === item.name
-                                    }
-                                 />
-                              ))}
+                              {list.map(
+                                 ({
+                                    item,
+                                    canBeDeleted: showDeleteBtn,
+                                    bindTo,
+                                 }) => (
+                                    <Raw
+                                       deleteDisabled={!showDeleteBtn}
+                                       key={item.name}
+                                       item={item}
+                                       handleDeletion={handleDeletion}
+                                       isLoading={
+                                          isDeleting &&
+                                          onDeleteName === item.name
+                                       }
+                                       bindToTasks={bindTo}
+                                    />
+                                 ),
+                              )}
                            </>
                         ) : (
                            <TableRow>
@@ -124,5 +134,5 @@ function AccordionList({
 export default AccordionList;
 
 AccordionList.defaultProps = {
-   disabled: false,
+   expanded: undefined,
 };

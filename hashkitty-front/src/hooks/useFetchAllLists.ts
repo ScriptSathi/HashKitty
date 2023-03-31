@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
+import useFetchItems from './useFetchItems';
 import useFetchList from './useFetchList';
 import ApiEndpoints from '../ApiEndpoints';
 import { TAttackMode, THashlist, TTemplate } from '../types/TypesORM';
-import { ItemBase } from '../types/TComponents';
+import { ListBase } from '../types/TApi';
 
 export default function useFetchAllList() {
    const [isLoading, setIsLoading] = useState(false);
@@ -17,34 +18,26 @@ export default function useFetchAllList() {
          method: 'GET',
          url: ApiEndpoints.GET.templates,
       });
-   const { items: potfiles, refresh: refreshPotfiles } = useFetchList<string>({
-      method: 'GET',
-      url: ApiEndpoints.GET.potfiles,
-   });
-   const { items: rules, refresh: refreshRules } = useFetchList<string>({
+   const { items: potfiles, refresh: refreshPotfiles } = useFetchList<ListBase>(
+      {
+         method: 'GET',
+         url: ApiEndpoints.GET.potfiles,
+      },
+   );
+   const { items: rules, refresh: refreshRules } = useFetchList<ListBase>({
       method: 'GET',
       url: ApiEndpoints.GET.rules,
    });
    const { items: attackModes, refresh: refreshAttacModes } =
-      useFetchList<TAttackMode>({
+      useFetchItems<TAttackMode>({
          method: 'GET',
          url: ApiEndpoints.GET.attackmodes,
       });
-   const { items: wordlists, refresh: refreshWordlists } = useFetchList<string>(
-      {
+   const { items: wordlists, refresh: refreshWordlists } =
+      useFetchList<ListBase>({
          method: 'GET',
          url: ApiEndpoints.GET.wordlists,
-      },
-   );
-
-   function buildItemBase(list: string[]): ItemBase[] {
-      return list.map((elem, i) => {
-         return {
-            name: elem,
-            id: i,
-         };
       });
-   }
 
    async function refresh() {
       setIsLoading(true);
@@ -64,12 +57,12 @@ export default function useFetchAllList() {
       refresh();
    }, []);
    return {
-      wordlists: buildItemBase(wordlists),
+      wordlists,
       attackModes,
       hashlists,
       templates,
-      potfiles: buildItemBase(potfiles),
-      rules: buildItemBase(rules),
+      potfiles,
+      rules,
       refresh,
       error,
       isLoading,

@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { TuseFetch } from '../types/THooks';
-import { ListItem, ListItemAvailable } from '../types/TApi';
 
-export default function useFetchList<ListType extends ListItemAvailable>({
+export default function useFetchItems<ItemType>({
    method,
    url,
    data,
    headers = {},
 }: TuseFetch) {
-   const [items, setItems] = useState<ListItem<ListType>[]>([]);
+   const [items, setItems] = useState<ItemType[]>([]);
    const [isLoading, setIsLoading] = useState(true);
    const [error, setError] = useState<null | unknown>(null);
 
