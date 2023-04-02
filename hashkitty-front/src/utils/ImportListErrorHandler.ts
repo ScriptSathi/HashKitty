@@ -1,7 +1,6 @@
 import { UseFormSetError } from 'react-hook-form';
 import ErrorHandler from './ErrorHandler';
-import { ImportListErrors } from '../types/TypesErrorHandler';
-import { TDBData } from '../types/TypesORM';
+import { ImportListErrors, TDBData } from '../types/TypesErrorHandler';
 import { ApiImportList } from '../types/TApi';
 
 export default class ImportListErrorHandler extends ErrorHandler<ImportListErrors> {

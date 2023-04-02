@@ -1,10 +1,11 @@
+import { ListItem } from '../types/TApi';
 import { StandardList } from '../types/TComponents';
 import { TAttackMode, THashType } from '../types/TypesORM';
 
 export default class FormatList {
-   public static standard(list: StandardList[]): string[] {
+   public static standard(list: ListItem<StandardList>[]): string[] {
       return list.reduce((acc: string[], elem) => {
-         return [...acc, ...[elem.name]];
+         return [...acc, ...[elem.item.name]];
       }, []);
    }
 

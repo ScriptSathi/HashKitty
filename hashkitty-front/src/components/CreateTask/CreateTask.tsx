@@ -29,6 +29,7 @@ import BackgroundBlur from '../ui/BackgroundBlur/BackGroundBlur';
 import ImportList from '../ImportList/ImportList';
 import useScreenSize from '../../hooks/useScreenSize';
 import InputDropdown from '../ui/Inputs/InputDropdown';
+import TextInput from '../ui/Inputs/TextInput';
 
 type CreateTaskProps = {
    closeTaskCreation: () => void;
@@ -295,7 +296,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                               },
                            }}
                         >
-                           {rules.map(({ name }) => (
+                           {rules.map(({ item: { name } }) => (
                               <MenuItem key={name} value={name}>
                                  <input
                                     className="flex fontMedium checkBox mt-1 mr-5"
@@ -321,7 +322,8 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                            setKernelOpti(!inputKernelOpti);
                         }}
                      />
-                     <TextField
+                     <TextInput
+                        tooltip=""
                         sx={{ width: 160 }}
                         type="number"
                         {...register('breakpointGPUTemperature', {
@@ -372,7 +374,8 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                            setCpuOnly(!inputCpuOnly);
                         }}
                      />
-                     <TextField
+                     <TextInput
+                        tooltip=""
                         type="number"
                         sx={{ width: 160 }}
                         {...register('workloadProfile', {

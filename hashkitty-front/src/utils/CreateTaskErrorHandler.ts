@@ -1,8 +1,8 @@
 import { UseFormSetError } from 'react-hook-form';
 import ErrorHandler from './ErrorHandler';
-import { CreateTaskErrors } from '../types/TypesErrorHandler';
+import { CreateTaskErrors, TDBData } from '../types/TypesErrorHandler';
 import { CreateTaskForm } from '../types/TComponents';
-import { TDBData, THashlist } from '../types/TypesORM';
+import { THashlist } from '../types/TypesORM';
 import { TaskUpdate } from '../types/TApi';
 
 export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskErrors> {
@@ -51,14 +51,14 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
 
    private checkTemplate(templateId: number) {
       const find = this.dbData.templates.find(elem => {
-         return elem.id === templateId;
+         return elem.item.id === templateId;
       });
       if (!find && templateId > 0) {
          this.setError('templateId', {
             message: this.wrongData.message,
          });
       } else if (find) {
-         this.finalForm.templateTaskId = find.id;
+         this.finalForm.templateTaskId = find.item.id;
       }
    }
 
@@ -85,7 +85,7 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
 
    private checkWordlist(name: string): void {
       const find = this.dbData.wordlists.find(elem => {
-         return elem.name === name;
+         return elem.item.name === name;
       });
       if (!find) {
          this.setError('wordlistName', {
@@ -100,7 +100,7 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
 
    private checkHashlist(name: THashlist['name']): void {
       const find = this.dbData.hashlists.find(elem => {
-         return elem.name === name;
+         return elem.item.name === name;
       });
       if (!find && name.length <= 0) {
          this.setError('hashlistName', {
@@ -109,14 +109,14 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
       } else if (!find && name.length > 0) {
          this.setError('hashlistName', { message: this.wrongData.message });
       } else if (find) {
-         this.finalForm.hashlistId = find.id;
+         this.finalForm.hashlistId = find.item.id;
       }
    }
 
    private checkRules(rules: string[]): void {
       rules.map(rule => {
          const find = this.dbData.rules.find(elem => {
-            return elem.name === rule;
+            return elem.item.name === rule;
          });
          if (!find && rule.length !== 0) {
             this.setError('rules', { message: this.wrongData.message });
@@ -129,7 +129,7 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
 
    private checkPotfiles(name: string): void {
       const find = this.dbData.potfiles.find(elem => {
-         return elem.name === name;
+         return elem.item.name === name;
       });
       if (!find && name.length !== 0) {
          this.setError('potfileName', { message: this.wrongData.message });

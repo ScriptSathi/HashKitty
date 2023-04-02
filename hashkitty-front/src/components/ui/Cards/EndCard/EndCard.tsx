@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 import SummarizeIcon from '@mui/icons-material/Summarize';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import duration from 'humanize-duration';
 import { TTask } from '../../../../types/TypesORM';
 import BaseCard from '../BaseCard/BaseCard';
@@ -93,31 +93,34 @@ export default function EndCard({
                   </div>
                )}
                <div className="flex items-center">
-                  <IconButton
-                     disabled={isLoading}
-                     onClick={() =>
-                        !results.isClicked &&
-                        setResults({
-                           isClicked: true,
-                           listId: task.hashlistId.id,
-                           listName: task.hashlistId.name,
-                        })
-                     }
-                     onKeyDown={e =>
-                        e.key === 'Enter' &&
-                        !results.isClicked &&
-                        setResults({
-                           isClicked: true,
-                           listId: task.hashlistId.id,
-                           listName: task.hashlistId.name,
-                        })
-                     }
-                  >
-                     <SummarizeIcon className="IconBtn__icon" />
-                  </IconButton>
+                  <Tooltip title='Show the cracked passwords'>
+                     <IconButton
+                        disabled={isLoading}
+                        onClick={() =>
+                           !results.isClicked &&
+                           setResults({
+                              isClicked: true,
+                              listId: task.hashlistId.id,
+                              listName: task.hashlistId.name,
+                           })
+                        }
+                        onKeyDown={e =>
+                           e.key === 'Enter' &&
+                           !results.isClicked &&
+                           setResults({
+                              isClicked: true,
+                              listId: task.hashlistId.id,
+                              listName: task.hashlistId.name,
+                           })
+                        }
+                     >
+                        <SummarizeIcon className="IconBtn__icon" />
+                     </IconButton>
+                  </Tooltip>
                </div>
                {(isMobile || isTablette) && (
                   <DeleteButton
+                     tooltip={`Delete the task ${task.name}`}
                      isLoading={isLoading}
                      handleDeletion={handleDeletion}
                   />
@@ -138,6 +141,7 @@ export default function EndCard({
                {!(isMobile || isTablette) && (
                   <div className="flex items-center">
                      <DeleteButton
+                        tooltip={`Delete the task ${task.name}`}
                         isLoading={isLoading}
                         handleDeletion={handleDeletion}
                      />

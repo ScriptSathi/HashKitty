@@ -57,6 +57,7 @@ export type InputStandard = {
 };
 
 export type StandardList = {
+   mode?: 0 | 1 | 3 | 6 | 9;
    id: number;
    name: string;
 };

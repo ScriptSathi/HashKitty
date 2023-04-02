@@ -1,6 +1,6 @@
-import { ApiImportList } from './TApi';
-import { CreateTaskForm, ItemBase } from './TComponents';
-import { TAttackMode, THashlist } from './TypesORM';
+import { ApiImportList, ListItem } from './TApi';
+import { CreateTaskForm, StandardList } from './TComponents';
+import { TAttackMode, THashType, THashlist, TTemplate } from './TypesORM';
 
 export type FieldError = {
    isError: boolean;
@@ -9,11 +9,13 @@ export type FieldError = {
 };
 
 export type TDBData = {
+   hashtypes: THashType[];
+   hashlists: ListItem<THashlist>[];
+   wordlists: ListItem<StandardList>[];
+   templates: ListItem<TTemplate>[];
+   rules: ListItem<StandardList>[];
    attackModes: TAttackMode[];
-   hashlist: THashlist[];
-   wordlist: ItemBase[];
-   rules: ItemBase[];
-   potfiles: ItemBase[];
+   potfiles: ListItem<StandardList>[];
 };
 
 export type DefaultFormErrors = {
