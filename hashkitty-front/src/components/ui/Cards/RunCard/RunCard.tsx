@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Typography from '@mui/material/Typography';
-import { CircularProgress, IconButton, SvgIcon } from '@mui/material';
+import { CircularProgress, IconButton, SvgIcon, Tooltip } from '@mui/material';
 
 import { TTask } from '../../../../types/TypesORM';
 import BaseCard from '../BaseCard/BaseCard';
@@ -120,7 +120,7 @@ export default function RunCard({
          title={task.name}
          autoResize
          additionnalBtn={
-            <DeleteButton isLoading={false} handleDeletion={handleDeletion} />
+            <DeleteButton tooltip={`Delete the task ${task.name}`} isLoading={false} handleDeletion={handleDeletion} />
          }
       >
          <div className="flex flex-col justify-between min-h-full h-full">
@@ -157,20 +157,22 @@ export default function RunCard({
                   <p className="">Time left: {status.estimatedStop}</p>
                </div>
                <div className="flex items-center">
-                  <IconButton
-                     disabled={isLoading}
-                     onClick={isRunning ? handleStop : handleStart}
-                     onKeyDown={e =>
-                        e.key === 'Enter' && isRunning
-                           ? handleStop()
-                           : handleStart()
-                     }
-                     sx={iconBtn}
-                     size="small"
-                     aria-label="Start/Stop the task"
-                  >
-                     {DisplaySVG}
-                  </IconButton>
+                  <Tooltip title={`${isRunning ? 'Stop' : 'Start'} the task`} >
+                     <IconButton
+                        disabled={isLoading}
+                        onClick={isRunning ? handleStop : handleStart}
+                        onKeyDown={e =>
+                           e.key === 'Enter' && isRunning
+                              ? handleStop()
+                              : handleStart()
+                        }
+                        sx={iconBtn}
+                        size="small"
+                        aria-label="Start/Stop the task"
+                     >
+                        {DisplaySVG}
+                     </IconButton>
+                  </Tooltip>
                </div>
             </div>
          </div>

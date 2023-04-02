@@ -2,6 +2,7 @@ import { Control, UseFormRegister, useController } from 'react-hook-form';
 import { TTemplate } from '../../types/TypesORM';
 import Radios from '../ui/Radios/Radios';
 import { CreateTaskForm } from '../../types/TComponents';
+import { ListItem } from '../../types/TApi';
 
 type TypeSetInput<T extends string | number | boolean | null = string> = [
    keyof CreateTaskForm,
@@ -9,7 +10,7 @@ type TypeSetInput<T extends string | number | boolean | null = string> = [
 ];
 
 type TemplateProps = {
-   list: TTemplate[];
+   list: ListItem<TTemplate>[];
    control: Control<CreateTaskForm>;
    register: UseFormRegister<CreateTaskForm>;
    inputWordlist: TypeSetInput<string | null>;
@@ -87,11 +88,16 @@ export default function Template({
       if (elem.options.potfileName) setInputPotfile(elem.options.potfileName);
    };
 
+   const templateList = list.reduce(
+      (acc, elem) => [...acc, elem.item],
+      [] as TTemplate[],
+   );
+
    return (
       <Radios<TTemplate, CreateTaskForm>
          name="Templates"
          fieldName="templateId"
-         list={list}
+         list={templateList}
          register={register}
          onChangeElem={onChange}
       />

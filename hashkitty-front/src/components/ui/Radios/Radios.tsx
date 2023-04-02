@@ -1,4 +1,4 @@
-import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { FormControlLabel, Radio, RadioGroup, Tooltip } from '@mui/material';
 import {
    FieldErrors,
    FieldValues,
@@ -6,6 +6,7 @@ import {
    UseFormRegister,
 } from 'react-hook-form';
 import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
+import tooltips from '../../../tooltips';
 
 type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    list: T[];
@@ -17,6 +18,8 @@ type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    name: string;
    fieldName: Path<Form>;
    errors?: FieldErrors<Form> | undefined;
+   useTemplateTooltips?: boolean | undefined;
+   useAttackModeTooltips?: boolean | undefined;
    checkValidation?: (elem: T) => boolean | undefined;
 };
 
@@ -29,12 +32,24 @@ export default function Radios<
    fieldName,
    name,
    errors,
+   useTemplateTooltips,
+   useAttackModeTooltips,
    onChangeElem = () => {},
    checkValidation = undefined,
 }: RadiosProps<T, Form>) {
    const errorMessage = () => {
       if (errors && errors[fieldName]) {
          return errors[fieldName]?.message as string;
+      }
+      return '';
+   };
+
+   const getTooltip = (item: T): string => {
+      if (useAttackModeTooltips) {
+         return tooltips.inputs.attackModes[item.mode ?? 0];
+      }
+      if (useTemplateTooltips) {
+         return tooltips.inputs.templates(item.name);
       }
       return '';
    };
@@ -69,29 +84,30 @@ export default function Radios<
                aria-labelledby="template-radio"
             >
                {list.map(elem => (
-                  <FormControlLabel
-                     key={elem.name}
-                     sx={{ height: 25 }}
-                     value={elem.id}
-                     control={
-                        <Radio
-                           checked={
-                              checkValidation
-                                 ? checkValidation(elem)
-                                 : undefined
-                           }
-                           color="secondary"
-                        />
-                     }
-                     label={elem.name}
-                     {...register(fieldName)}
-                     onChange={event =>
-                        onChangeElem({
-                           event: event as RadioOnChangeEvent<number>,
-                           elem,
-                        })
-                     }
-                  />
+                  <Tooltip key={elem.name} title={getTooltip(elem)}>
+                     <FormControlLabel
+                        sx={{ height: 25 }}
+                        value={elem.id}
+                        control={
+                              <Radio
+                                 checked={
+                                    checkValidation
+                                       ? checkValidation(elem)
+                                       : undefined
+                                 }
+                                 color="secondary"
+                              />
+                        }
+                        label={elem.name}
+                        {...register(fieldName)}
+                        onChange={event =>
+                           onChangeElem({
+                              event: event as RadioOnChangeEvent<number>,
+                              elem,
+                           })
+                        }
+                     />
+                  </Tooltip>
                ))}
             </RadioGroup>
          </div>
@@ -103,4 +119,6 @@ Radios.defaultProps = {
    onChangeElem: () => {},
    checkValidation: undefined,
    errors: undefined,
+   useAttackModeTooltips: undefined,
+   useTemplateTooltips: undefined,
 };

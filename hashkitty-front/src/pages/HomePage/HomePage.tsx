@@ -34,8 +34,8 @@ export default function HomePage() {
    const [tasks, endedTasks] = items.reduce(
       ([_tasks, _endedTasks]: TTask[][], element: TTask) =>
          element.isfinished
-            ? [_tasks, [..._endedTasks, ...[element]]]
-            : [[..._tasks, ...[element]], _endedTasks],
+            ? [_tasks, [..._endedTasks, element]]
+            : [[..._tasks, element], _endedTasks],
       [[], []],
    );
    const closeTaskCreation = () => {
@@ -88,7 +88,7 @@ export default function HomePage() {
                         />
                      ))
                   ) : (
-                     <>
+                     <> 
                         <CreateCard
                            clickedCreation={[
                               isClickedCreation,
