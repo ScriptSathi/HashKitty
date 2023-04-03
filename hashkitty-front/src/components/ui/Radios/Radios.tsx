@@ -89,14 +89,14 @@ export default function Radios<
                         sx={{ height: 25 }}
                         value={elem.id}
                         control={
-                              <Radio
-                                 checked={
-                                    checkValidation
-                                       ? checkValidation(elem)
-                                       : undefined
-                                 }
-                                 color="secondary"
-                              />
+                           <Radio
+                              checked={
+                                 checkValidation
+                                    ? checkValidation(elem)
+                                    : undefined
+                              }
+                              color="secondary"
+                           />
                         }
                         label={elem.name}
                         {...register(fieldName)}

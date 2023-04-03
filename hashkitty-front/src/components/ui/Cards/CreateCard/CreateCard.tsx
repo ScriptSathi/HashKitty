@@ -20,7 +20,7 @@ export default function CreateCard({
    };
    const size = isMobile || isTablette ? smallSize : fullSize;
    return (
-      <Tooltip title='Create the task you want !' enterDelay={2000} >
+      <Tooltip title="Create the task you want !" enterDelay={2000}>
          <Card sx={{ ...size, borderRadius: '1rem', maxWidth: 345, margin: 1 }}>
             <CardActionArea
                sx={{

@@ -120,7 +120,11 @@ export default function RunCard({
          title={task.name}
          autoResize
          additionnalBtn={
-            <DeleteButton tooltip={`Delete the task ${task.name}`} isLoading={false} handleDeletion={handleDeletion} />
+            <DeleteButton
+               tooltip={`Delete the task ${task.name}`}
+               isLoading={false}
+               handleDeletion={handleDeletion}
+            />
          }
       >
          <div className="flex flex-col justify-between min-h-full h-full">
@@ -157,7 +161,7 @@ export default function RunCard({
                   <p className="">Time left: {status.estimatedStop}</p>
                </div>
                <div className="flex items-center">
-                  <Tooltip title={`${isRunning ? 'Stop' : 'Start'} the task`} >
+                  <Tooltip title={`${isRunning ? 'Stop' : 'Start'} the task`}>
                      <IconButton
                         disabled={isLoading}
                         onClick={isRunning ? handleStop : handleStart}

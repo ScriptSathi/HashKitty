@@ -93,7 +93,7 @@ export default function EndCard({
                   </div>
                )}
                <div className="flex items-center">
-                  <Tooltip title='Show the cracked passwords'>
+                  <Tooltip title="Show the cracked passwords">
                      <IconButton
                         disabled={isLoading}
                         onClick={() =>

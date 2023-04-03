@@ -110,9 +110,9 @@ export class Dao {
    public async reloadWordlistInDB(): Promise<void> {
       const filesInDir = FsUtils.listFileInDir(Constants.wordlistPath);
       const wordlistInDb = await this.db.getRepository(Wordlist).find();
-      const missingInDb = filesInDir.filter(file => {
-         return !wordlistInDb.find(elem => file === elem.name);
-      });
+      const missingInDb = filesInDir.filter(
+         file => !wordlistInDb.find(elem => file === elem.name)
+      );
       missingInDb.map(file => {
          const wl = new Wordlist();
          wl.name = file;
@@ -124,10 +124,10 @@ export class Dao {
             logger.error('An error occured', e);
          }
       });
-      // const dbElemToDelete = wordlistInDb.filter(
-      //     x => !filesInDir.includes(x.name)
-      // );
-      // TODO Remove deleted wordlists (the filter above is working)
+      const dbElemToDelete = wordlistInDb.filter(
+         file => !filesInDir.includes(file.name)
+      );
+      dbElemToDelete.map(wl => this.db.getRepository(Wordlist).delete(wl.id));
    }
 
    public async taskExistById(id: number): Promise<boolean> {

@@ -19,6 +19,10 @@ const tooltips = {
       maskQuery: 'Change me pls :3',
       maskFilename: 'Change me pls :3',
    },
+   lists: {
+      wordlist:
+         'If your file is bigger than 2 Go, you can put it inside the wordlist directory in the server, then click on the reload button beside',
+   },
 };
 
 export default tooltips;
