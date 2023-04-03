@@ -28,10 +28,12 @@ type AccordionListProps<List extends ListItemAvailable> = {
    name: string;
    refreshLists: () => void;
    expanded?: boolean;
+   additionnalElem?: JSX.Element | undefined;
 };
 
 function AccordionList<List extends ListItemAvailable>({
    list,
+   additionnalElem,
    name,
    refreshLists,
    expanded,
@@ -69,7 +71,10 @@ function AccordionList<List extends ListItemAvailable>({
                   id="panel1a-header"
                   className="flex justify-between"
                >
-                  <Typography sx={{ marginTop: 0.3 }}>{name}</Typography>
+                  <Typography sx={{ marginTop: 0.5 }}>{name}</Typography>
+                  {additionnalElem && (
+                     <div className="p-0 m-0">{additionnalElem}</div>
+                  )}
                   <Button
                      className="ml-auto h-[15px] w-[100px]"
                      onClick={() => setIsClickedImport(!isClickedImport)}
@@ -135,4 +140,5 @@ export default AccordionList;
 
 AccordionList.defaultProps = {
    expanded: undefined,
+   additionnalElem: undefined,
 };

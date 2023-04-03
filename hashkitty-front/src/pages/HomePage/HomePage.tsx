@@ -88,7 +88,7 @@ export default function HomePage() {
                         />
                      ))
                   ) : (
-                     <> 
+                     <>
                         <CreateCard
                            clickedCreation={[
                               isClickedCreation,
