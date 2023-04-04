@@ -283,17 +283,13 @@ export class RouteHandler {
       res.status(httpCode).json({ message, httpCode, success, items });
    };
 
-   public getFilesInWordlistDir = (
+   public getAllWordlists = async (
       _: ReceivedRequest,
       res: ResponseSend
-   ): void => {
-      try {
-         const listString = FsUtils.listFileInDir(Constants.wordlistPath);
-         const list = this.buildListBase(['* (All Wordlists)', ...listString]);
-         this.getFileInDirResp(res, list);
-      } catch (e) {
-         this.getFileInDirResp(res, [], Constants.wordlistPath, e);
-      }
+   ): Promise<void> => {
+      const { message, httpCode, success, items } =
+         await this.listController.getAllWordlists();
+      res.status(httpCode).json({ message, httpCode, success, items });
    };
 
    public getFilesInPotfileDir = (

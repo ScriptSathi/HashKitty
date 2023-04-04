@@ -1,3 +1,4 @@
+import ApiEndpoints from '../../ApiEndpoints';
 import Frame from '../../components/Frame/Frame';
 import AccordionList from '../../components/ui/AccordionList/AccordionList';
 import ReloadButton from '../../components/ui/Buttons/ReloadButton';
@@ -10,6 +11,10 @@ function Lists() {
    const { isMobile, isTablette } = useScreenSize();
    const { hashlists, potfiles, rules, wordlists, isLoading, refresh } =
       useFetchAllList();
+
+   const handleReload = () => {
+      fetch(ApiEndpoints.GET.reloadWordlits).then(() => refresh());
+   };
 
    return (
       <Frame isLoading={isLoading}>
@@ -39,9 +44,10 @@ function Lists() {
                            tooltip={tooltips.lists.wordlist}
                         />
                         <ReloadButton
+                           tooltip="Reload the registered wordlists"
                            sx={{ padding: 0.5 }}
                            isLoading={isLoading}
-                           handleReload={refresh}
+                           handleReload={handleReload}
                         />
                      </div>
                   }

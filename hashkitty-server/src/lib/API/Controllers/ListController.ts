@@ -8,6 +8,7 @@ import { UploadedFile } from 'express-fileupload';
 import { logger } from '../../utils/Logger';
 import { Task } from '../../ORM/entity/Task';
 import { Hashlist } from '../../ORM/entity/Hashlist';
+import { Wordlist } from '../../ORM/entity/Wordlist';
 
 export default class ListController {
    private dao: Dao;
@@ -80,6 +81,31 @@ export default class ListController {
             hashlists,
             (hashlist, task) => hashlist.id === task.hashlistId.id,
             true
+         );
+         return {
+            message: '',
+            items,
+            httpCode: 200,
+            success: true,
+         };
+      } catch (err) {
+         const message = (err as Error).message || 'An error occurred';
+         this.sendNotification('error', message);
+         return {
+            message,
+            httpCode: 500,
+            success: false,
+            items: [],
+         };
+      }
+   }
+
+   public async getAllWordlists(): Promise<ResponseAttr> {
+      try {
+         const wordlists = await this.dao.db.getRepository(Wordlist).find();
+         const items = await this.dao.getListContext(
+            wordlists,
+            (wordlists, task) => wordlists.id === task.options.wordlistId.id
          );
          return {
             message: '',
