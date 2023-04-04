@@ -1,5 +1,5 @@
 import { ApiImportList, ListItem } from './TApi';
-import { CreateTaskForm, StandardList } from './TComponents';
+import { CreateTaskForm, CreateTemplateForm, StandardList } from './TComponents';
 import { TAttackMode, THashType, THashlist, TTemplate } from './TypesORM';
 
 export type FieldError = {
@@ -24,6 +24,10 @@ export type DefaultFormErrors = {
 
 export type CreateTaskErrors = {
    [key in keyof CreateTaskForm]: FieldError;
+};
+
+export type CreateTemplateErrors = {
+   [key in keyof CreateTemplateForm]: FieldError;
 };
 
 export type ImportListErrors = {

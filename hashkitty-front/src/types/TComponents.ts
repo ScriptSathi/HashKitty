@@ -14,7 +14,10 @@ export type CreateTaskForm = {
    templateId: number;
 };
 
-export type TemplateForm = Omit<CreateTaskForm, 'fashlistName'>;
+export type CreateTemplateForm = Omit<
+   CreateTaskForm,
+   'hashlistName' | 'templateId'
+>;
 
 export type ApiTaskFormData = {
    name: string;

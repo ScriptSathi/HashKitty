@@ -1,4 +1,4 @@
-import { ResponseAttr, TemplateTaskUpdate } from '../../types/TRoutes';
+import { ResponseAttr, TemplateUpdate } from '../../types/TRoutes';
 import { Events } from '../../utils/Events';
 import { Dao } from '../DAOs/Dao';
 import { Sanitizer } from '../Sanitizer';
@@ -43,7 +43,7 @@ export default class TemplateController {
       }
    }
 
-   public async update(template: TemplateTaskUpdate): Promise<ResponseAttr> {
+   public async update(template: TemplateUpdate): Promise<ResponseAttr> {
       if (template.id && !(await this.dao.templateExistById(template.id))) {
          return GenericController.responseNoCorrespondingItem('template');
       }

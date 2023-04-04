@@ -6,7 +6,7 @@ import {
    UseFormReturn,
 } from 'react-hook-form';
 import { CardContent } from '@mui/material';
-import FrameHoverCard from '../ui/Cards/FrameHoveCard/FrameHoverCard';
+import FrameHoverCard from '../ui/Cards/FrameHoverCard/FrameHoverCard';
 import useScreenSize from '../../hooks/useScreenSize';
 import { ApiImportList, UploadFileType } from '../../types/TApi';
 

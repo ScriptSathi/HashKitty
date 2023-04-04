@@ -66,7 +66,9 @@ function Lists() {
                <AccordionList
                   additionnalTitleBarElem={
                      <LightTooltip
-                        className={displayRules ? 'IconBtn__themed' : 'IconBtn__black'}
+                        className={
+                           displayRules ? 'IconBtn__themed' : 'IconBtn__black'
+                        }
                         sx={{ marginTop: 0.5 }}
                         tooltip="Show suggested rules"
                         onClick={e => {

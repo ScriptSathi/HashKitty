@@ -82,13 +82,15 @@ function AccordionList<List extends ListItemAvailable>({
                >
                   <Typography sx={{ marginTop: 0.5 }}>{name}</Typography>
                   {additionnalTitleBarElem && (
-                     <div className="p-0 my-0 ml-[10px]">{additionnalTitleBarElem}</div>
+                     <div className="p-0 my-0 ml-[10px]">
+                        {additionnalTitleBarElem}
+                     </div>
                   )}
                   <Button
                      className="ml-auto h-[15px] w-[100px]"
-                     onClick={(e) => {
+                     onClick={e => {
                         e.stopPropagation();
-                        setIsClickedImport(!isClickedImport)
+                        setIsClickedImport(!isClickedImport);
                      }}
                   >
                      Import {singularName}

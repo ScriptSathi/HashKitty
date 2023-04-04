@@ -23,7 +23,7 @@ type TemplateProps = {
    inputMaskQuery: TypeSetInput<string>;
 };
 
-export default function Template({
+export default function TemplateRadio({
    list,
    control,
    register,

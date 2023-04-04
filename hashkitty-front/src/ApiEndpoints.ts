@@ -36,6 +36,7 @@ export default class ApiEndpoints {
          list: `${this.apiUrl}/list`,
          startTask: `${this.apiUrl}/start`,
          task: `${this.apiUrl}/tasks`,
+         template: `${this.apiUrl}/template`,
          taskResults: `${this.apiUrl}/results`,
          restore: `${this.apiUrl}/restore`,
       };

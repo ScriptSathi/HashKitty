@@ -1,14 +1,14 @@
 import { UseFormSetError } from 'react-hook-form';
 import ErrorHandler from './ErrorHandler';
-import { CreateTaskErrors, TDBData } from '../types/TypesErrorHandler';
-import { CreateTaskForm } from '../types/TComponents';
+import { CreateTaskErrors, CreateTemplateErrors, TDBData } from '../types/TypesErrorHandler';
+import { CreateTaskForm, CreateTemplateForm } from '../types/TComponents';
 import { THashlist } from '../types/TypesORM';
 import { TaskUpdate } from '../types/TApi';
 
-export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskErrors> {
+export default class CreateTaskOrTemplateErrorHandler<FormError extends CreateTaskErrors | CreateTemplateErrors> extends ErrorHandler<FormError> {
    public finalForm: TaskUpdate;
    private setError: UseFormSetError<CreateTaskForm>;
-   private dbData: Omit<TDBData, 'hashtypes'>;
+   private dbData: Omit<TDBData, 'hashtypes' | 'templates'> & Partial<Pick<TDBData, 'templates'>>;
    constructor(
       setError: UseFormSetError<CreateTaskForm>,
       dbData: Omit<TDBData, 'hashtypes'>,
@@ -32,7 +32,7 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
       };
    }
 
-   public analyse(form: CreateTaskForm): void {
+   public analyseTask(form: CreateTaskForm): void {
       this.isValid = true;
       this.checkName(form.name);
       this.checkTemplate(form.templateId);
@@ -49,8 +49,24 @@ export default class CreateTaskErrorHandler extends ErrorHandler<CreateTaskError
       this.finalForm.options.maskQuery = form.maskQuery;
    }
 
+   public analyseTemplate(form: CreateTemplateForm): void {
+      this.isValid = true;
+      this.checkName(form.name);
+      this.checkAttackMode(form.attackModeId);
+      this.checkWordlist(form.wordlistName);
+      this.checkRules(form.rules);
+      this.checkPotfiles(form.potfileName);
+      this.checkWorkloadProfile(form.workloadProfile);
+      this.checkBreakpointTemp(form.breakpointGPUTemperature);
+
+      this.finalForm.options.kernelOpti = form.kernelOpti;
+      this.finalForm.options.CPUOnly = form.cpuOnly;
+      this.finalForm.options.maskQuery = form.maskQuery;
+   }
+
    private checkTemplate(templateId: number) {
-      const find = this.dbData.templates.find(elem => {
+      const templates = this.dbData.templates ?? [];
+      const find = templates.find(elem => {
          return elem.item.id === templateId;
       });
       if (!find && templateId > 0) {

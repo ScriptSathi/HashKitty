@@ -12,12 +12,11 @@ import {
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import Button from '../ui/Buttons/Button';
-import CreateTaskErrorHandler from '../../utils/CreateTaskErrorHandler';
+import CreateTaskOrTemplateErrorHandler from '../../utils/CreateTaskOrTemplateErrorHandler';
 import useFetchAllList from '../../hooks/useFetchAllLists';
 import FormatList from '../../utils/FormatUtils';
 import { CreateTaskForm } from '../../types/TComponents';
-import Template from './Template';
-import CreateFrame from './CreateFrame';
+import TemplateRadio from './TemplateRadio';
 import createTaskDefaultValues from './createTaskDefaultValues';
 import Radios from '../ui/Radios/Radios';
 import { TAttackMode } from '../../types/TypesORM';
@@ -30,6 +29,8 @@ import ImportList from '../ImportList/ImportList';
 import useScreenSize from '../../hooks/useScreenSize';
 import InputDropdown from '../ui/Inputs/InputDropdown';
 import TextInput from '../ui/Inputs/TextInput';
+import FrameHoverCardForm from '../ui/Cards/FrameHoverCard/FrameHoverCardForm';
+import { CreateTaskErrors } from '../../types/TypesErrorHandler';
 
 type CreateTaskProps = {
    closeTaskCreation: () => void;
@@ -83,7 +84,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    };
 
    const onSubmit = (form: CreateTaskForm) => {
-      const formVerifier = new CreateTaskErrorHandler(setError, {
+      const formVerifier = new CreateTaskOrTemplateErrorHandler<CreateTaskErrors>(setError, {
          attackModes,
          templates,
          hashlists,
@@ -91,7 +92,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
          rules,
          potfiles,
       });
-      formVerifier.analyse(form);
+      formVerifier.analyseTask(form);
       if (formVerifier.isValid) {
          sendForm({ data: formVerifier.finalForm });
          if (!isLoadingCreation) {
@@ -102,7 +103,13 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
 
    if (isLoading || isLoadingCreation) {
       return (
-         <CreateFrame
+         <FrameHoverCardForm<CreateTaskForm>
+            name="task"
+            sx={{
+               width: '100%',
+               height: '50%',
+               overflowY: 'scroll',
+            }}
             formMethods={formMethods}
             onSubmit={onSubmit}
             closeTaskCreation={closeTaskCreation}
@@ -115,7 +122,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
             <div className="flex justify-center">
                <CircularProgress className="mt-[200px]" color="secondary" />
             </div>
-         </CreateFrame>
+         </FrameHoverCardForm>
       );
    }
 
@@ -126,7 +133,13 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    }
    return (
       <>
-         <CreateFrame
+         <FrameHoverCardForm<CreateTaskForm>
+            name="task"
+            sx={{
+               width: '100%',
+               height: '50%',
+               overflowY: 'scroll',
+            }}
             formMethods={formMethods}
             onSubmit={onSubmit}
             closeTaskCreation={closeTaskCreation}
@@ -179,7 +192,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                   </div>
                </section>
                <section className="">
-                  <Template
+                  <TemplateRadio
                      list={templates}
                      register={register}
                      control={control}
@@ -410,7 +423,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                   </section>
                </div>
             </div>
-         </CreateFrame>
+         </FrameHoverCardForm>
          {isClickedImport && (
             <BackgroundBlur
                toggleFn={() => setIsClickedImport(!isClickedImport)}

@@ -2,7 +2,7 @@ import { CircularProgress } from '@mui/material';
 import { useState } from 'react';
 import ApiEndpoints from '../../ApiEndpoints';
 import useFetchPassword from '../../hooks/useFetchPassword';
-import FrameHoverCard from '../ui/Cards/FrameHoveCard/FrameHoverCard';
+import FrameHoverCard from '../ui/Cards/FrameHoverCard/FrameHoverCard';
 import './TaskResuslts.scss';
 import useScreenSize from '../../hooks/useScreenSize';
 import CheckBox from '../ui/Inputs/CheckBox';
