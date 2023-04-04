@@ -3,6 +3,8 @@ import {
    AccordionDetails,
    AccordionSummary,
    Paper,
+   SnackbarContent,
+   Stack,
    Table,
    TableBody,
    TableCell,
@@ -28,15 +30,22 @@ type AccordionListProps<List extends ListItemAvailable> = {
    name: string;
    refreshLists: () => void;
    expanded?: boolean;
-   additionnalElem?: JSX.Element | undefined;
+   additionnalTitleBarElem?: JSX.Element | undefined;
+   additionnalStack?: {
+      text: string;
+      link: string;
+   }[];
+   displayAdditionnalStack?: boolean;
 };
 
 function AccordionList<List extends ListItemAvailable>({
    list,
-   additionnalElem,
+   additionnalTitleBarElem,
    name,
    refreshLists,
    expanded,
+   additionnalStack,
+   displayAdditionnalStack,
    ...args
 }: AccordionListProps<List>) {
    const singularName = name
@@ -72,17 +81,44 @@ function AccordionList<List extends ListItemAvailable>({
                   className="flex justify-between"
                >
                   <Typography sx={{ marginTop: 0.5 }}>{name}</Typography>
-                  {additionnalElem && (
-                     <div className="p-0 m-0">{additionnalElem}</div>
+                  {additionnalTitleBarElem && (
+                     <div className="p-0 my-0 ml-[10px]">{additionnalTitleBarElem}</div>
                   )}
                   <Button
                      className="ml-auto h-[15px] w-[100px]"
-                     onClick={() => setIsClickedImport(!isClickedImport)}
+                     onClick={(e) => {
+                        e.stopPropagation();
+                        setIsClickedImport(!isClickedImport)
+                     }}
                   >
                      Import {singularName}
                   </Button>
                </AccordionSummary>
                <AccordionDetails>
+                  {displayAdditionnalStack && (
+                     <Stack spacing={0.5}>
+                        {additionnalStack?.map(({ text, link }) => (
+                           <SnackbarContent
+                              key={link}
+                              sx={{
+                                 color: 'white',
+                                 backgroundColor: '#FC6F6F',
+                              }}
+                              message={
+                                 <Typography className="m-0 p-0">
+                                    {text}{' '}
+                                    <a
+                                       className="text-slate-800 cursor-pointer"
+                                       href={link}
+                                    >
+                                       {link}
+                                    </a>
+                                 </Typography>
+                              }
+                           />
+                        ))}
+                     </Stack>
+                  )}
                   <Table>
                      <TableBody>
                         {isEmptyList ? (
@@ -140,5 +176,7 @@ export default AccordionList;
 
 AccordionList.defaultProps = {
    expanded: undefined,
-   additionnalElem: undefined,
+   additionnalTitleBarElem: undefined,
+   displayAdditionnalStack: false,
+   additionnalStack: [],
 };
