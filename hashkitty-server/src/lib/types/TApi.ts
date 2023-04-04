@@ -1,6 +1,7 @@
 import { Hashlist } from '../ORM/entity/Hashlist';
 import { Notification } from '../ORM/entity/Notification';
 import { Task } from '../ORM/entity/Task';
+import { Wordlist } from '../ORM/entity/Wordlist';
 
 export type TEndpoint = 'exec' | 'restore';
 
@@ -111,7 +112,7 @@ export type ListBase = {
 };
 
 export type ListItem = {
-   item: Partial<TemplateTask | Hashlist | ListBase>;
+   item: Partial<TemplateTask | Wordlist | Hashlist | ListBase>;
    canBeDeleted: boolean;
    bindTo: TTask[];
 };

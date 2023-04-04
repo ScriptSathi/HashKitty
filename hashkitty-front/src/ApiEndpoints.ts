@@ -21,6 +21,7 @@ export default class ApiEndpoints {
          rules: `${this.apiUrl}/rules`,
          tasks: `${this.apiUrl}/tasks`,
          templates: `${this.apiUrl}/template`,
+         reloadWordlits: `${this.apiUrl}/reload-wordlists`,
       };
    }
    public static get DELETE() {

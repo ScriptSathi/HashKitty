@@ -57,7 +57,12 @@ export class Dao {
          WorkloadProfile,
          migration.migrateWorkloadProfiles
       );
-      this.migrateIfNotExist<Wordlist>(db, Wordlist, migration.migrateWordlist);
+      this.migrateIfItemNotExist<Wordlist>(
+         db,
+         Wordlist,
+         migration.migrateWordlist,
+         { name: '* (All Wordlists)' }
+      );
    }
 
    private static async migrateIfNotExist<T extends ObjectLiteral>(
@@ -87,6 +92,34 @@ export class Dao {
          }
       }
       return req;
+   }
+
+   private static async migrateIfItemNotExist<T extends ObjectLiteral>(
+      db: DataSource,
+      EntityList: EntityTarget<T>,
+      migrateFunc: () => Promise<void>,
+      findObject: Partial<T>,
+      tryAgainCount = 0
+   ): Promise<void> {
+      try {
+         const item = await db
+            .getRepository(EntityList)
+            .findOne({ where: findObject });
+         if (item === null) {
+            await migrateFunc();
+            await this.migrateIfNotExist(
+               db,
+               EntityList,
+               migrateFunc,
+               findObject,
+               1
+            );
+         }
+      } catch (e) {
+         if (tryAgainCount > 0) {
+            throw e;
+         }
+      }
    }
 
    public db: DataSource;

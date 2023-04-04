@@ -7,9 +7,13 @@ type InfoTooltipProps = {
    sx?: SxProps<Theme>;
 };
 
-export default function InfoTooltip({ tooltip, sx, className }: InfoTooltipProps) {
+export default function InfoTooltip({
+   tooltip,
+   sx,
+   className,
+}: InfoTooltipProps) {
    return (
-      <Tooltip title={tooltip} className={className} >
+      <Tooltip title={tooltip} className={className}>
          <Info sx={sx} />
       </Tooltip>
    );

@@ -59,7 +59,7 @@ export class Migration {
 
    public migrateWordlist = async (): Promise<void> => {
       const dbWL = new Wordlist();
-      dbWL.name = '*';
+      dbWL.name = '* (All Wordlists)';
       dbWL.path = Constants.wordlistPath;
       await this.appDataSource.manager.save(dbWL);
       logger.debug('Adding known "*" option wordlist');

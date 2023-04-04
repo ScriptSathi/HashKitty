@@ -18,7 +18,7 @@ export class ApiRouter {
    private registerRoutes() {
       this.router.get('/stop', this.routeHandler.stopHashcat);
       this.router.get('/status', this.routeHandler.getHashcatStatus);
-      this.router.get('/wordlists', this.routeHandler.getFilesInWordlistDir);
+      this.router.get('/wordlists', this.routeHandler.getAllWordlists);
       this.router.get('/hashlists', this.routeHandler.getHashlists);
       this.router.get('/potfiles', this.routeHandler.getFilesInPotfileDir);
       this.router.get('/attackmodes', this.routeHandler.getAttackModes);
