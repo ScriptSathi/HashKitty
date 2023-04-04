@@ -31,7 +31,10 @@ function ReloadButton({
             <IconButton
                sx={sx}
                disabled={disabled || isLoading}
-               onClick={handleReload}
+               onClick={e => {
+                  e.stopPropagation();
+                  handleReload();
+               }}
                onKeyDown={e => e.key === 'Enter' && handleReload()}
                {...args}
             >

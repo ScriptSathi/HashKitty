@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import ApiEndpoints from '../../ApiEndpoints';
 import Frame from '../../components/Frame/Frame';
 import AccordionList from '../../components/ui/AccordionList/AccordionList';
@@ -6,11 +7,13 @@ import InfoTooltip from '../../components/ui/Tooltips/InfoTooltip';
 import useFetchAllList from '../../hooks/useFetchAllLists';
 import useScreenSize from '../../hooks/useScreenSize';
 import tooltips from '../../tooltips';
+import LightTooltip from '../../components/ui/Tooltips/LightTooltip';
 
 function Lists() {
    const { isMobile, isTablette } = useScreenSize();
    const { hashlists, potfiles, rules, wordlists, isLoading, refresh } =
       useFetchAllList();
+   const [displayRules, setDisplayRules] = useState(false);
 
    const handleReload = () => {
       fetch(ApiEndpoints.GET.reloadWordlits).then(() => refresh());
@@ -36,12 +39,15 @@ function Lists() {
             </div>
             <div className="flex flex-col gap-2 px-5">
                <AccordionList
-                  additionnalElem={
-                     <div className="flex ml-[10px]">
+                  additionnalTitleBarElem={
+                     <div className="flex">
                         <InfoTooltip
                            className="IconBtn__icon"
                            sx={{ marginTop: 0.5 }}
                            tooltip={tooltips.lists.wordlist}
+                           onClick={e => {
+                              e.stopPropagation();
+                           }}
                         />
                         <ReloadButton
                            tooltip="Reload the registered wordlists"
@@ -58,7 +64,20 @@ function Lists() {
                   refreshLists={refresh}
                />
                <AccordionList
+                  additionnalTitleBarElem={
+                     <LightTooltip
+                        className={displayRules ? 'IconBtn__themed' : 'IconBtn__black'}
+                        sx={{ marginTop: 0.5 }}
+                        tooltip="Show suggested rules"
+                        onClick={e => {
+                           e.stopPropagation();
+                           setDisplayRules(!displayRules);
+                        }}
+                     />
+                  }
                   list={rules}
+                  displayAdditionnalStack={displayRules}
+                  additionnalStack={tooltips.lists.rules}
                   name="Rules"
                   refreshLists={refresh}
                />

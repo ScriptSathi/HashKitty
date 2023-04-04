@@ -1,27 +1,27 @@
-import { Info } from '@mui/icons-material';
 import { SxProps, Theme, Tooltip } from '@mui/material';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
-type InfoTooltipProps = {
+type LightTooltipProps = {
    tooltip: string;
    className?: string;
    sx?: SxProps<Theme>;
    onClick?: React.MouseEventHandler<SVGSVGElement>;
 };
 
-export default function InfoTooltip({
+export default function LightTooltip({
    tooltip,
    sx,
    className,
    onClick,
-}: InfoTooltipProps) {
+}: LightTooltipProps) {
    return (
       <Tooltip title={tooltip} className={className}>
-         <Info onClick={onClick} sx={sx} />
+         <LightbulbIcon onClick={onClick} sx={sx} />
       </Tooltip>
    );
 }
 
-InfoTooltip.defaultProps = {
+LightTooltip.defaultProps = {
    sx: {},
    className: '',
    onClick: () => {},

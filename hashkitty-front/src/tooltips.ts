@@ -20,6 +20,12 @@ const tooltips = {
       maskFilename: 'Change me pls :3',
    },
    lists: {
+      rules: [
+         {
+            text: 'Best64 : A very common rule you can use ',
+            link: 'https://github.com/hashcat/hashcat/blob/master/rules/best64.rule',
+         },
+      ],
       wordlist:
          'If your file is bigger than 2 Go, you can put it inside the wordlist directory in the server, then click on the reload button beside',
    },
