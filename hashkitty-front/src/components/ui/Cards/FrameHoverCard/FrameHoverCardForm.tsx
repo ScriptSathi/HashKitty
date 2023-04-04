@@ -5,26 +5,29 @@ import {
    FieldValues,
    UseFormReturn,
 } from 'react-hook-form';
-import { CardContent } from '@mui/material';
-import FrameHoverCard from '../ui/Cards/FrameHoveCard/FrameHoverCard';
-import useScreenSize from '../../hooks/useScreenSize';
-import { CreateTaskForm } from '../../types/TComponents';
+import { CardContent, SxProps, Theme } from '@mui/material';
+import useScreenSize from '../../../../hooks/useScreenSize';
+import FrameHoverCard from './FrameHoverCard';
 
-interface Props<T extends FieldValues> {
-   onSubmit: SubmitHandler<T>;
+interface Props<Form extends FieldValues> {
+   onSubmit: SubmitHandler<Form>;
    children: ReactNode | ReactNode[];
    submitButton: ReactNode;
    closeTaskCreation: () => void;
-   formMethods: UseFormReturn<T>;
+   formMethods: UseFormReturn<Form>;
+   name: string;
+   sx?: SxProps<Theme> | undefined;
 }
 
-export default function CreateFrame({
+function FrameHoverCardForm<Form extends object>({
    onSubmit,
    submitButton,
    closeTaskCreation,
    children,
    formMethods,
-}: Props<CreateTaskForm>): ReactElement {
+   sx,
+   name,
+}: Props<Form>): ReactElement {
    const { isMobile, isTablette } = useScreenSize();
 
    return (
@@ -32,15 +35,11 @@ export default function CreateFrame({
          <form onSubmit={formMethods.handleSubmit(onSubmit)}>
             <FrameHoverCard
                footer={submitButton}
-               title="Create a new task"
+               title={`Create a new ${name}`}
                closeFrame={closeTaskCreation}
             >
                <CardContent
-                  sx={{
-                     width: '100%',
-                     height: '50%',
-                     overflowY: 'scroll',
-                  }}
+                  sx={sx}
                   style={{
                      marginLeft: 0,
                      height: isMobile || isTablette ? '74vh' : '45vh',
@@ -53,3 +52,8 @@ export default function CreateFrame({
       </FormProvider>
    );
 }
+FrameHoverCardForm.defaultProps = {
+   sx: undefined,
+};
+
+export default FrameHoverCardForm;

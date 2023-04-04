@@ -43,13 +43,17 @@ type ApiOptionsFormData = {
    maskFilename?: string;
 };
 
-export type TaskUpdate = TBaseCreateTask & {
+export type TaskUpdate = BaseCreate & {
    hashlistId: number;
    options: ApiOptionsFormData;
    templateTaskId?: number;
 };
 
-type TBaseCreateTask = {
+export type TemplateUpdate = BaseCreate & {
+   options: ApiOptionsFormData;
+};
+
+type BaseCreate = {
    id?: number;
    name: string;
    description: string;

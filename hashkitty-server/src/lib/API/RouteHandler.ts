@@ -4,7 +4,7 @@ import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { Dao } from './DAOs/Dao';
 import { ListBase, UploadFileType } from '../types/TApi';
-import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
+import { TaskUpdate, TemplateUpdate, UploadFile } from '../types/TRoutes';
 import { FsUtils } from '../utils/FsUtils';
 import { FileArray, UploadedFile } from 'express-fileupload';
 import {
@@ -178,7 +178,7 @@ export class RouteHandler {
    };
 
    public updateTemplateTask = async (
-      req: ReceivedRequest<TemplateTaskUpdate>,
+      req: ReceivedRequest<TemplateUpdate>,
       res: ResponseSend
    ): Promise<void> => {
       const { message, httpCode, success } = await this.taskController.update(

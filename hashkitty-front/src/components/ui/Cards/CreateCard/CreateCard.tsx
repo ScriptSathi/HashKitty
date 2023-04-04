@@ -3,11 +3,15 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 
 import useScreenSize from '../../../../hooks/useScreenSize';
 
+type CreateCardProps = {
+   name: 'task' | 'template';
+   clickedCreation: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
+};
+
 export default function CreateCard({
    clickedCreation: [isClickedCreation, setIsClickedCreation],
-}: {
-   clickedCreation: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
-}) {
+   name,
+}: CreateCardProps) {
    const { isMobile, isTablette } = useScreenSize({});
 
    const fullSize = {
@@ -20,7 +24,7 @@ export default function CreateCard({
    };
    const size = isMobile || isTablette ? smallSize : fullSize;
    return (
-      <Tooltip title="Create the task you want !" enterDelay={2000}>
+      <Tooltip title={`Create the ${name} you want !`} enterDelay={2000}>
          <Card sx={{ ...size, borderRadius: '1rem', maxWidth: 345, margin: 1 }}>
             <CardActionArea
                sx={{
@@ -36,7 +40,7 @@ export default function CreateCard({
                   fontSize="large"
                   sx={{ '&:hover': { color: 'secondary.main' } }}
                />
-               Create a new task
+               Create a new {name}
             </CardActionArea>
          </Card>
       </Tooltip>

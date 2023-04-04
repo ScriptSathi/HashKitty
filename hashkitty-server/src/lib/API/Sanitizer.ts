@@ -1,5 +1,5 @@
 import { ApiOptionsFormData } from '../types/TDAOs';
-import { TaskUpdate, TemplateTaskUpdate, UploadFile } from '../types/TRoutes';
+import { TaskUpdate, TemplateUpdate, UploadFile } from '../types/TRoutes';
 import { Options } from '../ORM/entity/Options';
 import { Dao } from './DAOs/Dao';
 import { Task } from '../ORM/entity/Task';
@@ -46,7 +46,7 @@ export class Sanitizer {
       await this.checkHashlist(form.hashlistId);
    }
 
-   public async analyseTemplate(form: TemplateTaskUpdate): Promise<void> {
+   public async analyseTemplate(form: TemplateUpdate): Promise<void> {
       if (form.id) {
          if (await this.dao.templateExistById(form.id)) {
             this.template = await this.dao.template.getById(form.id);

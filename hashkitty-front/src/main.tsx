@@ -5,6 +5,7 @@ import { createTheme, ThemeOptions, ThemeProvider } from '@mui/material/styles';
 
 import HomePage from './pages/HomePage/HomePage';
 import ErrorPage from './pages/ErrorPage/ErrorPage';
+import Templates from './pages/Templates/Templates';
 
 import './assets/styles/main.scss';
 import Lists from './pages/Lists/Lists';
@@ -62,7 +63,7 @@ const router = createBrowserRouter([
          },
          {
             path: 'templates',
-            element: <HomePage />,
+            element: <Templates />,
          },
          {
             path: 'lists',

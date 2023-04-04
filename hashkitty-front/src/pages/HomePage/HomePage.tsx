@@ -90,6 +90,7 @@ export default function HomePage() {
                   ) : (
                      <>
                         <CreateCard
+                           name="task"
                            clickedCreation={[
                               isClickedCreation,
                               setIsClickedCreation,
@@ -125,6 +126,7 @@ export default function HomePage() {
                </h2>
                <div className="flex flex-wrap justify-center">
                   <CreateCard
+                     name="task"
                      clickedCreation={[isClickedCreation, setIsClickedCreation]}
                   />
                   {tasks.map(task => (

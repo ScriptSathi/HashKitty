@@ -44,7 +44,7 @@ export type TaskUpdate = TDaoCreate &
       templateTaskId?: number;
    };
 
-export type TemplateTaskUpdate = TDaoCreate &
+export type TemplateUpdate = TDaoCreate &
    Partial<TDaoById> & {
       options: ApiOptionsFormData;
    };
