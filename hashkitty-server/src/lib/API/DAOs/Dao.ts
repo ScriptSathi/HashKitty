@@ -261,7 +261,7 @@ export class Dao {
    public async getListContext<List extends ListItem['item']>(
       items: List[],
       filterCallback: (item: List, task: TTask) => boolean,
-      isHashlist = false
+      isRegisteredInDb = false
    ): Promise<ListItem[]> {
       const tasks = (await this.task.getAll()) as unknown as TTask[];
       return items.reduce((acc, list) => {
@@ -270,7 +270,7 @@ export class Dao {
             ...acc,
             {
                item: list,
-               canBeDeleted: isHashlist ? listIsBindTo.length === 0 : true,
+               canBeDeleted: isRegisteredInDb ? listIsBindTo.length === 0 : true,
                bindTo: listIsBindTo as unknown as TTask[],
             },
          ];

@@ -1,4 +1,4 @@
-import { ListItem, TTask, UploadFileType } from '../../types/TApi';
+import { UploadFileType } from '../../types/TApi';
 import { ResponseAttr, UploadFile } from '../../types/TRoutes';
 import { Events } from '../../utils/Events';
 import { Dao } from '../DAOs/Dao';
@@ -6,8 +6,6 @@ import { Sanitizer } from '../Sanitizer';
 import { FsUtils } from '../../utils/FsUtils';
 import { UploadedFile } from 'express-fileupload';
 import { logger } from '../../utils/Logger';
-import { Task } from '../../ORM/entity/Task';
-import { Hashlist } from '../../ORM/entity/Hashlist';
 import { Wordlist } from '../../ORM/entity/Wordlist';
 
 export default class ListController {
@@ -105,7 +103,8 @@ export default class ListController {
          const wordlists = await this.dao.db.getRepository(Wordlist).find();
          const items = await this.dao.getListContext(
             wordlists,
-            (wordlists, task) => wordlists.id === task.options.wordlistId.id
+            (wordlists, task) => wordlists.id === task.options.wordlistId.id,
+            true
          );
          return {
             message: '',
