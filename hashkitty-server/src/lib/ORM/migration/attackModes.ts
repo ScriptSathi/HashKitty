@@ -1,3 +1,5 @@
+import { AttackMode } from '../entity/AttackMode';
+
 export const attackModes = [
    {
       mode: 0,
@@ -23,4 +25,4 @@ export const attackModes = [
       mode: 9,
       name: 'Association',
    },
-];
+] satisfies Pick<AttackMode, 'name' | 'mode'>[];

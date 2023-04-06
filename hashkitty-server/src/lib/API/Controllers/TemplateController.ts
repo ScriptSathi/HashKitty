@@ -4,7 +4,6 @@ import { Dao } from '../DAOs/Dao';
 import { Sanitizer } from '../Sanitizer';
 import GenericController from './GenericResponse';
 import { TemplateTask } from '../../ORM/entity/TemplateTask';
-import { ListItem } from '../../types/TApi';
 
 export default class TemplateController {
    private dao: Dao;
