@@ -23,7 +23,7 @@ export default function HomePage() {
    const [isClickedCreation, setIsClickedCreation] = useState(false);
    const [switchClicked, setSwitchClicked] = useState(false);
    const [results, setResults] = useState(defaultResults);
-   const { isTablette, isMobile } = useScreenSize({});
+   const { isTablette, isMobile } = useScreenSize();
    const { items, refresh, isLoading } = useFetchItems<TTask>({
       method: 'GET',
       url: ApiEndpoints.GET.tasks,
@@ -52,7 +52,7 @@ export default function HomePage() {
 
    if ((isTablette || isMobile) && (isClickedCreation || results.isClicked)) {
       return (
-         <Frame>
+         <Frame isLoading={isLoading}>
             {isClickedCreation && (
                <CreateTask closeTaskCreation={closeTaskCreation} />
             )}

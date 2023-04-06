@@ -1,17 +1,25 @@
 import { UseFormSetError } from 'react-hook-form';
 import ErrorHandler from './ErrorHandler';
-import { CreateTaskErrors, CreateTemplateErrors, TDBData } from '../types/TypesErrorHandler';
+import {
+   CreateTaskErrors,
+   CreateTemplateErrors,
+   TDBData,
+} from '../types/TypesErrorHandler';
 import { CreateTaskForm, CreateTemplateForm } from '../types/TComponents';
 import { THashlist } from '../types/TypesORM';
 import { TaskUpdate } from '../types/TApi';
 
-export default class CreateTaskOrTemplateErrorHandler<FormError extends CreateTaskErrors | CreateTemplateErrors> extends ErrorHandler<FormError> {
+export default class CreateTaskOrTemplateErrorHandler<
+   FormError extends CreateTaskErrors | CreateTemplateErrors,
+> extends ErrorHandler<FormError> {
    public finalForm: TaskUpdate;
    private setError: UseFormSetError<CreateTaskForm>;
-   private dbData: Omit<TDBData, 'hashtypes' | 'templates'> & Partial<Pick<TDBData, 'templates'>>;
+   private dbData: Omit<TDBData, 'hashtypes' | 'templates'> &
+      Partial<Pick<TDBData, 'templates'>>;
    constructor(
       setError: UseFormSetError<CreateTaskForm>,
-      dbData: Omit<TDBData, 'hashtypes'>,
+      dbData: Omit<TDBData, 'hashtypes' | 'templates'> &
+         Partial<Pick<TDBData, 'templates'>>,
    ) {
       super();
       this.setError = setError;
@@ -62,6 +70,23 @@ export default class CreateTaskOrTemplateErrorHandler<FormError extends CreateTa
       this.finalForm.options.kernelOpti = form.kernelOpti;
       this.finalForm.options.CPUOnly = form.cpuOnly;
       this.finalForm.options.maskQuery = form.maskQuery;
+   }
+
+   public analyseFirstStepTemplate(form: CreateTemplateForm): void {
+      this.isValid = true;
+      this.checkName(form.name);
+      this.checkAttackMode(form.attackModeId);
+   }
+
+   public analyseSecondStepTemplate(form: CreateTemplateForm): void {
+      this.isValid = true;
+      this.checkName(form.name);
+      this.checkAttackMode(form.attackModeId);
+      this.checkWordlist(form.wordlistName);
+      this.checkRules(form.rules);
+      this.checkPotfiles(form.potfileName);
+      this.checkWorkloadProfile(form.workloadProfile);
+      this.checkBreakpointTemp(form.breakpointGPUTemperature);
    }
 
    private checkTemplate(templateId: number) {

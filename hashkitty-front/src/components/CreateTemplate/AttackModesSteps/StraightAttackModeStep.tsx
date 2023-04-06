@@ -1,5 +1,5 @@
 function StraightAttackModeStep() {
-   return <p>aaaaaaaaaaaa</p>;
+   return <p>StraightAttackModeStep</p>;
 }
 
 export default StraightAttackModeStep;

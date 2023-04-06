@@ -25,9 +25,13 @@ function AttackModeStep({ attackMode }: AttackModeStepProps) {
       case 9:
          return <AssocitationAttackModeStep />;
       default:
-         <p className='text-red-700'>
-            An error occured, the requested attack mode {attackMode} does not
-            exist
-         </p>;
+         return (
+            <p className="text-red-700">
+               An error occured, the requested attack mode {attackMode} does not
+               exist
+            </p>
+         );
    }
 }
+
+export default AttackModeStep;

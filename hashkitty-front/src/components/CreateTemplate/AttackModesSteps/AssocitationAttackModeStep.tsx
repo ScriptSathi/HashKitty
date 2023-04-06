@@ -1,5 +1,5 @@
 function AssocitationAttackModeStep() {
-   return <p>aaaaaaaaaaaa</p>;
+   return <p>AssocitationAttackModeStep</p>;
 }
 
 export default AssocitationAttackModeStep;
