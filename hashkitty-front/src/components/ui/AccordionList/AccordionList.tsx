@@ -107,10 +107,10 @@ function AccordionList<List extends ListItemAvailable>({
                                  backgroundColor: '#FC6F6F',
                               }}
                               message={
-                                 <Typography className="m-0 p-0">
+                                 <Typography className="m-0 p-0 text-black">
                                     {text}{' '}
                                     <a
-                                       className="text-slate-800 cursor-pointer"
+                                       className="text-white cursor-pointer underline"
                                        href={link}
                                     >
                                        {link}

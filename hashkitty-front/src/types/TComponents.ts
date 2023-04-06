@@ -19,34 +19,6 @@ export type CreateTemplateForm = Omit<
    'hashlistName' | 'templateId'
 >;
 
-export type ApiTaskFormData = {
-   name: string;
-   description: string;
-   hashlistId: number;
-   id?: number;
-   templateTaskId?: number;
-   options: ApiOptionsFormData;
-};
-
-export type ApiTemplateFormData = {
-   name: string;
-   description: string;
-   options: ApiOptionsFormData;
-};
-
-export type ApiOptionsFormData = {
-   attackModeId: number;
-   breakpointGPUTemperature: number;
-   wordlistName: string;
-   workloadProfileId: number;
-   kernelOpti: boolean;
-   CPUOnly: boolean;
-   rules?: string;
-   potfileName?: string;
-   maskQuery?: string;
-   maskFilename?: string;
-};
-
 export type TUploadReqBody = {
    hashlist: File;
    filename: string;
@@ -59,8 +31,10 @@ export type InputStandard = {
    label: string;
 };
 
+export type AttackModeAvailable = 0 | 1 | 3 | 6 | 7 | 9;
+
 export type StandardList = {
-   mode?: 0 | 1 | 3 | 6 | 9;
+   mode?: AttackModeAvailable;
    id: number;
    name: string;
 };

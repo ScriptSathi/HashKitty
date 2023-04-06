@@ -7,6 +7,7 @@ const tooltips = {
          1: 'Change me pls :3',
          3: 'Change me pls :3',
          6: 'Change me pls :3',
+         7: 'Change me pls :3',
          9: 'Change me pls :3',
       },
       breakpointGPUTemperature: 'Change me pls :3',
