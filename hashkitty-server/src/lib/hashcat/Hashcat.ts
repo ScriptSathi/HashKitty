@@ -2,8 +2,6 @@ import path = require('node:path');
 import { Worker } from 'node:worker_threads';
 import * as fs from 'fs-extra';
 
-import { Constants } from '../Constants';
-import { FsUtils } from '../utils/FsUtils';
 import { TTask } from '../types/TApi';
 import { THashcatRunningStatus, THashcatStatus } from '../types/THashcat';
 import { logger } from '../utils/Logger';

@@ -270,7 +270,9 @@ export class Dao {
             ...acc,
             {
                item: list,
-               canBeDeleted: isRegisteredInDb ? listIsBindTo.length === 0 : true,
+               canBeDeleted: isRegisteredInDb
+                  ? listIsBindTo.length === 0
+                  : true,
                bindTo: listIsBindTo as unknown as TTask[],
             },
          ];

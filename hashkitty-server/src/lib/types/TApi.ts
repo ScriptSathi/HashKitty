@@ -1,6 +1,4 @@
 import { Hashlist } from '../ORM/entity/Hashlist';
-import { Notification } from '../ORM/entity/Notification';
-import { Task } from '../ORM/entity/Task';
 import { Wordlist } from '../ORM/entity/Wordlist';
 
 export type TEndpoint = 'exec' | 'restore';
@@ -86,10 +84,12 @@ export type TWordlist = {
    path: string;
 };
 
+export type AttackModeAvailable = 0 | 1 | 3 | 6 | 7 | 9;
+
 export type TAttackMode = {
    id: number;
    name: string;
-   mode: number;
+   mode: AttackModeAvailable;
 };
 
 export type TWorkloadProfile = {
