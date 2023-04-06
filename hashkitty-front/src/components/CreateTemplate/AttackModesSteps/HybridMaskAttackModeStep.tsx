@@ -1,5 +1,5 @@
 function HybridMaskAttackModeStep() {
-   return <p>aaaaaaaaaaaa</p>;
+   return <p>HybridMaskAttackModeStep</p>;
 }
 
 export default HybridMaskAttackModeStep;

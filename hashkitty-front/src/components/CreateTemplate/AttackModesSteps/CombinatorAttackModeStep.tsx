@@ -1,5 +1,5 @@
 function CombinatorAttackModeStep() {
-   return <p>aaaaaaaaaaaa</p>;
+   return <p>CombinatorAttackModeStep</p>;
 }
 
 export default CombinatorAttackModeStep;

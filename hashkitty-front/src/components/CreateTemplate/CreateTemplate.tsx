@@ -1,23 +1,52 @@
-import { Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { CircularProgress } from '@mui/material';
 import FrameHoverCardForm from '../ui/Cards/FrameHoverCard/FrameHoverCardForm';
-import { CreateTemplateForm } from '../../types/TComponents';
+import {
+   AttackModeAvailable,
+   CreateTemplateForm,
+} from '../../types/TComponents';
 import useSendForm from '../../hooks/useSendForm';
 import ApiEndpoints from '../../ApiEndpoints';
 import { TemplateUpdate } from '../../types/TApi';
 import CreateTaskOrTemplateErrorHandler from '../../utils/CreateTaskOrTemplateErrorHandler';
 import { CreateTemplateErrors } from '../../types/TypesErrorHandler';
 import useFetchAllList from '../../hooks/useFetchAllLists';
+import { TAttackMode } from '../../types/TypesORM';
+import Radios from '../ui/Radios/Radios';
+import FormatList from '../../utils/FormatUtils';
+import Button from '../ui/Buttons/Button';
+import InitialStep from './InitialStep';
+import useMultistepForm from '../../hooks/useMultiStepForm';
+import AttackModeStep from './AttackModeStep';
 
 type CreateTemplateProps = {
    closeTaskCreation: () => void;
 };
 
 function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
+   const {
+      hashlists,
+      templates,
+      attackModes,
+      potfiles,
+      rules,
+      wordlists,
+      isLoading,
+      refresh,
+   } = useFetchAllList();
+
+   const [inputAttackMode, setInputAttackMode] = useState<{
+      id: number;
+      mode: AttackModeAvailable;
+   }>({
+      id: 1,
+      mode: 0,
+   });
    const formMethods = useForm<CreateTemplateForm>({
       defaultValues: {
          name: '',
-         attackModeId: '',
+         attackModeId: '1',
          cpuOnly: false,
          rules: [],
          maskQuery: '',
@@ -43,25 +72,42 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
    } = formMethods;
 
    const {
-      hashlists,
-      templates,
-      attackModes,
-      potfiles,
-      rules,
-      wordlists,
-      isLoading,
-      refresh,
-   } = useFetchAllList();
+      currentStepIndex,
+      step,
+      steps,
+      isFirstStep,
+      isLastStep,
+      goTo,
+      next,
+      back,
+   } = useMultistepForm([
+      <InitialStep
+         errors={errors}
+         register={register}
+         attackModes={attackModes}
+         inputAttackMode={[inputAttackMode, setInputAttackMode]}
+      />,
+      <AttackModeStep attackMode={inputAttackMode.mode} />,
+      <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>,
+   ]);
 
    const onSubmit = (form: CreateTemplateForm) => {
-      const formVerifier = new CreateTaskOrTemplateErrorHandler<CreateTemplateErrors>(setError, {
-         attackModes,
-         hashlists,
-         wordlists,
-         rules,
-         potfiles,
-      });
-      formVerifier.analyseTemplate(form);
+      const formVerifier =
+         new CreateTaskOrTemplateErrorHandler<CreateTemplateErrors>(setError, {
+            attackModes,
+            hashlists,
+            wordlists,
+            rules,
+            potfiles,
+         });
+
+      const isSecondStep = currentStepIndex === 1;
+      if (isFirstStep) formVerifier.analyseFirstStepTemplate(form);
+      else if (isSecondStep) formVerifier.analyseSecondStepTemplate(form);
+      else formVerifier.analyseTemplate(form);
+
+      if (formVerifier.isValid && !isLastStep) return next();
+
       if (formVerifier.isValid) {
          sendForm({ data: formVerifier.finalForm });
          if (!isLoadingCreation) {
@@ -70,6 +116,31 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
       }
    };
 
+   if (isLoading || isLoadingCreation) {
+      return (
+         <FrameHoverCardForm<CreateTemplateForm>
+            name="template"
+            sx={{
+               width: '100%',
+               height: '50%',
+               overflowY: 'scroll',
+            }}
+            formMethods={formMethods}
+            onSubmit={onSubmit}
+            closeTaskCreation={closeTaskCreation}
+            submitButton={
+               <Button className="w-full text-lg" type="submit">
+                  <CircularProgress size={28} color="secondary" />
+               </Button>
+            }
+         >
+            <div className="flex justify-center">
+               <CircularProgress className="mt-[200px]" color="secondary" />
+            </div>
+         </FrameHoverCardForm>
+      );
+   }
+
    return (
       <FrameHoverCardForm<CreateTemplateForm>
          name="template"
@@ -77,12 +148,23 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
          onSubmit={onSubmit}
          closeTaskCreation={closeTaskCreation}
          submitButton={
-            <Button className="w-full" type="submit">
-               Create
-            </Button>
+            <section className="flex w-full gap-x-[10rem]">
+               {!isFirstStep && (
+                  <Button
+                     className="w-full text-lg"
+                     type="button"
+                     onClick={back}
+                  >
+                     Back
+                  </Button>
+               )}
+               <Button className="w-full text-lg" type="submit">
+                  {isLastStep ? 'Create' : 'Next'}
+               </Button>
+            </section>
          }
       >
-         <p>aaaaaaaaaaaaaaaaaaaaaaaa</p>
+         {step}
       </FrameHoverCardForm>
    );
 }

@@ -1,5 +1,5 @@
 function HybridWLAttackModeStep() {
-   return <p>aaaaaaaaaaaa</p>;
+   return <p>HybridWLAttackModeStep</p>;
 }
 
 export default HybridWLAttackModeStep;

@@ -1,5 +1,5 @@
 function BFAttackModeStep() {
-   return <p>aaaaaaaaaaaa</p>;
+   return <p>BFAttackModeStep</p>;
 }
 
 export default BFAttackModeStep;

@@ -84,14 +84,15 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    };
 
    const onSubmit = (form: CreateTaskForm) => {
-      const formVerifier = new CreateTaskOrTemplateErrorHandler<CreateTaskErrors>(setError, {
-         attackModes,
-         templates,
-         hashlists,
-         wordlists,
-         rules,
-         potfiles,
-      });
+      const formVerifier =
+         new CreateTaskOrTemplateErrorHandler<CreateTaskErrors>(setError, {
+            attackModes,
+            templates,
+            hashlists,
+            wordlists,
+            rules,
+            potfiles,
+         });
       formVerifier.analyseTask(form);
       if (formVerifier.isValid) {
          sendForm({ data: formVerifier.finalForm });

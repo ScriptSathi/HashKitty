@@ -1,5 +1,9 @@
 import { ApiImportList, ListItem } from './TApi';
-import { CreateTaskForm, CreateTemplateForm, StandardList } from './TComponents';
+import {
+   CreateTaskForm,
+   CreateTemplateForm,
+   StandardList,
+} from './TComponents';
 import { TAttackMode, THashType, THashlist, TTemplate } from './TypesORM';
 
 export type FieldError = {
