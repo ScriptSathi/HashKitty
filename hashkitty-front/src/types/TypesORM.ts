@@ -63,7 +63,7 @@ export type TWordlist = {
 export type TAttackMode = {
    id: number;
    name: string;
-   mode: 0 | 1 | 3 | 6 | 9;
+   mode: 0 | 1 | 3 | 6 | 7 | 9;
 };
 
 export type TWorkloadProfile = {

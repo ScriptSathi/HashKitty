@@ -42,7 +42,7 @@ function Lists() {
                   additionnalTitleBarElem={
                      <div className="flex">
                         <InfoTooltip
-                           className="IconBtn__icon"
+                           className="cursor-default"
                            sx={{ marginTop: 0.5 }}
                            tooltip={tooltips.lists.wordlist}
                            onClick={e => {
