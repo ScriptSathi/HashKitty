@@ -19,6 +19,7 @@ export type Options = {
    workloadProfileId: TWorkloadProfile;
    kernelOpti: boolean;
    CPUOnly: boolean;
+   combinatorWordlistId?: TWordlist;
    rules?: string;
    potfileName?: string;
    maskQuery?: string;

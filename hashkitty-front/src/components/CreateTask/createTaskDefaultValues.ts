@@ -1,6 +1,6 @@
 import { CreateTaskForm } from '../../types/TComponents';
 
-const createTaskDefaultValues: CreateTaskForm = {
+const createTaskDefaultValues = {
    name: '',
    hashlistName: '',
    attackModeId: '',
@@ -8,12 +8,13 @@ const createTaskDefaultValues: CreateTaskForm = {
    rules: [],
    maskQuery: '',
    maskFileName: '',
+   combinatorWordlistName: '',
    potfileName: '',
    kernelOpti: false,
    wordlistName: '',
    workloadProfile: '3',
    breakpointGPUTemperature: '90',
    templateId: '-1',
-};
+} satisfies CreateTaskForm;
 
 export default createTaskDefaultValues;
