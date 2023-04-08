@@ -157,9 +157,10 @@ export class Dao {
             logger.error('An error occured', e);
          }
       });
-      const dbElemToDelete = wordlistInDb.filter(
-         file => !filesInDir.includes(file.name)
-      );
+      const dbElemToDelete = wordlistInDb.filter(file => {
+         const isGenericWordlist = file.name.includes('*');
+         return !isGenericWordlist && !filesInDir.includes(file.name);
+      });
       dbElemToDelete.map(wl => this.db.getRepository(Wordlist).delete(wl.id));
    }
 

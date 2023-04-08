@@ -72,7 +72,7 @@ function AccordionList<List extends ListItemAvailable>({
 
    return (
       <>
-         <Paper>
+         <Paper sx={{ boxShadow: 'none' }}>
             <Accordion expanded={expanded} {...args}>
                <AccordionSummary
                   expandIcon={!expanded && <ExpandMoreIcon />}

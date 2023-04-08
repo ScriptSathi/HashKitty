@@ -114,7 +114,7 @@ export class Sanitizer {
       this.checkMaskQuery(options.maskQuery || '');
       this.checkKernelOptions(options.kernelOpti);
       this.checkCPUOnly(options.CPUOnly);
-      this.checkRules(options.rules || '');
+      this.checkRules(options.rules ?? []);
       this.checkPotfiles(options.potfileName || '');
       this.task.options = this.options;
       this.template.options = this.options;
@@ -264,24 +264,26 @@ export class Sanitizer {
       }
    }
 
-   private checkRules(name: string): void {
-      try {
-         if (name.length > 0) {
-            const files = FsUtils.listFileInDir(Constants.rulesPath);
-            if (
-               files.find(file => {
-                  return file === name;
-               })
-            ) {
-               this.options.rules = name;
-            } else {
-               throw 'Wrong data provided for rules';
+   private checkRules(rules: string[]): void {
+      let fileExists = true;
+      for (const ruleFileName of rules) {
+         try {
+            if (ruleFileName.length > 0) {
+               const files = FsUtils.listFileInDir(Constants.rulesPath);
+               const fileHasBeenFound = files.find(file => {
+                  return file === ruleFileName;
+               });
+               if (!fileHasBeenFound) {
+                  fileExists = false;
+                  throw 'Wrong data provided for rules';
+               }
             }
+         } catch (error) {
+            this.unexpectedError('rules');
+            logger.debug(error);
          }
-      } catch (error) {
-         this.unexpectedError('rules');
-         logger.debug(error);
       }
+      if (fileExists) this.options.rules = rules.join();
    }
 
    private checkPotfiles(name: string): void {

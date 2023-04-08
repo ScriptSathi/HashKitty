@@ -69,7 +69,7 @@ export default function NavBar() {
       <TWNavBar className="mx-auto text-black max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4 border-none">
          <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
             <Link to="/home" className="flex items-center">
-               <img className="logoclassName" src={logo} alt="Logo" />
+               <img className="logoclassName pr-2.5" src={logo} alt="Logo" />
                <Typography as="p" className="font-semibold text-lg">
                   HashKitty
                </Typography>

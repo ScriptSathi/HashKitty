@@ -158,8 +158,8 @@ export class HashcatGenerator {
       return flags.reduce((acc: string, cmdData) => {
          let cmd = '';
          if (cmdData.flagData.isRepeatableFlag) {
-            for (const value in cmdData.value as string[]) {
-               cmd = buildSingleFlag(cmdData, value);
+            for (const value of cmdData.value as string[]) {
+               cmd += buildSingleFlag(cmdData, value);
             }
          } else {
             cmd = buildSingleFlag(cmdData);

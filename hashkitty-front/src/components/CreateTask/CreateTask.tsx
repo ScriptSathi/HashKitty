@@ -44,11 +44,11 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    const [inputHashlist, setInputHashlist] = useState<string | null>(null);
    const [inputRules, setInputRules] = useState<string[]>([]);
    const [inputAttackMode, setAttackMode] = useState<string | null>('');
-   const [inputBreakTemp, setBreakTemp] = useState<number | null>(90);
+   const [inputBreakTemp, setBreakTemp] = useState<string | null>('90');
    const [inputCpuOnly, setCpuOnly] = useState<boolean>(false);
    const [inputKernelOpti, setKernelOpti] = useState<boolean>(false);
-   const [inputWorkloadProfile, setWorkloadProfile] = useState<number | null>(
-      3,
+   const [inputWorkloadProfile, setWorkloadProfile] = useState<string | null>(
+      '3',
    );
    const [isClickedImport, setIsClickedImport] = useState(false);
 
@@ -95,14 +95,14 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
          });
       formVerifier.analyseTask(form);
       if (formVerifier.isValid) {
-         sendForm({ data: formVerifier.finalForm });
+         sendForm({ data: formVerifier.finalForm as TaskUpdate });
          if (!isLoadingCreation) {
             closeTaskCreation();
          }
       }
    };
 
-   if (isLoading || isLoadingCreation) {
+   if (isLoading ?? isLoadingCreation) {
       return (
          <FrameHoverCardForm<CreateTaskForm>
             name="task"
@@ -127,7 +127,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
       );
    }
 
-   if ((isTablette || isMobile) && isClickedImport) {
+   if ((isTablette ?? isMobile) && isClickedImport) {
       return (
          <ImportList closeImportWindow={closeImportWindow} type="hashlist" />
       );
@@ -183,8 +183,8 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         label="Hash lists *"
                         value={inputHashlist}
                         onChange={(_, value) => {
-                           setInputHashlist(value);
-                           setValue('hashlistName', value || '');
+                           setInputHashlist(value as string);
+                           setValue('hashlistName', (value as string) ?? '');
                         }}
                         isOptionEqualToValue={(option, value) =>
                            option === value || value === null
@@ -208,6 +208,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                      inputKernelOpti={['kernelOpti', setKernelOpti]}
                      inputCpuOnly={['cpuOnly', setCpuOnly]}
                      inputMaskQuery={['maskQuery', setInputMaskQuery]}
+                     inputRules={['rules', setInputRules]}
                   />
                </section>
             </div>
@@ -223,8 +224,8 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         label="Wordlists"
                         value={inputWordlist}
                         onChange={(_, value) => {
-                           setInputWordlist(value);
-                           setValue('wordlistName', value || '');
+                           setInputWordlist(value as string);
+                           setValue('wordlistName', (value as string) ?? '');
                         }}
                         isOptionEqualToValue={(option, value) =>
                            option === value || value === null
@@ -247,7 +248,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         value={inputMaskQuery}
                         onChange={({ target: { value } }) => {
                            setInputMaskQuery(value);
-                           setValue('maskQuery', value || '');
+                           setValue('maskQuery', value ?? '');
                         }}
                      />
                   </section>
@@ -277,8 +278,8 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         label="Potfiles"
                         value={inputPotfile}
                         onChange={(_, value) => {
-                           setInputWordlist(value);
-                           setValue('potfileName', value || '');
+                           setInputWordlist(value as string);
+                           setValue('potfileName', (value as string) ?? '');
                         }}
                         isOptionEqualToValue={(option, value) =>
                            option === value || value === null
@@ -368,10 +369,10 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                            const {
                               target: { value },
                            } = e;
-                           setBreakTemp(parseInt(value, 10) || 0);
+                           setBreakTemp(value);
                            setValue(
                               'breakpointGPUTemperature',
-                              parseInt(value, 10) || 0,
+                              value as string,
                            );
                         }}
                      />
@@ -414,11 +415,8 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                            const {
                               target: { value },
                            } = e;
-                           setWorkloadProfile(parseInt(value, 10) || 0);
-                           setValue(
-                              'workloadProfile',
-                              parseInt(value, 10) || 0,
-                           );
+                           setWorkloadProfile(value);
+                           setValue('workloadProfile', value as string);
                         }}
                      />
                   </section>

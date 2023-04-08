@@ -19,6 +19,7 @@ import Button from '../ui/Buttons/Button';
 import InitialStep from './InitialStep';
 import useMultistepForm from '../../hooks/useMultiStepForm';
 import AttackModeStep from './AttackModeStep';
+import AdvancedStep from './AdvancedStep';
 
 type CreateTemplateProps = {
    closeTaskCreation: () => void;
@@ -54,8 +55,8 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
          potfileName: '',
          kernelOpti: false,
          wordlistName: '',
-         workloadProfile: 3,
-         breakpointGPUTemperature: 90,
+         workloadProfile: '3',
+         breakpointGPUTemperature: '90',
       },
    });
    const { sendForm, isLoading: isLoadingCreation } =
@@ -71,6 +72,18 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
       formState: { errors },
    } = formMethods;
 
+   const multistepFormProps = {
+      register,
+      setValue,
+      errors,
+      DBData: {
+         hashlists,
+         attackModes,
+         potfiles,
+         rules,
+         wordlists,
+      },
+   };
    const {
       currentStepIndex,
       step,
@@ -82,13 +95,15 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
       back,
    } = useMultistepForm([
       <InitialStep
-         errors={errors}
-         register={register}
+         {...multistepFormProps}
          attackModes={attackModes}
          inputAttackMode={[inputAttackMode, setInputAttackMode]}
       />,
-      <AttackModeStep attackMode={inputAttackMode.mode} />,
-      <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>,
+      <AttackModeStep
+         {...multistepFormProps}
+         attackMode={inputAttackMode.mode}
+      />,
+      <AdvancedStep {...multistepFormProps} />,
    ]);
 
    const onSubmit = (form: CreateTemplateForm) => {
@@ -109,6 +124,7 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
       if (formVerifier.isValid && !isLastStep) return next();
 
       if (formVerifier.isValid) {
+         console.log(form);
          sendForm({ data: formVerifier.finalForm });
          if (!isLoadingCreation) {
             closeTaskCreation();
@@ -151,14 +167,14 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
             <section className="flex w-full gap-x-[10rem]">
                {!isFirstStep && (
                   <Button
-                     className="w-full text-lg"
+                     className="w-full text-base"
                      type="button"
                      onClick={back}
                   >
                      Back
                   </Button>
                )}
-               <Button className="w-full text-lg" type="submit">
+               <Button className="w-full text-base" type="submit">
                   {isLastStep ? 'Create' : 'Next'}
                </Button>
             </section>
