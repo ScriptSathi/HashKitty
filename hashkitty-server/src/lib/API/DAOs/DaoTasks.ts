@@ -7,25 +7,25 @@ import { Options } from '../../ORM/entity/Options';
 export class DaoTasks implements IDaoSub<Task> {
    private db: Repository<Task>;
    private option: Repository<Options>;
-   private dbRelations = {
-      relations: [
+   private dbRelations: string[];
+
+   constructor(db: DataSource) {
+      this.db = db.getRepository(Task);
+      this.option = db.getRepository(Options);
+      this.dbRelations = [
          'options',
          'options.wordlistId',
+         'options.combinatorWordlistId',
          'options.attackModeId',
          'options.workloadProfileId',
          'templateTaskId',
          'hashlistId',
          'hashlistId.hashTypeId',
-      ],
-   };
-
-   constructor(db: DataSource) {
-      this.db = db.getRepository(Task);
-      this.option = db.getRepository(Options);
+      ];
    }
 
    public async getAll(): Promise<Task[]> {
-      const tasks = await this.db.find(this.dbRelations);
+      const tasks = await this.db.find({ relations: this.dbRelations });
       return tasks.sort((a, b) => {
          return (
             new Date(b.lastestModification).valueOf() -
@@ -46,7 +46,7 @@ export class DaoTasks implements IDaoSub<Task> {
    public async getById(id: number): Promise<Task> {
       const task = await this.db.findOne({
          where: { id },
-         ...this.dbRelations,
+         ...{ relations: this.dbRelations },
       });
       return task === null ? new Task() : task;
    }

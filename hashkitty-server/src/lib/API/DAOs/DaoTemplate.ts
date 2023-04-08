@@ -7,20 +7,23 @@ import { Options } from '../../ORM/entity/Options';
 export class DaoTemplate implements IDaoSub<TemplateTask> {
    private db: Repository<TemplateTask>;
    private option: Repository<Options>;
+   private dbRelations: string[];
 
    constructor(db: DataSource) {
       this.db = db.getRepository(TemplateTask);
       this.option = db.getRepository(Options);
+      this.dbRelations = [
+         'options',
+         'options.wordlistId',
+         'options.combinatorWordlistId',
+         'options.attackModeId',
+         'options.workloadProfileId',
+      ];
    }
 
    public getAll(): Promise<TemplateTask[]> {
       return this.db.find({
-         relations: [
-            'options',
-            'options.wordlistId',
-            'options.attackModeId',
-            'options.workloadProfileId',
-         ],
+         relations: this.dbRelations,
       });
    }
 
@@ -36,12 +39,7 @@ export class DaoTemplate implements IDaoSub<TemplateTask> {
    public async getById(id: number): Promise<TemplateTask> {
       const templateTask = await this.db.findOne({
          where: { id },
-         relations: [
-            'options',
-            'options.wordlistId',
-            'options.attackModeId',
-            'options.workloadProfileId',
-         ],
+         ...{ relations: this.dbRelations },
       });
       return templateTask === null ? new TemplateTask() : templateTask;
    }
