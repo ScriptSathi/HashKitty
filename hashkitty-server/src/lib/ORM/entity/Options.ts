@@ -26,6 +26,10 @@ export class Options {
    @JoinColumn({ name: 'wordlist_id', referencedColumnName: 'id' })
    wordlistId!: number;
 
+   @ManyToOne(() => Wordlist, (wordlist: Wordlist) => wordlist.id)
+   @JoinColumn({ name: 'combinator_wordlist_id', referencedColumnName: 'id' })
+   combinatorWordlistId!: number;
+
    @ManyToOne(
       () => WorkloadProfile,
       (workloadProfile: WorkloadProfile) => workloadProfile.id

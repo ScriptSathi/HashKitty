@@ -40,7 +40,8 @@ export class Sanitizer {
       this.task.description = this.sanitizeText(
          form.description,
          'description',
-         255
+         255,
+         true
       );
       await this.prepareOptions(form.options);
       await this.checkHashlist(form.hashlistId);
@@ -60,7 +61,8 @@ export class Sanitizer {
       this.template.description = this.sanitizeText(
          form.description,
          'description',
-         255
+         255,
+         true
       );
       await this.prepareOptions(form.options);
    }
@@ -108,6 +110,7 @@ export class Sanitizer {
 
    private async prepareOptions(options: ApiOptionsFormData): Promise<void> {
       await this.checkWordlist(options.wordlistName);
+      await this.checkCombinatorWordlist(options.combinatorWordlistName ?? '');
       await this.checkWorkloadProfile(options.workloadProfileId);
       await this.checkAttackMode(options.attackModeId);
       this.breakpointGPUTemperature(options.breakpointGPUTemperature);
@@ -130,6 +133,20 @@ export class Sanitizer {
          }
       } catch (error) {
          this.unexpectedError('wordlist');
+         logger.debug(error);
+      }
+   }
+
+   private async checkCombinatorWordlist(name: string): Promise<void> {
+      try {
+         const wordlist = await this.dao.findWordlistWhere({ name });
+         if (wordlist !== null) {
+            this.options.combinatorWordlistId = wordlist.id;
+         } else {
+            this.incorrectDataSubmitted('combinator wordlist');
+         }
+      } catch (error) {
+         this.unexpectedError('combinatorWordlistId');
          logger.debug(error);
       }
    }
@@ -309,7 +326,8 @@ export class Sanitizer {
    private sanitizeText(
       text: string,
       param: string,
-      expectedLength = -1
+      expectedLength = -1,
+      spaceAreAllowed = false,
    ): string {
       try {
          if (text.length > 0) {
@@ -317,7 +335,7 @@ export class Sanitizer {
                ? this.removeSpecialCharInString(text)
                : this.shortenStringByLength(
                     expectedLength,
-                    this.removeSpecialCharInString(text)
+                    spaceAreAllowed ? text : this.removeSpecialCharInString(text)
                  );
          } else {
             throw new Error('Empty string');

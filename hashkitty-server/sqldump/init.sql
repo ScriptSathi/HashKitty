@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mysql
--- Généré le : dim. 19 mars 2023 à 11:01
+-- Généré le : sam. 08 avr. 2023 à 17:33
 -- Version du serveur : 8.0.30
 -- Version de PHP : 8.0.27
 
@@ -85,6 +85,7 @@ CREATE TABLE `notification` (
 CREATE TABLE `options` (
   `id` int NOT NULL,
   `wordlist_id` int NOT NULL,
+  `combinator_wordlist_id` int DEFAULT NULL,
   `kernel_opti` tinyint(1) DEFAULT '0',
   `rule_name` varchar(100) DEFAULT NULL,
   `mask_query` varchar(100) DEFAULT NULL,
@@ -192,7 +193,8 @@ ALTER TABLE `options`
   ADD PRIMARY KEY (`id`),
   ADD KEY `attack_mode_id` (`attack_mode_id`),
   ADD KEY `workload_profile_id` (`workload_profile_id`),
-  ADD KEY `wordlist_id` (`wordlist_id`);
+  ADD KEY `wordlist_id` (`wordlist_id`),
+  ADD KEY `combinator_wordlist_id` (`combinator_wordlist_id`);
 
 --
 -- Index pour la table `task`
@@ -295,6 +297,7 @@ ALTER TABLE `hashlist`
 --
 ALTER TABLE `options`
   ADD CONSTRAINT `attack_mode_id` FOREIGN KEY (`attack_mode_id`) REFERENCES `attack_mode` (`id`),
+  ADD CONSTRAINT `combinator_wordlist_id` FOREIGN KEY (`wordlist_id`) REFERENCES `wordlist` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `wordlist_id` FOREIGN KEY (`wordlist_id`) REFERENCES `wordlist` (`id`),
   ADD CONSTRAINT `workload_profile_id` FOREIGN KEY (`workload_profile_id`) REFERENCES `workload_profile` (`id`);
 
