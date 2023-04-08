@@ -65,6 +65,8 @@ export default function BaseCard({
                   style={{
                      paddingBottom: 0,
                      paddingTop: 2,
+                     marginTop: 0,
+                     lineHeight: 0,
                      width: '20vh',
                      height: 40,
                      ...headerStyleOnScreenSize,
@@ -75,7 +77,9 @@ export default function BaseCard({
                   title={title}
                />
                {isMouseOver && additionnalBtn && (
-                  <div className="mr-[20px]">{additionnalBtn}</div>
+                  <div className="mr-[12px] flex items-end">
+                     {additionnalBtn}
+                  </div>
                )}
             </div>
             <CardContent

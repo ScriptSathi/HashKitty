@@ -160,7 +160,7 @@ export default function RunCard({
                   <p className="">Progress: {status.runningProgress}</p>
                   <p className="">Time left: {status.estimatedStop}</p>
                </div>
-               <div className="flex items-center">
+               <div className="flex items-end">
                   <Tooltip title={`${isRunning ? 'Stop' : 'Start'} the task`}>
                      <IconButton
                         disabled={isLoading}

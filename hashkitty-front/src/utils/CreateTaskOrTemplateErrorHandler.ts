@@ -7,12 +7,12 @@ import {
 } from '../types/TypesErrorHandler';
 import { CreateTaskForm, CreateTemplateForm } from '../types/TComponents';
 import { THashlist } from '../types/TypesORM';
-import { TaskUpdate } from '../types/TApi';
+import { TaskUpdate, TemplateUpdate } from '../types/TApi';
 
 export default class CreateTaskOrTemplateErrorHandler<
    FormError extends CreateTaskErrors | CreateTemplateErrors,
 > extends ErrorHandler<FormError> {
-   public finalForm: TaskUpdate;
+   public finalForm: TaskUpdate | TemplateUpdate;
    private setError: UseFormSetError<CreateTaskForm>;
    private dbData: Omit<TDBData, 'hashtypes' | 'templates'> &
       Partial<Pick<TDBData, 'templates'>>;
@@ -24,33 +24,20 @@ export default class CreateTaskOrTemplateErrorHandler<
       super();
       this.setError = setError;
       this.dbData = dbData;
-      this.finalForm = {
-         name: '',
-         description: 'Not done yet, sorry bro',
-         hashlistId: -1,
-         options: {
-            attackModeId: -1,
-            breakpointGPUTemperature: 90,
-            wordlistName: '',
-            workloadProfileId: 1,
-            kernelOpti: false,
-            CPUOnly: false,
-            maskQuery: '',
-         },
-      };
+      this.finalForm = this.setDefaultFinalForm();
    }
 
    public analyseTask(form: CreateTaskForm): void {
       this.isValid = true;
       this.checkName(form.name);
-      this.checkTemplate(form.templateId);
+      this.checkTemplate(parseInt(form.templateId, 10));
       this.checkAttackMode(form.attackModeId);
       this.checkHashlist(form.hashlistName);
       this.checkWordlist(form.wordlistName);
       this.checkRules(form.rules);
       this.checkPotfiles(form.potfileName);
-      this.checkWorkloadProfile(form.workloadProfile);
-      this.checkBreakpointTemp(form.breakpointGPUTemperature);
+      this.checkWorkloadProfile(parseInt(form.workloadProfile, 10));
+      this.checkBreakpointTemp(parseInt(form.breakpointGPUTemperature, 10));
 
       this.finalForm.options.kernelOpti = form.kernelOpti;
       this.finalForm.options.CPUOnly = form.cpuOnly;
@@ -64,8 +51,8 @@ export default class CreateTaskOrTemplateErrorHandler<
       this.checkWordlist(form.wordlistName);
       this.checkRules(form.rules);
       this.checkPotfiles(form.potfileName);
-      this.checkWorkloadProfile(form.workloadProfile);
-      this.checkBreakpointTemp(form.breakpointGPUTemperature);
+      this.checkWorkloadProfile(parseInt(form.workloadProfile, 10));
+      this.checkBreakpointTemp(parseInt(form.breakpointGPUTemperature, 10));
 
       this.finalForm.options.kernelOpti = form.kernelOpti;
       this.finalForm.options.CPUOnly = form.cpuOnly;
@@ -85,8 +72,8 @@ export default class CreateTaskOrTemplateErrorHandler<
       this.checkWordlist(form.wordlistName);
       this.checkRules(form.rules);
       this.checkPotfiles(form.potfileName);
-      this.checkWorkloadProfile(form.workloadProfile);
-      this.checkBreakpointTemp(form.breakpointGPUTemperature);
+      this.checkWorkloadProfile(parseInt(form.workloadProfile, 10));
+      this.checkBreakpointTemp(parseInt(form.breakpointGPUTemperature, 10));
    }
 
    private checkTemplate(templateId: number) {
@@ -99,7 +86,7 @@ export default class CreateTaskOrTemplateErrorHandler<
             message: this.wrongData.message,
          });
       } else if (find) {
-         this.finalForm.templateTaskId = find.item.id;
+         (this.finalForm as TaskUpdate).templateTaskId = find.item.id;
       }
    }
 
@@ -150,7 +137,7 @@ export default class CreateTaskOrTemplateErrorHandler<
       } else if (!find && name.length > 0) {
          this.setError('hashlistName', { message: this.wrongData.message });
       } else if (find) {
-         this.finalForm.hashlistId = find.item.id;
+         (this.finalForm as TaskUpdate).hashlistId = find.item.id;
       }
    }
 
@@ -195,5 +182,31 @@ export default class CreateTaskOrTemplateErrorHandler<
       } else {
          this.finalForm.options.workloadProfileId = profile;
       }
+   }
+
+   private setDefaultFinalForm(): TaskUpdate | TemplateUpdate {
+      const isTaskUpdate = !!this.dbData.templates;
+      const minimalDefault = {
+         name: '',
+         description: 'No description',
+         options: {
+            attackModeId: -1,
+            breakpointGPUTemperature: 90,
+            wordlistName: '',
+            workloadProfileId: 1,
+            kernelOpti: false,
+            CPUOnly: false,
+            maskQuery: '',
+            rules: [],
+         },
+      };
+      if (isTaskUpdate) {
+         return {
+            hashlistId: -1,
+            templateTaskId: -1,
+            ...minimalDefault,
+         } satisfies TaskUpdate;
+      }
+      return minimalDefault satisfies TemplateUpdate;
    }
 }

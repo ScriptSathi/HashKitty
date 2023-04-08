@@ -5,7 +5,7 @@ type CheckBoxProps<T extends object> = {
    name?: FieldPath<T> | undefined;
    className?: string;
    checked?: boolean | undefined;
-   onClick?: React.MouseEventHandler<HTMLInputElement> | undefined;
+   onClick?: (args: { target: { checked: boolean } }) => void | undefined;
    register?: UseFormRegister<T>;
 };
 export default function CheckBox<T extends object>({
@@ -23,7 +23,9 @@ export default function CheckBox<T extends object>({
             type="checkbox"
             checked={checked}
             {...((register && register(name || ('' as FieldPath<T>))) || {})}
-            onClick={onClick}
+            onClick={
+               onClick as React.MouseEventHandler<HTMLInputElement> | undefined
+            }
             onChange={() => {}}
          />
          <p className="m-0">{title}</p>

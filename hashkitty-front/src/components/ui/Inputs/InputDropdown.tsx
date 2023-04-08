@@ -1,4 +1,4 @@
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, AutocompleteProps, TextField } from '@mui/material';
 import {
    FieldError,
    FieldErrors,
@@ -15,13 +15,14 @@ type InputDropdownProps<Item extends object | string, Form extends object> = {
    value?: Item | undefined | null;
    width?: number;
    disablePortal?: boolean;
+   isMultiple?: boolean | undefined;
    onChange?: (
       event: React.SyntheticEvent<Element, Event>,
-      value: Item | null,
+      value: Item | Item[] | null,
    ) => void;
    getOptionLabel?: (elem: Item) => string;
    isOptionEqualToValue?: (option: Item, value: Item) => boolean;
-};
+} & Partial<AutocompleteProps<Item, boolean, boolean, boolean>>;
 
 export default function InputDropdown<
    Item extends object | string,
@@ -37,15 +38,19 @@ export default function InputDropdown<
    disablePortal,
    value,
    onChange,
+   isMultiple,
    isOptionEqualToValue,
+   ...autoCompleteProps
 }: InputDropdownProps<Item, Form>) {
    return (
-      <Autocomplete<Item>
+      <Autocomplete<Item, boolean, boolean, boolean>
+         multiple={isMultiple}
          disablePortal={disablePortal}
          options={options}
          getOptionLabel={getOptionLabel}
          sx={{ width }}
          isOptionEqualToValue={isOptionEqualToValue}
+         {...autoCompleteProps}
          renderInput={params => (
             <TextField
                {...params}
@@ -66,9 +71,10 @@ export default function InputDropdown<
 
 InputDropdown.defaultProps = {
    getOptionLabel: (e: string) => e,
-   onChange: () => {},
+   onChange: undefined,
    width: 300,
    disablePortal: false,
    value: undefined,
+   isMultiple: undefined,
    isOptionEqualToValue: (option: string, value: string) => option === value,
 };

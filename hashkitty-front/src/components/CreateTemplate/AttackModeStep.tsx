@@ -1,29 +1,45 @@
-import { AttackModeAvailable } from '../../types/TComponents';
+import type {
+   FieldErrors,
+   UseFormRegister,
+   UseFormSetValue,
+} from 'react-hook-form';
+import type {
+   AttackModeAvailable,
+   CreateTemplateForm,
+} from '../../types/TComponents';
 import AssocitationAttackModeStep from './AttackModesSteps/AssocitationAttackModeStep';
 import BFAttackModeStep from './AttackModesSteps/BFAttackModeStep';
 import CombinatorAttackModeStep from './AttackModesSteps/CombinatorAttackModeStep';
 import HybridMaskAttackModeStep from './AttackModesSteps/HybridMaskAttackModeStep';
 import HybridWLAttackModeStep from './AttackModesSteps/HybridWLAttackModeStep';
 import StraightAttackModeStep from './AttackModesSteps/StraightAttackModeStep';
+import type { TDBData } from '../../types/TypesErrorHandler';
 
-type AttackModeStepProps = {
+type AttackModeStepProps<Form extends CreateTemplateForm> = {
    attackMode: AttackModeAvailable;
+   setValue: UseFormSetValue<Form>;
+   register: UseFormRegister<Form>;
+   errors: FieldErrors<Form>;
+   DBData: Omit<TDBData, 'templates' | 'hashtypes'>;
 };
 
-function AttackModeStep({ attackMode }: AttackModeStepProps) {
+function AttackModeStep<Form extends CreateTemplateForm = CreateTemplateForm>({
+   attackMode,
+   ...otherProps
+}: AttackModeStepProps<Form>) {
    switch (attackMode) {
       case 0:
-         return <StraightAttackModeStep />;
+         return <StraightAttackModeStep {...otherProps} />;
       case 1:
-         return <CombinatorAttackModeStep />;
+         return <CombinatorAttackModeStep {...otherProps} />;
       case 3:
-         return <BFAttackModeStep />;
+         return <BFAttackModeStep {...otherProps} />;
       case 6:
-         return <HybridMaskAttackModeStep />;
+         return <HybridMaskAttackModeStep {...otherProps} />;
       case 7:
-         return <HybridWLAttackModeStep />;
+         return <HybridWLAttackModeStep {...otherProps} />;
       case 9:
-         return <AssocitationAttackModeStep />;
+         return <AssocitationAttackModeStep {...otherProps} />;
       default:
          return (
             <p className="text-red-700">

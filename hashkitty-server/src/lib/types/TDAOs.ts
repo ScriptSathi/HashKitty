@@ -26,7 +26,7 @@ export type ApiOptionsFormData = {
    workloadProfileId: number;
    kernelOpti: boolean;
    CPUOnly: boolean;
-   rules?: string;
+   rules?: string[];
    potfileName?: string;
    maskQuery?: string;
    maskFilename?: string;

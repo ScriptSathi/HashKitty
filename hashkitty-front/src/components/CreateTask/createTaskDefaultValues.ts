@@ -11,9 +11,9 @@ const createTaskDefaultValues: CreateTaskForm = {
    potfileName: '',
    kernelOpti: false,
    wordlistName: '',
-   workloadProfile: 3,
-   breakpointGPUTemperature: 90,
-   templateId: -1,
+   workloadProfile: '3',
+   breakpointGPUTemperature: '90',
+   templateId: '-1',
 };
 
 export default createTaskDefaultValues;

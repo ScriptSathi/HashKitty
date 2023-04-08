@@ -1,3 +1,10 @@
+import type {
+   FieldErrors,
+   UseFormRegister,
+   UseFormSetValue,
+} from 'react-hook-form';
+import type { TDBData } from './TypesErrorHandler';
+
 export type CreateTaskForm = {
    name: string;
    hashlistName: string;
@@ -9,15 +16,17 @@ export type CreateTaskForm = {
    potfileName: string;
    kernelOpti: boolean;
    wordlistName: string;
-   workloadProfile: number;
-   breakpointGPUTemperature: number;
-   templateId: number;
+   workloadProfile: string;
+   breakpointGPUTemperature: string;
+   templateId: string;
 };
 
 export type CreateTemplateForm = Omit<
    CreateTaskForm,
-   'hashlistName' | 'templateId'
->;
+   'hashlistName' | 'templateId' | 'rules'
+> & {
+   rules: string[];
+};
 
 export type TUploadReqBody = {
    hashlist: File;
@@ -44,3 +53,15 @@ export type RadioOnChangeEvent<E = string> = React.BaseSyntheticEvent<
    EventTarget & Element,
    EventTarget & { value: E }
 >;
+
+export type TUseState<State> = [
+   State,
+   React.Dispatch<React.SetStateAction<State>>,
+];
+
+export type AttackModeStepProps<Form extends CreateTemplateForm> = {
+   register: UseFormRegister<Form>;
+   DBData: Omit<TDBData, 'templates' | 'hashtypes'>;
+   setValue: UseFormSetValue<Form>;
+   errors: FieldErrors<Form>;
+};

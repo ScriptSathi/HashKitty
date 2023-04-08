@@ -4,7 +4,7 @@ import Radios from '../ui/Radios/Radios';
 import { CreateTaskForm } from '../../types/TComponents';
 import { ListItem } from '../../types/TApi';
 
-type TypeSetInput<T extends string | number | boolean | null = string> = [
+type TypeSetInput<T extends string | string[] | number | boolean | null = string> = [
    keyof CreateTaskForm,
    React.Dispatch<React.SetStateAction<T>>,
 ];
@@ -16,11 +16,12 @@ type TemplateProps = {
    inputWordlist: TypeSetInput<string | null>;
    inputPotfile: TypeSetInput<string | null>;
    inputAttackMode: TypeSetInput<string | null>;
-   inputBreakTemp: TypeSetInput<number | null>;
-   inputWorkloadProfile: TypeSetInput<number | null>;
+   inputBreakTemp: TypeSetInput<string | null>;
+   inputWorkloadProfile: TypeSetInput<string | null>;
    inputKernelOpti: TypeSetInput<boolean>;
    inputCpuOnly: TypeSetInput<boolean>;
    inputMaskQuery: TypeSetInput<string>;
+   inputRules: TypeSetInput<string[]>;
 };
 
 export default function TemplateRadio({
@@ -35,6 +36,7 @@ export default function TemplateRadio({
    inputCpuOnly: [fieldNameCpuOnly, setCpuOnly],
    inputKernelOpti: [fieldNameKernelOpti, setKernelOpti],
    inputMaskQuery: [fieldNameMaskQuery, setMaskQuery],
+   inputRules: [fieldNameRules, setRules],
 }: TemplateProps) {
    const { field: fieldWordlist } = useController<CreateTaskForm>({
       control,
@@ -68,22 +70,30 @@ export default function TemplateRadio({
       control,
       name: fieldNameMaskQuery,
    });
+   const { field: fieldRules } = useController<CreateTaskForm>({
+      control,
+      name: fieldNameRules,
+   });
 
    const onChange = ({ elem }: { elem: TTemplate }) => {
       fieldWordlist.onChange(elem.options.wordlistId.name);
       fieldPotfile.onChange(elem.options.potfileName);
-      fieldBreakTemp.onChange(elem.options.breakpointGPUTemperature);
-      fielWorkloadProfile.onChange(elem.options.workloadProfileId.profileId);
+      fieldBreakTemp.onChange(elem.options.breakpointGPUTemperature.toString());
+      fielWorkloadProfile.onChange(
+         elem.options.workloadProfileId.profileId.toString(),
+      );
       fieldAttackMode.onChange(elem.options.attackModeId.id.toString());
       fieldCpuOnly.onChange(elem.options.CPUOnly);
       fieldKernelOpti.onChange(elem.options.kernelOpti);
       fieldMaskQuery.onChange(elem.options.maskQuery || '');
+      setRules(elem.options.rules?.split(',') ?? []);
+      fieldRules.onChange(elem.options.rules?.split(',') ?? []);
       setMaskQuery(elem.options.maskQuery || '');
       setKernelOpti(elem.options.kernelOpti);
       setInputWordlist(elem.options.wordlistId.name);
       setAttackMode(elem.options.attackModeId.id.toString());
-      setWorkloadProfile(elem.options.workloadProfileId.profileId);
-      setBreakTemp(elem.options.breakpointGPUTemperature);
+      setWorkloadProfile(elem.options.workloadProfileId.profileId.toString());
+      setBreakTemp(elem.options.breakpointGPUTemperature.toString());
       setCpuOnly(elem.options.CPUOnly);
       if (elem.options.potfileName) setInputPotfile(elem.options.potfileName);
    };

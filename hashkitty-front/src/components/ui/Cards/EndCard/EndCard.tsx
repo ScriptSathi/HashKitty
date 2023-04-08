@@ -92,7 +92,7 @@ export default function EndCard({
                      </Typography>
                   </div>
                )}
-               <div className="flex items-center">
+               <div className="flex items-end">
                   <Tooltip title="Show the cracked passwords">
                      <IconButton
                         disabled={isLoading}
@@ -139,7 +139,7 @@ export default function EndCard({
                   </p>
                </div>
                {!(isMobile || isTablette) && (
-                  <div className="flex items-center">
+                  <div className="flex items-end">
                      <DeleteButton
                         tooltip={`Delete the task ${task.name}`}
                         isLoading={isLoading}

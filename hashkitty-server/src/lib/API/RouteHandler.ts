@@ -181,9 +181,8 @@ export class RouteHandler {
       req: ReceivedRequest<TemplateUpdate>,
       res: ResponseSend
    ): Promise<void> => {
-      const { message, httpCode, success } = await this.taskController.update(
-         req.body
-      );
+      const { message, httpCode, success } =
+         await this.templateController.update(req.body);
       res.status(httpCode).json({ message, httpCode, success });
    };
 
