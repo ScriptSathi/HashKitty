@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useFetchItems from './useFetchItems';
 import useFetchList from './useFetchList';
 import ApiEndpoints from '../ApiEndpoints';
-import { TAttackMode, THashlist, TTemplate } from '../types/TypesORM';
-import { ListBase } from '../types/TApi';
+import type { TAttackMode, THashlist, TTemplate } from '../types/TypesORM';
+import type { ListBase } from '../types/TApi';
 
 export default function useFetchAllList() {
    const [isLoading, setIsLoading] = useState(false);
@@ -39,23 +39,20 @@ export default function useFetchAllList() {
          url: ApiEndpoints.GET.wordlists,
       });
 
-   async function refresh() {
+   function refresh() {
       setIsLoading(true);
-      try {
-         await refreshHashlists();
-         await refreshTemplates();
-         await refreshPotfiles();
-         await refreshRules();
-         await refreshAttacModes();
-         await refreshWordlists();
-      } catch (e) {
-         setErorr(e);
-      }
-      setIsLoading(false);
+      Promise.all([
+         refreshHashlists(),
+         refreshTemplates(),
+         refreshPotfiles(),
+         refreshRules(),
+         refreshWordlists(),
+         refreshAttacModes(),
+      ])
+         .then(() => setIsLoading(false))
+         .catch(e => setErorr(e));
    }
-   useEffect(() => {
-      refresh();
-   }, []);
+
    return {
       wordlists,
       attackModes,

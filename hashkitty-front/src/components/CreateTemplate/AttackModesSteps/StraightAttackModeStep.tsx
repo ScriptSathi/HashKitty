@@ -1,16 +1,12 @@
 import type {
-   FieldErrors,
    Path,
    PathValue,
-   UseFormRegister,
-   UseFormSetValue,
 } from 'react-hook-form';
 import { Chip } from '@mui/material';
 import type {
    AttackModeStepProps,
    CreateTemplateForm,
 } from '../../../types/TComponents';
-import type { TDBData } from '../../../types/TypesErrorHandler';
 import FormatList from '../../../utils/FormatUtils';
 import InputDropdown from '../../ui/Inputs/InputDropdown';
 
@@ -53,14 +49,18 @@ function StraightAttackModeStep<
                )
             }
             renderTags={(rules, getTagProps) =>
-               rules.map((rule, index) => (
-                  <Chip
-                     variant="outlined"
-                     label={rule}
-                     color="secondary"
-                     {...getTagProps({ index })}
-                  />
-               ))
+               rules.map((rule, index) => {
+                  const { key, ...tagProps } = getTagProps({ index });
+                  return (
+                     <Chip
+                        key={rule}
+                        variant="outlined"
+                        label={rule}
+                        color="secondary"
+                        {...tagProps}
+                     />
+                  );
+               })
             }
          />
       </div>

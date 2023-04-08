@@ -4,16 +4,16 @@ import Radios from '../ui/Radios/Radios';
 import { CreateTaskForm } from '../../types/TComponents';
 import { ListItem } from '../../types/TApi';
 
-type TypeSetInput<T extends string | string[] | number | boolean | null = string> = [
-   keyof CreateTaskForm,
-   React.Dispatch<React.SetStateAction<T>>,
-];
+type TypeSetInput<
+   T extends string | string[] | number | boolean | null = string,
+> = [keyof CreateTaskForm, React.Dispatch<React.SetStateAction<T>>];
 
 type TemplateProps = {
    list: ListItem<TTemplate>[];
    control: Control<CreateTaskForm>;
    register: UseFormRegister<CreateTaskForm>;
    inputWordlist: TypeSetInput<string | null>;
+   inputCombinatorWordlistName: TypeSetInput<string | null>;
    inputPotfile: TypeSetInput<string | null>;
    inputAttackMode: TypeSetInput<string | null>;
    inputBreakTemp: TypeSetInput<string | null>;
@@ -37,6 +37,10 @@ export default function TemplateRadio({
    inputKernelOpti: [fieldNameKernelOpti, setKernelOpti],
    inputMaskQuery: [fieldNameMaskQuery, setMaskQuery],
    inputRules: [fieldNameRules, setRules],
+   inputCombinatorWordlistName: [
+      fieldNameCombinatorWordlist,
+      setCombinatorWordlist,
+   ],
 }: TemplateProps) {
    const { field: fieldWordlist } = useController<CreateTaskForm>({
       control,
@@ -74,9 +78,16 @@ export default function TemplateRadio({
       control,
       name: fieldNameRules,
    });
+   const { field: fieldCombinatorWordlist } = useController<CreateTaskForm>({
+      control,
+      name: fieldNameCombinatorWordlist,
+   });
 
    const onChange = ({ elem }: { elem: TTemplate }) => {
       fieldWordlist.onChange(elem.options.wordlistId.name);
+      fieldCombinatorWordlist.onChange(
+         elem.options.combinatorWordlistId?.name ?? '',
+      );
       fieldPotfile.onChange(elem.options.potfileName);
       fieldBreakTemp.onChange(elem.options.breakpointGPUTemperature.toString());
       fielWorkloadProfile.onChange(
@@ -93,6 +104,7 @@ export default function TemplateRadio({
       setInputWordlist(elem.options.wordlistId.name);
       setAttackMode(elem.options.attackModeId.id.toString());
       setWorkloadProfile(elem.options.workloadProfileId.profileId.toString());
+      setCombinatorWordlist(elem.options.combinatorWordlistId?.name ?? '');
       setBreakTemp(elem.options.breakpointGPUTemperature.toString());
       setCpuOnly(elem.options.CPUOnly);
       if (elem.options.potfileName) setInputPotfile(elem.options.potfileName);

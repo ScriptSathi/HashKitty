@@ -37,6 +37,7 @@ type ApiOptionsFormData = {
    workloadProfileId: number;
    kernelOpti: boolean;
    CPUOnly: boolean;
+   combinatorWordlistName?: string;
    rules?: string[];
    potfileName?: string;
    maskQuery?: string;

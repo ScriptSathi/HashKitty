@@ -34,6 +34,10 @@ export default class CreateTaskOrTemplateErrorHandler<
       this.checkAttackMode(form.attackModeId);
       this.checkHashlist(form.hashlistName);
       this.checkWordlist(form.wordlistName);
+      this.checkCombinatorWordlist(
+         form.combinatorWordlistName,
+         form.attackModeId,
+      );
       this.checkRules(form.rules);
       this.checkPotfiles(form.potfileName);
       this.checkWorkloadProfile(parseInt(form.workloadProfile, 10));
@@ -49,6 +53,10 @@ export default class CreateTaskOrTemplateErrorHandler<
       this.checkName(form.name);
       this.checkAttackMode(form.attackModeId);
       this.checkWordlist(form.wordlistName);
+      this.checkCombinatorWordlist(
+         form.combinatorWordlistName,
+         form.attackModeId,
+      );
       this.checkRules(form.rules);
       this.checkPotfiles(form.potfileName);
       this.checkWorkloadProfile(parseInt(form.workloadProfile, 10));
@@ -70,10 +78,11 @@ export default class CreateTaskOrTemplateErrorHandler<
       this.checkName(form.name);
       this.checkAttackMode(form.attackModeId);
       this.checkWordlist(form.wordlistName);
+      this.checkCombinatorWordlist(
+         form.combinatorWordlistName,
+         form.attackModeId,
+      );
       this.checkRules(form.rules);
-      this.checkPotfiles(form.potfileName);
-      this.checkWorkloadProfile(parseInt(form.workloadProfile, 10));
-      this.checkBreakpointTemp(parseInt(form.breakpointGPUTemperature, 10));
    }
 
    private checkTemplate(templateId: number) {
@@ -123,6 +132,29 @@ export default class CreateTaskOrTemplateErrorHandler<
          this.finalForm.options.wordlistName = name;
       } else {
          this.setError('wordlistName', { message: this.wrongData.message });
+      }
+   }
+
+   private checkCombinatorWordlist(name: string, attackModeId: string): void {
+      const find = this.dbData.wordlists.find(elem => {
+         return elem.item.name === name;
+      });
+      let attackMode;
+
+      try {
+         attackMode = this.dbData.attackModes.find(elem => {
+            return elem.id.toString() === attackModeId;
+         });
+      } catch {
+         attackMode = undefined;
+      }
+      const isCombinatorAttackMode = attackMode && attackMode.mode === 1;
+      if (!find && isCombinatorAttackMode) {
+         this.setError('combinatorWordlistName', {
+            message: this.requieredFields.message,
+         });
+      } else if (find) {
+         this.finalForm.options.combinatorWordlistName = name;
       }
    }
 
@@ -197,9 +229,10 @@ export default class CreateTaskOrTemplateErrorHandler<
             kernelOpti: false,
             CPUOnly: false,
             maskQuery: '',
+            combinatorWordlistName: '',
             rules: [],
          },
-      };
+      } satisfies TemplateUpdate;
       if (isTaskUpdate) {
          return {
             hashlistId: -1,
@@ -207,6 +240,6 @@ export default class CreateTaskOrTemplateErrorHandler<
             ...minimalDefault,
          } satisfies TaskUpdate;
       }
-      return minimalDefault satisfies TemplateUpdate;
+      return minimalDefault;
    }
 }

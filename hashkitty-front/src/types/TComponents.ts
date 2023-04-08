@@ -16,6 +16,7 @@ export type CreateTaskForm = {
    potfileName: string;
    kernelOpti: boolean;
    wordlistName: string;
+   combinatorWordlistName: string;
    workloadProfile: string;
    breakpointGPUTemperature: string;
    templateId: string;

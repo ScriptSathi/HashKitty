@@ -12,9 +12,6 @@ import { TemplateUpdate } from '../../types/TApi';
 import CreateTaskOrTemplateErrorHandler from '../../utils/CreateTaskOrTemplateErrorHandler';
 import { CreateTemplateErrors } from '../../types/TypesErrorHandler';
 import useFetchAllList from '../../hooks/useFetchAllLists';
-import { TAttackMode } from '../../types/TypesORM';
-import Radios from '../ui/Radios/Radios';
-import FormatList from '../../utils/FormatUtils';
 import Button from '../ui/Buttons/Button';
 import InitialStep from './InitialStep';
 import useMultistepForm from '../../hooks/useMultiStepForm';
@@ -26,16 +23,8 @@ type CreateTemplateProps = {
 };
 
 function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
-   const {
-      hashlists,
-      templates,
-      attackModes,
-      potfiles,
-      rules,
-      wordlists,
-      isLoading,
-      refresh,
-   } = useFetchAllList();
+   const { hashlists, attackModes, potfiles, rules, wordlists, isLoading } =
+      useFetchAllList();
 
    const [inputAttackMode, setInputAttackMode] = useState<{
       id: number;
@@ -55,6 +44,7 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
          potfileName: '',
          kernelOpti: false,
          wordlistName: '',
+         combinatorWordlistName: '',
          workloadProfile: '3',
          breakpointGPUTemperature: '90',
       },
@@ -68,7 +58,6 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
       register,
       setValue,
       setError,
-      control,
       formState: { errors },
    } = formMethods;
 
@@ -84,27 +73,21 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
          wordlists,
       },
    };
-   const {
-      currentStepIndex,
-      step,
-      steps,
-      isFirstStep,
-      isLastStep,
-      goTo,
-      next,
-      back,
-   } = useMultistepForm([
-      <InitialStep
-         {...multistepFormProps}
-         attackModes={attackModes}
-         inputAttackMode={[inputAttackMode, setInputAttackMode]}
-      />,
-      <AttackModeStep
-         {...multistepFormProps}
-         attackMode={inputAttackMode.mode}
-      />,
-      <AdvancedStep {...multistepFormProps} />,
-   ]);
+   const { currentStepIndex, step, isFirstStep, isLastStep, next, back } =
+      useMultistepForm([
+         <InitialStep
+            key={0}
+            {...multistepFormProps}
+            attackModes={attackModes}
+            inputAttackMode={[inputAttackMode, setInputAttackMode]}
+         />,
+         <AttackModeStep
+            key={1}
+            {...multistepFormProps}
+            attackMode={inputAttackMode.mode}
+         />,
+         <AdvancedStep key={2} {...multistepFormProps} />,
+      ]);
 
    const onSubmit = (form: CreateTemplateForm) => {
       const formVerifier =
@@ -121,10 +104,8 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
       else if (isSecondStep) formVerifier.analyseSecondStepTemplate(form);
       else formVerifier.analyseTemplate(form);
 
-      if (formVerifier.isValid && !isLastStep) return next();
-
-      if (formVerifier.isValid) {
-         console.log(form);
+      if (formVerifier.isValid && !isLastStep) next();
+      else if (formVerifier.isValid && isLastStep) {
          sendForm({ data: formVerifier.finalForm });
          if (!isLoadingCreation) {
             closeTaskCreation();

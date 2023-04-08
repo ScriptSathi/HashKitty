@@ -47,11 +47,13 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    const [inputBreakTemp, setBreakTemp] = useState<string | null>('90');
    const [inputCpuOnly, setCpuOnly] = useState<boolean>(false);
    const [inputKernelOpti, setKernelOpti] = useState<boolean>(false);
+   const [inputCombinatorWordlist, setCombinatorWordlist] = useState<
+      string | null
+   >(null);
    const [inputWorkloadProfile, setWorkloadProfile] = useState<string | null>(
       '3',
    );
    const [isClickedImport, setIsClickedImport] = useState(false);
-
    const { sendForm, isLoading: isLoadingCreation } = useSendForm<TaskUpdate>({
       url: ApiEndpoints.POST.task,
    });
@@ -82,6 +84,9 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
       setIsClickedImport(!isClickedImport);
       setTimeout(() => refresh(), 1000);
    };
+
+   const isCombinatorAttack =
+      attackModes.find(e => e.id.toString() === inputAttackMode)?.mode === 1;
 
    const onSubmit = (form: CreateTaskForm) => {
       const formVerifier =
@@ -209,6 +214,10 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                      inputCpuOnly={['cpuOnly', setCpuOnly]}
                      inputMaskQuery={['maskQuery', setInputMaskQuery]}
                      inputRules={['rules', setInputRules]}
+                     inputCombinatorWordlistName={[
+                        'combinatorWordlistName',
+                        setCombinatorWordlist,
+                     ]}
                   />
                </section>
             </div>
@@ -231,6 +240,26 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                            option === value || value === null
                         }
                      />
+                     {isCombinatorAttack && (
+                        <InputDropdown<string, CreateTaskForm>
+                           register={register}
+                           options={FormatList.standard(wordlists)}
+                           errors={errors}
+                           formName="combinatorWordlistName"
+                           label="Right wordlist *"
+                           value={inputCombinatorWordlist}
+                           onChange={(_, value) => {
+                              setCombinatorWordlist(value as string);
+                              setValue(
+                                 'combinatorWordlistName',
+                                 (value as string) ?? '',
+                              );
+                           }}
+                           isOptionEqualToValue={(option, value) =>
+                              option === value || value === null || value === ''
+                           }
+                        />
+                     )}
                      <TextField
                         {...register('maskQuery', {
                            pattern: {
@@ -278,7 +307,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         label="Potfiles"
                         value={inputPotfile}
                         onChange={(_, value) => {
-                           setInputWordlist(value as string);
+                           setInputPotfile(value as string);
                            setValue('potfileName', (value as string) ?? '');
                         }}
                         isOptionEqualToValue={(option, value) =>
