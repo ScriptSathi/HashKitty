@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import {
    Navbar as TWNavBar,
    MobileNav,
@@ -12,7 +12,7 @@ import useScreenSize from '../../hooks/useScreenSize';
 
 import './NavBar.scss';
 
-export default function NavBar() {
+const NavBar = memo(() => {
    const [openNav, setOpenNav] = useState(false);
    useScreenSize({
       callbackOnMobile: () => setOpenNav(false),
@@ -130,4 +130,6 @@ export default function NavBar() {
          )}
       </TWNavBar>
    );
-}
+});
+
+export default NavBar;
