@@ -6,6 +6,7 @@ export default function useFetchItems<ItemType>({
    url,
    data,
    headers = {},
+   loadOnInit = true,
 }: TuseFetch) {
    const [items, setItems] = useState<ItemType[]>([]);
    const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +37,10 @@ export default function useFetchItems<ItemType>({
    }
 
    useEffect(() => {
-      refresh();
+      if (loadOnInit) {
+         refresh();
+      }
    }, []);
+
    return { items, refresh, error, isLoading };
 }

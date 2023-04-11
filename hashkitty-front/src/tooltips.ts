@@ -1,7 +1,14 @@
+import type { TTemplate } from './types/TypesORM';
+
 const tooltips = {
    inputs: {
       name: (fieldType: string) => `The name of the ${fieldType}`,
-      templates: (name: string) => `Use the template ${name}`,
+      templates: (template: TTemplate) => [
+         `Name: ${template.name}`,
+         `Attack mode: ${template.options.attackModeId.mode}`,
+         `Wordlist: ${template.options.wordlistId.name}`,
+         `MaskQuery: ${template.options.maskQuery || 'None'}`,
+      ],
       attackModes: {
          0: 'Change me pls :3',
          1: 'Change me pls :3',

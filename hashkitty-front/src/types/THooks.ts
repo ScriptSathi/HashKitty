@@ -11,4 +11,5 @@ export type TuseFetch = {
    url: string;
    data?: unknown;
    headers?: { [key: string]: unknown };
+   loadOnInit?: boolean;
 };

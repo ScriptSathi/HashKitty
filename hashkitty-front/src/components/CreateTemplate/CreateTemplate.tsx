@@ -101,8 +101,9 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
 
       const isSecondStep = currentStepIndex === 1;
       if (isFirstStep) formVerifier.analyseFirstStepTemplate(form);
-      else if (isSecondStep) formVerifier.analyseSecondStepTemplate(form);
-      else formVerifier.analyseTemplate(form);
+      else if (isSecondStep)
+         formVerifier.analyseSecondStepTemplate(form, inputAttackMode.mode);
+      else formVerifier.analyseTemplate(form, inputAttackMode.mode);
 
       if (formVerifier.isValid && !isLastStep) next();
       else if (formVerifier.isValid && isLastStep) {

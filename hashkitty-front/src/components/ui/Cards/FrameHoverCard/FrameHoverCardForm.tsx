@@ -42,7 +42,7 @@ function FrameHoverCardForm<Form extends object>({
                   sx={sx}
                   style={{
                      marginLeft: 0,
-                     height: isMobile || isTablette ? '74vh' : '45vh',
+                     height: isMobile || isTablette ? '76vh' : '430px',
                   }}
                >
                   {children}

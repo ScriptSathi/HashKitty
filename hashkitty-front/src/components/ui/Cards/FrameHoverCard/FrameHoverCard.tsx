@@ -80,8 +80,7 @@ export default function FrameHoverCard({
             maxWidth: 800,
             maxHeight: 600,
             margin: 1,
-            paddingLeft: 1,
-            paddingRight: 2.5,
+            paddingX: 2.5,
             cursor: 'default',
          }}
       >

@@ -1,7 +1,4 @@
-import type {
-   Path,
-   PathValue,
-} from 'react-hook-form';
+import type { Path, PathValue } from 'react-hook-form';
 import { Chip } from '@mui/material';
 import type {
    AttackModeStepProps,
@@ -9,6 +6,7 @@ import type {
 } from '../../../types/TComponents';
 import FormatList from '../../../utils/FormatUtils';
 import InputDropdown from '../../ui/Inputs/InputDropdown';
+import WordlistField from '../../HashcatFields/WordlistField';
 
 function StraightAttackModeStep<
    Form extends CreateTemplateForm = CreateTemplateForm,
@@ -16,21 +14,11 @@ function StraightAttackModeStep<
    return (
       <div className="flex flex-col items-center gap-y-10">
          <h3 className="text-lg">Specific configuration for Straight attack</h3>
-         <InputDropdown<string, Form>
+         <WordlistField<Form>
             register={register}
-            options={FormatList.standard(DBData.wordlists)}
+            wordlists={DBData.wordlists}
             errors={errors}
-            formName={'wordlistName' as Path<Form>}
-            label="Wordlists"
-            isOptionEqualToValue={(option, value) =>
-               option === value || value === null
-            }
-            onChange={(_, value) =>
-               setValue(
-                  'wordlistName' as Path<Form>,
-                  (value as PathValue<Form, Path<Form>>) ?? '',
-               )
-            }
+            setValue={setValue}
          />
          <InputDropdown<string, Form>
             isMultiple

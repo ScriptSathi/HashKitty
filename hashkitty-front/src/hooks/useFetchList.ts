@@ -7,6 +7,7 @@ export default function useFetchList<ListType extends ListItemAvailable>({
    url,
    data,
    headers = {},
+   loadOnInit = true,
 }: TuseFetch) {
    const [items, setItems] = useState<ListItem<ListType>[]>([]);
    const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +38,10 @@ export default function useFetchList<ListType extends ListItemAvailable>({
    }
 
    useEffect(() => {
-      refresh();
+      if (loadOnInit) {
+         refresh();
+      }
    }, []);
+
    return { items, refresh, error, isLoading };
 }
