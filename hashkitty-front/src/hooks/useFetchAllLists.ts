@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useFetchItems from './useFetchItems';
 import useFetchList from './useFetchList';
 import ApiEndpoints from '../ApiEndpoints';
@@ -12,31 +12,37 @@ export default function useFetchAllList() {
       useFetchList<THashlist>({
          method: 'GET',
          url: ApiEndpoints.GET.hashlists,
+         loadOnInit: false,
       });
    const { items: templates, refresh: refreshTemplates } =
       useFetchList<TTemplate>({
          method: 'GET',
          url: ApiEndpoints.GET.templates,
+         loadOnInit: false,
       });
    const { items: potfiles, refresh: refreshPotfiles } = useFetchList<ListBase>(
       {
          method: 'GET',
          url: ApiEndpoints.GET.potfiles,
+         loadOnInit: false,
       },
    );
    const { items: rules, refresh: refreshRules } = useFetchList<ListBase>({
       method: 'GET',
       url: ApiEndpoints.GET.rules,
+      loadOnInit: false,
    });
    const { items: attackModes, refresh: refreshAttacModes } =
       useFetchItems<TAttackMode>({
          method: 'GET',
          url: ApiEndpoints.GET.attackmodes,
+         loadOnInit: false,
       });
    const { items: wordlists, refresh: refreshWordlists } =
       useFetchList<ListBase>({
          method: 'GET',
          url: ApiEndpoints.GET.wordlists,
+         loadOnInit: false,
       });
 
    function refresh() {
@@ -52,6 +58,8 @@ export default function useFetchAllList() {
          .then(() => setIsLoading(false))
          .catch(e => setErorr(e));
    }
+
+   useEffect(() => refresh(), []);
 
    return {
       wordlists,

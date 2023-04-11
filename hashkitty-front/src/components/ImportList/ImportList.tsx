@@ -40,6 +40,10 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
       setError,
       formState: { errors },
    } = formMethods;
+
+   const getOptionLabel: (elem: THashType) => string = ({ name, typeNumber }) =>
+      `${typeNumber} - ${name}`;
+
    const onSubmit = (form: ApiImportList) => {
       const formVerifier = new ImportListErrorHandler(setError, {
          hashtypes,
@@ -98,10 +102,7 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
                         message: 'Must be shorter than 20 characters',
                      },
                   })}
-                  error={
-                     errors.fileName !== undefined &&
-                     errors.fileName.message !== undefined
-                  }
+                  error={!!errors.fileName && !!errors.fileName.message}
                   label="File name *"
                   helperText={errors.fileName?.message}
                   sx={{ marginTop: 0.5, width: 300 }}
@@ -111,13 +112,16 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
                      register={register}
                      options={hashtypes}
                      errors={errors}
-                     getOptionLabel={({ name, typeNumber }) =>
-                        `${typeNumber} - ${name}`
+                     getOptionLabel={
+                        getOptionLabel as
+                           | (((elem: THashType) => string) &
+                                ((option: string | THashType) => string))
+                           | undefined
                      }
                      formName="hashTypeId"
                      label="Hash type *"
                      onChange={(_, value) => {
-                        setValue('hashTypeId', value?.id || -1);
+                        setValue('hashTypeId', (value as THashType)?.id || -1);
                      }}
                      isOptionEqualToValue={(option, value) =>
                         option.id === value.id || value === null

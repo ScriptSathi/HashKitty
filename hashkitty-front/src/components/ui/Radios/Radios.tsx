@@ -1,4 +1,4 @@
-import { FormControlLabel, Radio, RadioGroup, Tooltip } from '@mui/material';
+import { FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
 import {
    FieldErrors,
    FieldValues,
@@ -7,6 +7,8 @@ import {
 } from 'react-hook-form';
 import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
 import tooltips from '../../../tooltips';
+import InfoTooltip from '../Tooltips/InfoTooltip';
+import { TTemplate } from '../../../types/TypesORM';
 
 type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    list: T[];
@@ -24,7 +26,7 @@ type RadiosProps<T extends StandardList, Form extends FieldValues> = {
 };
 
 export default function Radios<
-   T extends StandardList,
+   T extends StandardList | TTemplate,
    Form extends FieldValues,
 >({
    list,
@@ -44,12 +46,19 @@ export default function Radios<
       return '';
    };
 
-   const getTooltip = (item: T): string => {
+   const getTooltip = (item: T): string | JSX.Element => {
       if (useAttackModeTooltips) {
-         return tooltips.inputs.attackModes[item.mode ?? 0];
+         return tooltips.inputs.attackModes[(item as StandardList).mode ?? 0];
       }
       if (useTemplateTooltips) {
-         return tooltips.inputs.templates(item.name);
+         const templateTooltips = tooltips.inputs.templates(item as TTemplate);
+         return (
+            <>
+               {templateTooltips.map(row => (
+                  <p key={row}>{row}</p>
+               ))}
+            </>
+         );
       }
       return '';
    };
@@ -84,7 +93,7 @@ export default function Radios<
                aria-labelledby="template-radio"
             >
                {list.map(elem => (
-                  <Tooltip key={elem.name} title={getTooltip(elem)}>
+                  <div key={elem.id} className="flex justify-between">
                      <FormControlLabel
                         sx={{ height: 25 }}
                         value={elem.id}
@@ -98,7 +107,11 @@ export default function Radios<
                               color="secondary"
                            />
                         }
-                        label={elem.name}
+                        label={
+                           <Typography sx={{ fontSize: 14 }}>
+                              {elem.name}
+                           </Typography>
+                        }
                         {...register(fieldName)}
                         onChange={event =>
                            onChangeElem({
@@ -107,7 +120,13 @@ export default function Radios<
                            })
                         }
                      />
-                  </Tooltip>
+                     {(useAttackModeTooltips || useTemplateTooltips) && (
+                        <InfoTooltip
+                           className="mr-[10px]"
+                           tooltip={getTooltip(elem)}
+                        />
+                     )}
+                  </div>
                ))}
             </RadioGroup>
          </div>

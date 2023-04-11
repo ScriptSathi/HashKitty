@@ -2,7 +2,7 @@ import { Info } from '@mui/icons-material';
 import { SxProps, Theme, Tooltip } from '@mui/material';
 
 type InfoTooltipProps = {
-   tooltip: string;
+   tooltip: string | JSX.Element;
    className?: string;
    sx?: SxProps<Theme>;
    onClick?: React.MouseEventHandler<SVGSVGElement>;

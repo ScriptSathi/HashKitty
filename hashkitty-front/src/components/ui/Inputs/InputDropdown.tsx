@@ -48,16 +48,16 @@ export default function InputDropdown<
          disablePortal={disablePortal}
          options={options}
          getOptionLabel={getOptionLabel}
-         sx={{ width }}
          isOptionEqualToValue={isOptionEqualToValue}
          {...autoCompleteProps}
+         sx={{ width }}
          renderInput={params => (
             <TextField
                {...params}
                label={label}
                error={
-                  (errors[formName] as FieldError) !== undefined &&
-                  (errors[formName] as FieldError).message !== undefined
+                  !!(errors[formName] as FieldError) &&
+                  !!(errors[formName] as FieldError).message
                }
                helperText={errors[formName]?.message as string}
             />
@@ -70,7 +70,7 @@ export default function InputDropdown<
 }
 
 InputDropdown.defaultProps = {
-   getOptionLabel: (e: string) => e,
+   getOptionLabel: (e: object | string) => e,
    onChange: undefined,
    width: 300,
    disablePortal: false,

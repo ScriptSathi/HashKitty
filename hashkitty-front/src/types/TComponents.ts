@@ -20,6 +20,10 @@ export type CreateTaskForm = {
    workloadProfile: string;
    breakpointGPUTemperature: string;
    templateId: string;
+   customCharset1: string;
+   customCharset2: string;
+   customCharset3: string;
+   customCharset4: string;
 };
 
 export type CreateTemplateForm = Omit<
@@ -63,6 +67,12 @@ export type TUseState<State> = [
 export type AttackModeStepProps<Form extends CreateTemplateForm> = {
    register: UseFormRegister<Form>;
    DBData: Omit<TDBData, 'templates' | 'hashtypes'>;
+   setValue: UseFormSetValue<Form>;
+   errors: FieldErrors<Form>;
+};
+
+export type FieldProps<Form extends CreateTemplateForm> = {
+   register: UseFormRegister<Form>;
    setValue: UseFormSetValue<Form>;
    errors: FieldErrors<Form>;
 };

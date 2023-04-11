@@ -35,9 +35,7 @@ function InitialStep({
                   message: 'Must be shorter than 20 characters',
                },
             })}
-            error={
-               errors.name !== undefined && errors.name.message !== undefined
-            }
+            error={!!errors.name && !!errors.name.message}
             label="Template name *"
             helperText={errors.name?.message}
             sx={{ marginTop: 0.5 }}

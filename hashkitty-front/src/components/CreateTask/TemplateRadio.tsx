@@ -1,11 +1,11 @@
 import { Control, UseFormRegister, useController } from 'react-hook-form';
-import { TTemplate } from '../../types/TypesORM';
+import type { TAttackMode, TTemplate } from '../../types/TypesORM';
 import Radios from '../ui/Radios/Radios';
-import { CreateTaskForm } from '../../types/TComponents';
-import { ListItem } from '../../types/TApi';
+import type { CreateTaskForm } from '../../types/TComponents';
+import type { ListItem } from '../../types/TApi';
 
 type TypeSetInput<
-   T extends string | string[] | number | boolean | null = string,
+   T extends string | string[] | object | boolean | null = string,
 > = [keyof CreateTaskForm, React.Dispatch<React.SetStateAction<T>>];
 
 type TemplateProps = {
@@ -15,7 +15,7 @@ type TemplateProps = {
    inputWordlist: TypeSetInput<string | null>;
    inputCombinatorWordlistName: TypeSetInput<string | null>;
    inputPotfile: TypeSetInput<string | null>;
-   inputAttackMode: TypeSetInput<string | null>;
+   inputAttackMode: TypeSetInput<TAttackMode>;
    inputBreakTemp: TypeSetInput<string | null>;
    inputWorkloadProfile: TypeSetInput<string | null>;
    inputKernelOpti: TypeSetInput<boolean>;
@@ -102,7 +102,7 @@ export default function TemplateRadio({
       setMaskQuery(elem.options.maskQuery || '');
       setKernelOpti(elem.options.kernelOpti);
       setInputWordlist(elem.options.wordlistId.name);
-      setAttackMode(elem.options.attackModeId.id.toString());
+      setAttackMode(elem.options.attackModeId);
       setWorkloadProfile(elem.options.workloadProfileId.profileId.toString());
       setCombinatorWordlist(elem.options.combinatorWordlistId?.name ?? '');
       setBreakTemp(elem.options.breakpointGPUTemperature.toString());
@@ -122,6 +122,7 @@ export default function TemplateRadio({
          list={templateList}
          register={register}
          onChangeElem={onChange}
+         useTemplateTooltips
       />
    );
 }

@@ -6,7 +6,6 @@ import {
    OutlinedInput,
    InputLabel,
    FormControl,
-   InputAdornment,
    CircularProgress,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -15,12 +14,9 @@ import Button from '../ui/Buttons/Button';
 import CreateTaskOrTemplateErrorHandler from '../../utils/CreateTaskOrTemplateErrorHandler';
 import useFetchAllList from '../../hooks/useFetchAllLists';
 import FormatList from '../../utils/FormatUtils';
-import { CreateTaskForm } from '../../types/TComponents';
+import type { CreateTaskForm } from '../../types/TComponents';
 import TemplateRadio from './TemplateRadio';
 import createTaskDefaultValues from './createTaskDefaultValues';
-import Radios from '../ui/Radios/Radios';
-import { TAttackMode } from '../../types/TypesORM';
-import CheckBox from '../ui/Inputs/CheckBox';
 import ApiEndpoints from '../../ApiEndpoints';
 import useSendForm from '../../hooks/useSendForm';
 import { TaskUpdate } from '../../types/TApi';
@@ -28,9 +24,19 @@ import BackgroundBlur from '../ui/BackgroundBlur/BackGroundBlur';
 import ImportList from '../ImportList/ImportList';
 import useScreenSize from '../../hooks/useScreenSize';
 import InputDropdown from '../ui/Inputs/InputDropdown';
-import TextInput from '../ui/Inputs/TextInput';
 import FrameHoverCardForm from '../ui/Cards/FrameHoverCard/FrameHoverCardForm';
 import { CreateTaskErrors } from '../../types/TypesErrorHandler';
+import BreakPointTempField from '../HashcatFields/BreakPointTempField';
+import KernelOptiCheckBox from '../HashcatFields/KernelOptiCheckBox';
+import CPUOnlyCheckBox from '../HashcatFields/CPUOnlyCheckBox';
+import WorkloadProfileField from '../HashcatFields/WorkloadProfileField';
+import WordlistField from '../HashcatFields/WordlistField';
+import CombinatorAttackField from '../HashcatFields/CombinatorAttackField';
+import MaskQueryField from '../HashcatFields/MaskQueryField';
+import AttackModeRadio from '../HashcatFields/AttackModeRadio';
+import PotfileField from '../HashcatFields/PotfileField';
+import CustomCharsetField from '../HashcatFields/CustomCharsetField';
+import type { TAttackMode } from '../../types/TypesORM';
 
 type CreateTaskProps = {
    closeTaskCreation: () => void;
@@ -43,7 +49,11 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    const [inputPotfile, setInputPotfile] = useState<string | null>(null);
    const [inputHashlist, setInputHashlist] = useState<string | null>(null);
    const [inputRules, setInputRules] = useState<string[]>([]);
-   const [inputAttackMode, setAttackMode] = useState<string | null>('');
+   const [inputAttackMode, setAttackMode] = useState<TAttackMode>({
+      id: -1,
+      name: '',
+      mode: 0,
+   });
    const [inputBreakTemp, setBreakTemp] = useState<string | null>('90');
    const [inputCpuOnly, setCpuOnly] = useState<boolean>(false);
    const [inputKernelOpti, setKernelOpti] = useState<boolean>(false);
@@ -85,8 +95,16 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
       setTimeout(() => refresh(), 1000);
    };
 
-   const isCombinatorAttack =
-      attackModes.find(e => e.id.toString() === inputAttackMode)?.mode === 1;
+   const isStraightAttack = inputAttackMode?.mode === 0;
+   const isCombinatorAttack = inputAttackMode?.mode === 1;
+   const isBFAttack = inputAttackMode?.mode === 3;
+   const isAssociationAttack = inputAttackMode?.mode === 9;
+
+   const fieldsProps = {
+      register,
+      errors,
+      setValue,
+   };
 
    const onSubmit = (form: CreateTaskForm) => {
       const formVerifier =
@@ -98,7 +116,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
             rules,
             potfiles,
          });
-      formVerifier.analyseTask(form);
+      formVerifier.analyseTask(form, inputAttackMode.mode);
       if (formVerifier.isValid) {
          sendForm({ data: formVerifier.finalForm as TaskUpdate });
          if (!isLoadingCreation) {
@@ -164,10 +182,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                            message: 'Must be shorter than 20 characters',
                         },
                      })}
-                     error={
-                        errors.name !== undefined &&
-                        errors.name.message !== undefined
-                     }
+                     error={!!errors.name && !!errors.name.message}
                      label="Name *"
                      helperText={errors.name?.message}
                      sx={{ marginTop: 0.5 }}
@@ -225,94 +240,72 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                <h3 className="text-lg mb-[2rem]">Advanced configurations</h3>
                <div className="flex justify-between flex-wrap gap-2">
                   <section className="flex flex-col gap-2 justify-between">
-                     <InputDropdown<string, CreateTaskForm>
-                        register={register}
-                        options={FormatList.standard(wordlists)}
-                        errors={errors}
-                        formName="wordlistName"
-                        label="Wordlists"
-                        value={inputWordlist}
-                        onChange={(_, value) => {
-                           setInputWordlist(value as string);
-                           setValue('wordlistName', (value as string) ?? '');
-                        }}
-                        isOptionEqualToValue={(option, value) =>
-                           option === value || value === null
-                        }
+                     <WordlistField<CreateTaskForm>
+                        customState={[inputWordlist, setInputWordlist]}
+                        wordlists={wordlists}
+                        {...fieldsProps}
+                        sx={{ width: 300 }}
                      />
                      {isCombinatorAttack && (
-                        <InputDropdown<string, CreateTaskForm>
-                           register={register}
-                           options={FormatList.standard(wordlists)}
-                           errors={errors}
-                           formName="combinatorWordlistName"
-                           label="Right wordlist *"
-                           value={inputCombinatorWordlist}
-                           onChange={(_, value) => {
-                              setCombinatorWordlist(value as string);
-                              setValue(
-                                 'combinatorWordlistName',
-                                 (value as string) ?? '',
-                              );
-                           }}
-                           isOptionEqualToValue={(option, value) =>
-                              option === value || value === null || value === ''
-                           }
+                        <CombinatorAttackField<CreateTaskForm>
+                           customState={[
+                              inputCombinatorWordlist,
+                              setCombinatorWordlist,
+                           ]}
+                           wordlists={wordlists}
+                           {...fieldsProps}
+                           sx={{ width: 300 }}
                         />
                      )}
-                     <TextField
-                        {...register('maskQuery', {
-                           pattern: {
-                              value: /^[\w?]*$/gi,
-                              message: 'Invalid pattern',
-                           },
-                        })}
-                        error={
-                           errors.maskQuery !== undefined &&
-                           errors.maskQuery.message !== undefined
-                        }
-                        label="Mask query"
-                        helperText={errors.maskQuery?.message}
-                        sx={{ marginTop: 0.5 }}
-                        value={inputMaskQuery}
-                        onChange={({ target: { value } }) => {
-                           setInputMaskQuery(value);
-                           setValue('maskQuery', value ?? '');
-                        }}
-                     />
+                     {!isCombinatorAttack &&
+                        !isStraightAttack &&
+                        !isAssociationAttack && (
+                           <MaskQueryField<CreateTaskForm>
+                              customState={[inputMaskQuery, setInputMaskQuery]}
+                              {...fieldsProps}
+                              sx={{ width: 300 }}
+                           />
+                        )}
                   </section>
                   <section>
-                     <Radios<TAttackMode, CreateTaskForm>
-                        name="Attack modes"
-                        fieldName="attackModeId"
-                        list={FormatList.attackMode(attackModes)}
-                        register={register}
-                        errors={errors}
-                        checkValidation={elem =>
-                           elem.id.toString() === inputAttackMode
-                        }
-                        onChangeElem={({ elem }) =>
-                           setAttackMode(elem.id.toString())
-                        }
+                     <AttackModeRadio<CreateTaskForm>
+                        customState={[inputAttackMode, setAttackMode]}
+                        attackModes={attackModes}
+                        {...fieldsProps}
                      />
                   </section>
                </div>
+               {isBFAttack && (
+                  <div className="mt-[15px] flex justify-between flex-wrap gap-2">
+                     <section className="flex flex-col gap-y-5 justify-between">
+                        <CustomCharsetField<CreateTaskForm>
+                           {...fieldsProps}
+                           charsetNumber={1}
+                        />
+                        <CustomCharsetField<CreateTaskForm>
+                           {...fieldsProps}
+                           charsetNumber={2}
+                        />
+                     </section>
+                     <section className="flex flex-col gap-y-5 justify-between">
+                        <CustomCharsetField<CreateTaskForm>
+                           {...fieldsProps}
+                           charsetNumber={3}
+                        />
+                        <CustomCharsetField<CreateTaskForm>
+                           {...fieldsProps}
+                           charsetNumber={4}
+                        />
+                     </section>
+                  </div>
+               )}
                <div className="flex flex-wrap mt-10 flex-col gap-y-3">
                   <section className="flex flex-wrap gap-2 justify-between">
-                     <InputDropdown<string, CreateTaskForm>
-                        register={register}
-                        options={FormatList.standard(potfiles)}
-                        errors={errors}
-                        formName="potfileName"
-                        label="Potfiles"
-                        value={inputPotfile}
-                        onChange={(_, value) => {
-                           setInputPotfile(value as string);
-                           setValue('potfileName', (value as string) ?? '');
-                        }}
-                        isOptionEqualToValue={(option, value) =>
-                           option === value || value === null
-                        }
+                     <PotfileField<CreateTaskForm>
+                        customState={[inputPotfile, setInputPotfile]}
+                        potfiles={potfiles}
+                        {...fieldsProps}
+                        sx={{ width: 300 }}
                      />
                      <FormControl sx={{ width: 300 }}>
                         <InputLabel id="rules">Rules</InputLabel>
@@ -355,98 +348,27 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                      </FormControl>
                   </section>
                   <section className="flex justify-between">
-                     <CheckBox<CreateTaskForm>
+                     <KernelOptiCheckBox<CreateTaskForm>
                         className="self-end"
-                        title="Kernel optimization"
-                        name="kernelOpti"
-                        register={register}
-                        checked={inputKernelOpti}
-                        onClick={() => {
-                           setValue('kernelOpti', !inputKernelOpti);
-                           setKernelOpti(!inputKernelOpti);
-                        }}
+                        customState={[inputKernelOpti, setKernelOpti]}
+                        {...fieldsProps}
                      />
-                     <TextInput
-                        tooltip=""
+                     <BreakPointTempField
+                        customState={[inputBreakTemp, setBreakTemp]}
+                        {...fieldsProps}
                         sx={{ width: 160 }}
-                        type="number"
-                        {...register('breakpointGPUTemperature', {
-                           max: {
-                              value: 100,
-                              message: 'Must be less than 100°C',
-                           },
-                           min: {
-                              value: 20,
-                              message: 'Cold but gold !',
-                           },
-                        })}
-                        error={
-                           errors.breakpointGPUTemperature !== undefined &&
-                           errors.breakpointGPUTemperature.message !== undefined
-                        }
-                        value={inputBreakTemp}
-                        label="Breakpoint temperature"
-                        helperText={errors.breakpointGPUTemperature?.message}
-                        InputProps={{
-                           endAdornment: (
-                              <InputAdornment position="start">
-                                 °C
-                              </InputAdornment>
-                           ),
-                        }}
-                        onChange={e => {
-                           const {
-                              target: { value },
-                           } = e;
-                           setBreakTemp(value);
-                           setValue(
-                              'breakpointGPUTemperature',
-                              value as string,
-                           );
-                        }}
                      />
                   </section>
                   <section className="flex justify-between">
-                     <CheckBox<CreateTaskForm>
+                     <CPUOnlyCheckBox<CreateTaskForm>
                         className="self-start"
-                        title="CPU Only"
-                        register={register}
-                        name="cpuOnly"
-                        checked={inputCpuOnly}
-                        onClick={() => {
-                           setValue('cpuOnly', !inputCpuOnly);
-                           setCpuOnly(!inputCpuOnly);
-                        }}
+                        customState={[inputCpuOnly, setCpuOnly]}
+                        {...fieldsProps}
                      />
-                     <TextInput
-                        tooltip=""
-                        type="number"
+                     <WorkloadProfileField
+                        customState={[inputWorkloadProfile, setWorkloadProfile]}
+                        {...fieldsProps}
                         sx={{ width: 160 }}
-                        {...register('workloadProfile', {
-                           max: {
-                              value: 4,
-                              message: 'No faster mode (between 0 to 4)',
-                           },
-                           min: {
-                              value: 0,
-                              message:
-                                 'It`s already super slow ! (between 0 to 4)',
-                           },
-                        })}
-                        error={
-                           errors.workloadProfile !== undefined &&
-                           errors.workloadProfile.message !== undefined
-                        }
-                        label="Workload profile"
-                        value={inputWorkloadProfile}
-                        helperText={errors.workloadProfile?.message}
-                        onChange={e => {
-                           const {
-                              target: { value },
-                           } = e;
-                           setWorkloadProfile(value);
-                           setValue('workloadProfile', value as string);
-                        }}
                      />
                   </section>
                </div>
