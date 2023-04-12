@@ -11,7 +11,7 @@ import type { TAttackMode } from '../../types/TypesORM';
 type AttackModeProps<Form extends CreateTemplateForm> = {
    customState?: TUseState<TAttackMode>;
    attackModes: TAttackMode[];
-} & FieldProps<Form>;
+} & Omit<FieldProps<Form>, 'setValue'>;
 
 function AttackModeRadio<Form extends CreateTemplateForm>({
    register,

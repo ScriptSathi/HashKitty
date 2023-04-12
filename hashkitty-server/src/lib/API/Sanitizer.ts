@@ -10,6 +10,7 @@ import { Hashlist } from '../ORM/entity/Hashlist';
 import { HashType } from '../ORM/entity/HashType';
 import { UploadFileType } from '../types/TApi';
 import { TemplateTask } from '../ORM/entity/TemplateTask';
+import { AttackMode } from '../ORM/entity/AttackMode';
 
 export class Sanitizer {
    public hasSucceded: boolean;
@@ -109,8 +110,14 @@ export class Sanitizer {
    }
 
    private async prepareOptions(options: ApiOptionsFormData): Promise<void> {
+      const attackMode = await this.findAttackModeWithId(options.attackModeId);
+      const isCombinatorAttack = attackMode && attackMode.mode === 1;
       await this.checkWordlist(options.wordlistName);
-      await this.checkCombinatorWordlist(options.combinatorWordlistName ?? '');
+      if (isCombinatorAttack) {
+         await this.checkCombinatorWordlist(
+            options.combinatorWordlistName ?? ''
+         );
+      }
       await this.checkWorkloadProfile(options.workloadProfileId);
       await this.checkAttackMode(options.attackModeId);
       this.breakpointGPUTemperature(options.breakpointGPUTemperature);
@@ -230,7 +237,7 @@ export class Sanitizer {
             if (mask.match(/^[\w?]*$/gi)) {
                this.options.maskQuery = mask;
             } else {
-               this.incorrectDataSubmitted('breakpointGPUTemperature');
+               this.incorrectDataSubmitted('maskQuery-');
             }
          } else {
             throw 'Wrong data provided for the mask query';
@@ -323,11 +330,19 @@ export class Sanitizer {
       }
    }
 
+   private findAttackModeWithId(id: number): Promise<AttackMode | null>   {
+      try {
+         return this.dao.findAttackModeById(id);
+      } catch {
+         return new Promise(() => undefined);
+      }
+   }
+
    private sanitizeText(
       text: string,
       param: string,
       expectedLength = -1,
-      spaceAreAllowed = false,
+      spaceAreAllowed = false
    ): string {
       try {
          if (text.length > 0) {
@@ -335,7 +350,9 @@ export class Sanitizer {
                ? this.removeSpecialCharInString(text)
                : this.shortenStringByLength(
                     expectedLength,
-                    spaceAreAllowed ? text : this.removeSpecialCharInString(text)
+                    spaceAreAllowed
+                       ? text
+                       : this.removeSpecialCharInString(text)
                  );
          } else {
             throw new Error('Empty string');
