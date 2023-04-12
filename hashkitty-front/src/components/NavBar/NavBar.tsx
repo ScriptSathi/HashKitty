@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { memo, useState } from 'react';
 import {
    Navbar as TWNavBar,
@@ -28,9 +28,9 @@ const NavBar = memo(() => {
             color="blue-gray"
             className={styleNavItems}
          >
-            <Link to="/home" className="links pages">
+            <NavLink to="/home" className="NavLinks pages">
                Home
-            </Link>
+            </NavLink>
          </Typography>
          <Typography
             as="li"
@@ -38,9 +38,9 @@ const NavBar = memo(() => {
             color="blue-gray"
             className={styleNavItems}
          >
-            <Link to="/templates" className="links pages">
+            <NavLink to="/templates" className="NavLinks pages">
                Templates
-            </Link>
+            </NavLink>
          </Typography>
          <Typography
             as="li"
@@ -48,9 +48,9 @@ const NavBar = memo(() => {
             color="blue-gray"
             className={styleNavItems}
          >
-            <Link to="/lists" className="links pages">
+            <NavLink to="/lists" className="NavLinks pages">
                Lists
-            </Link>
+            </NavLink>
          </Typography>
          <Typography
             as="li"
@@ -58,9 +58,9 @@ const NavBar = memo(() => {
             color="blue-gray"
             className={styleNavItems}
          >
-            <Link to="/server-infos" className="links pages">
+            <NavLink to="/server-infos" className="NavLinks pages">
                Server infos
-            </Link>
+            </NavLink>
          </Typography>
       </ul>
    );
@@ -68,12 +68,12 @@ const NavBar = memo(() => {
    return (
       <TWNavBar className="mx-auto text-black max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4 border-none">
          <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
-            <Link to="/home" className="flex items-center">
+            <NavLink to="/home" className="flex items-center">
                <img className="logoclassName pr-2.5" src={logo} alt="Logo" />
                <Typography as="p" className="font-semibold text-lg">
                   HashKitty
                </Typography>
-            </Link>
+            </NavLink>
             <div className="hidden lg:block">{navList}</div>
             <IconButton
                variant="text"

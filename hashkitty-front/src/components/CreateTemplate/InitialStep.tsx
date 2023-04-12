@@ -1,19 +1,11 @@
-import { Dispatch, SetStateAction } from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { TextField } from '@mui/material';
-import {
-   AttackModeAvailable,
-   CreateTemplateForm,
-} from '../../types/TComponents';
-import { TAttackMode } from '../../types/TypesORM';
-import FormatList from '../../utils/FormatUtils';
-import Radios from '../ui/Radios/Radios';
+import type { CreateTemplateForm, TUseState } from '../../types/TComponents';
+import type { TAttackMode } from '../../types/TypesORM';
+import AttackModeRadio from '../HashcatFields/AttackModeRadio';
 
 type InitialStepProps = {
-   inputAttackMode: [
-      { id: number; mode: AttackModeAvailable },
-      Dispatch<SetStateAction<{ id: number; mode: AttackModeAvailable }>>,
-   ];
+   inputAttackMode: TUseState<TAttackMode>;
    attackModes: TAttackMode[];
    register: UseFormRegister<CreateTemplateForm>;
    errors: FieldErrors<CreateTemplateForm>;
@@ -41,14 +33,11 @@ function InitialStep({
             sx={{ marginTop: 0.5 }}
          />
          <div className="mt-[40px]">
-            <Radios<TAttackMode, CreateTemplateForm>
-               name="Attack modes"
-               fieldName="attackModeId"
-               list={FormatList.attackMode(attackModes)}
+            <AttackModeRadio<CreateTemplateForm>
+               customState={[inputAttackMode, setInputAttackMode]}
+               attackModes={attackModes}
                register={register}
                errors={errors}
-               checkValidation={elem => elem.id === inputAttackMode.id}
-               onChangeElem={({ elem }) => setInputAttackMode(elem)}
             />
          </div>
       </section>
