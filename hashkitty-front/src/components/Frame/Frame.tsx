@@ -33,7 +33,7 @@ export default function Frame({ children, isLoading, className }: FrameProps) {
             {isLoading ? (
                <CircularProgress className="mt-96" color="secondary" />
             ) : (
-               <main className="block max-w-screen-2xl w-full">{children}</main>
+               <main className="block px-[6vw] w-full">{children}</main>
             )}
          </div>
       </div>

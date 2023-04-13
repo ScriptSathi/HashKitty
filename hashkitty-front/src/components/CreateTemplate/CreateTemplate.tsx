@@ -28,9 +28,11 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
 
    const [inputAttackMode, setInputAttackMode] = useState<{
       id: number;
+      name: string;
       mode: AttackModeAvailable;
    }>({
       id: 1,
+      name: 'Unknow',
       mode: 0,
    });
    const formMethods = useForm<CreateTemplateForm>({

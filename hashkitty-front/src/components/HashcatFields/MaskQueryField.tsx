@@ -27,6 +27,10 @@ function MaskQueryField<Form extends CreateTemplateForm>({
                value: /^[\w?]*$/gi,
                message: 'Invalid pattern',
             },
+            maxLength: {
+               value: 30,
+               message: `Too long, must be less than 30 characters`,
+            },
          })}
          error={!!errors.maskQuery && !!errors.maskQuery.message}
          label="Mask query *"
