@@ -1,22 +1,24 @@
 import { useState } from 'react';
 import ApiEndpoints from '../../ApiEndpoints';
 import Frame from '../../components/Frame/Frame';
-import useFetchItems from '../../hooks/useFetchItems';
 import { TTemplate } from '../../types/TypesORM';
 import CreateCard from '../../components/ui/Cards/CreateCard/CreateCard';
 import BackgroundBlur from '../../components/ui/BackgroundBlur/BackGroundBlur';
 import CreateTemplate from '../../components/CreateTemplate/CreateTemplate';
 import useScreenSize from '../../hooks/useScreenSize';
+import TemplateCard from '../../components/ui/Cards/TemplateCard/TemplateCard';
+import useFetchList from '../../hooks/useFetchList';
 
 function Templates() {
    const {
       items: templates,
       refresh,
       isLoading,
-   } = useFetchItems<TTemplate>({
+   } = useFetchList<TTemplate>({
       method: 'GET',
       url: ApiEndpoints.GET.templates,
    });
+
    const [isClickedCreation, setIsClickedCreation] = useState(false);
    const { isTablette, isMobile } = useScreenSize();
    const closeTaskCreation = () => {
@@ -37,19 +39,22 @@ function Templates() {
 
    return (
       <Frame isLoading={isLoading}>
-         <div className="px-[50px]">
+         <div className="">
             <h2 className="flex justify-center text-3xl my-[25px]">
                Templates
             </h2>
-            <section
-               className={`flex ${
-                  isMobile || isTablette ? 'justify-center' : ''
-               }`}
-            >
+            <section className="flex gap-x-[20px] flex-wrap">
                <CreateCard
                   name="template"
                   clickedCreation={[isClickedCreation, setIsClickedCreation]}
                />
+               {templates.map(template => (
+                  <TemplateCard
+                     key={template.item.id}
+                     template={template}
+                     handleRefresh={refresh}
+                  />
+               ))}
             </section>
          </div>
          {isClickedCreation && (

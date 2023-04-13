@@ -24,6 +24,10 @@ export type Options = {
    potfileName?: string;
    maskQuery?: string;
    maskFilename?: string;
+   customCharset1?: string;
+   customCharset2?: string;
+   customCharset3?: string;
+   customCharset4?: string;
 };
 
 export type TTemplate = {

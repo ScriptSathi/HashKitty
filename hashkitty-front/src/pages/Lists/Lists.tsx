@@ -26,10 +26,10 @@ function Lists() {
             className={
                isMobile || isTablette
                   ? 'flex flex-col gap-2'
-                  : 'grid justify-around grid-cols-2'
+                  : 'flex justify-center gap-x-[100px]'
             }
          >
-            <div className="w-full px-5">
+            <div className="px-5 justify-self-end w-full">
                <AccordionList
                   expanded={isMobile || isTablette ? undefined : true}
                   list={hashlists}
@@ -37,7 +37,7 @@ function Lists() {
                   refreshLists={refresh}
                />
             </div>
-            <div className="flex flex-col gap-2 px-5">
+            <div className="flex flex-col w-full gap-2 px-5">
                <AccordionList
                   additionnalTitleBarElem={
                      <div className="flex">
