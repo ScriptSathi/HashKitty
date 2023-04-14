@@ -39,24 +39,20 @@ function Templates() {
 
    return (
       <Frame isLoading={isLoading}>
-         <div className="">
-            <h2 className="flex justify-center text-3xl my-[25px]">
-               Templates
-            </h2>
-            <section className="flex gap-x-[20px] flex-wrap">
-               <CreateCard
-                  name="template"
-                  clickedCreation={[isClickedCreation, setIsClickedCreation]}
+         <h2 className="flex justify-center text-3xl my-[25px]">Templates</h2>
+         <section className="flex gap-x-[20px] flex-wrap justify-center">
+            <CreateCard
+               name="template"
+               clickedCreation={[isClickedCreation, setIsClickedCreation]}
+            />
+            {templates.map(template => (
+               <TemplateCard
+                  key={template.item.id}
+                  template={template}
+                  handleRefresh={refresh}
                />
-               {templates.map(template => (
-                  <TemplateCard
-                     key={template.item.id}
-                     template={template}
-                     handleRefresh={refresh}
-                  />
-               ))}
-            </section>
-         </div>
+            ))}
+         </section>
          {isClickedCreation && (
             <BackgroundBlur toggleFn={closeTaskCreation}>
                <CreateTemplate closeTaskCreation={closeTaskCreation} />
