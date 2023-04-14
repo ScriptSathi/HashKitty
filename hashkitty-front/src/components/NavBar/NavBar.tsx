@@ -12,6 +12,7 @@ import useScreenSize from '../../hooks/useScreenSize';
 
 import './NavBar.scss';
 
+// eslint-disable-next-line react/display-name
 const NavBar = memo(() => {
    const [openNav, setOpenNav] = useState(false);
    useScreenSize({
@@ -50,16 +51,6 @@ const NavBar = memo(() => {
          >
             <NavLink to="/lists" className="NavLinks pages">
                Lists
-            </NavLink>
-         </Typography>
-         <Typography
-            as="li"
-            variant="small"
-            color="blue-gray"
-            className={styleNavItems}
-         >
-            <NavLink to="/server-infos" className="NavLinks pages">
-               Server infos
             </NavLink>
          </Typography>
       </ul>

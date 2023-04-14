@@ -69,10 +69,6 @@ const router = createBrowserRouter([
             path: 'lists',
             element: <Lists />,
          },
-         {
-            path: 'server-infos',
-            element: <HomePage />,
-         },
       ],
    },
 ]);

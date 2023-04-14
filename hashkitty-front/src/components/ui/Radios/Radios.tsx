@@ -1,28 +1,23 @@
-import { FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import { RadioGroup } from '@mui/material';
 import {
    FieldErrors,
    FieldValues,
    Path,
    UseFormRegister,
 } from 'react-hook-form';
-import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
+import { StandardList } from '../../../types/TComponents';
 import tooltips from '../../../tooltips';
-import InfoTooltip from '../Tooltips/InfoTooltip';
 import { TTemplate } from '../../../types/TypesORM';
+import RadioItem from './RadioItem';
 
 type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    list: T[];
    register: UseFormRegister<Form>;
-   onChangeElem?: (props: {
-      event: RadioOnChangeEvent<number>;
-      elem: T;
-   }) => void;
    name: string;
    fieldName: Path<Form>;
    errors?: FieldErrors<Form> | undefined;
    useTemplateTooltips?: boolean | undefined;
    useAttackModeTooltips?: boolean | undefined;
-   checkValidation?: (elem: T) => boolean | undefined;
 };
 
 export default function Radios<
@@ -36,8 +31,6 @@ export default function Radios<
    errors,
    useTemplateTooltips,
    useAttackModeTooltips,
-   onChangeElem = () => {},
-   checkValidation = undefined,
 }: RadiosProps<T, Form>) {
    const errorMessage = () => {
       if (errors && errors[fieldName]) {
@@ -93,40 +86,15 @@ export default function Radios<
                aria-labelledby="template-radio"
             >
                {list.map(elem => (
-                  <div key={elem.id} className="flex justify-between">
-                     <FormControlLabel
-                        sx={{ height: 25 }}
-                        value={elem.id}
-                        control={
-                           <Radio
-                              checked={
-                                 checkValidation
-                                    ? checkValidation(elem)
-                                    : undefined
-                              }
-                              color="secondary"
-                           />
-                        }
-                        label={
-                           <Typography sx={{ fontSize: 14 }}>
-                              {elem.name}
-                           </Typography>
-                        }
-                        {...register(fieldName)}
-                        onChange={event =>
-                           onChangeElem({
-                              event: event as RadioOnChangeEvent<number>,
-                              elem,
-                           })
-                        }
-                     />
-                     {(useAttackModeTooltips || useTemplateTooltips) && (
-                        <InfoTooltip
-                           className="mr-[10px]"
-                           tooltip={getTooltip(elem)}
-                        />
-                     )}
-                  </div>
+                  <RadioItem<Form>
+                     className="flex justify-between"
+                     key={elem.id}
+                     showTooltips={useAttackModeTooltips || useTemplateTooltips}
+                     elem={elem}
+                     register={register}
+                     tooltipText={getTooltip(elem)}
+                     fieldName={fieldName}
+                  />
                ))}
             </RadioGroup>
          </div>
@@ -135,8 +103,6 @@ export default function Radios<
 }
 
 Radios.defaultProps = {
-   onChangeElem: () => {},
-   checkValidation: undefined,
    errors: undefined,
    useAttackModeTooltips: undefined,
    useTemplateTooltips: undefined,
