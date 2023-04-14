@@ -5,21 +5,27 @@ import InfoTooltip from '../Tooltips/InfoTooltip';
 import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
 import { TTemplate } from '../../../types/TypesORM';
 
-type RadioItemProps<Form extends FieldValues> = {
+type RadioItemProps<
+   T extends StandardList | TTemplate,
+   Form extends FieldValues,
+> = {
    register: UseFormRegister<Form>;
    fieldName: Path<Form>;
-   elem: StandardList | TTemplate;
+   elem: T;
    tooltipText: string | JSX.Element;
    showTooltips?: boolean;
    className?: string;
-   checkValidation?: (elem: StandardList | TTemplate) => boolean | undefined;
+   checkValidation?: (elem: T) => boolean | undefined;
    onChangeElem?: (props: {
       event: RadioOnChangeEvent<number>;
-      elem: StandardList | TTemplate;
+      elem: T;
    }) => void;
 };
 
-function RadioItem<Form extends FieldValues>({
+function RadioItem<
+   T extends StandardList | TTemplate,
+   Form extends FieldValues,
+>({
    elem,
    className,
    register,
@@ -28,7 +34,7 @@ function RadioItem<Form extends FieldValues>({
    showTooltips,
    tooltipText,
    fieldName,
-}: RadioItemProps<Form>) {
+}: RadioItemProps<T, Form>) {
    const [isHover, setIsHover] = useState(false);
    const displayTooltip = isHover && showTooltips;
    return (

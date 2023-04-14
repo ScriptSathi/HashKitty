@@ -5,7 +5,7 @@ import {
    Path,
    UseFormRegister,
 } from 'react-hook-form';
-import { StandardList } from '../../../types/TComponents';
+import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
 import tooltips from '../../../tooltips';
 import { TTemplate } from '../../../types/TypesORM';
 import RadioItem from './RadioItem';
@@ -18,6 +18,11 @@ type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    errors?: FieldErrors<Form> | undefined;
    useTemplateTooltips?: boolean | undefined;
    useAttackModeTooltips?: boolean | undefined;
+   checkValidation?: (elem: T) => boolean | undefined;
+   onChangeElem?: (props: {
+      event: RadioOnChangeEvent<number>;
+      elem: T;
+   }) => void;
 };
 
 export default function Radios<
@@ -31,6 +36,8 @@ export default function Radios<
    errors,
    useTemplateTooltips,
    useAttackModeTooltips,
+   checkValidation,
+   onChangeElem,
 }: RadiosProps<T, Form>) {
    const errorMessage = () => {
       if (errors && errors[fieldName]) {
@@ -86,7 +93,7 @@ export default function Radios<
                aria-labelledby="template-radio"
             >
                {list.map(elem => (
-                  <RadioItem<Form>
+                  <RadioItem<T, Form>
                      className="flex justify-between"
                      key={elem.id}
                      showTooltips={useAttackModeTooltips || useTemplateTooltips}
@@ -94,6 +101,8 @@ export default function Radios<
                      register={register}
                      tooltipText={getTooltip(elem)}
                      fieldName={fieldName}
+                     onChangeElem={onChangeElem}
+                     checkValidation={checkValidation}
                   />
                ))}
             </RadioGroup>
@@ -106,4 +115,6 @@ Radios.defaultProps = {
    errors: undefined,
    useAttackModeTooltips: undefined,
    useTemplateTooltips: undefined,
+   onChangeElem: () => {},
+   checkValidation: undefined,
 };
