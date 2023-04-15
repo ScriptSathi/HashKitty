@@ -22,7 +22,7 @@ export type TDaoById = { id: number };
 export type ApiOptionsFormData = {
    attackModeId: number;
    breakpointGPUTemperature: number;
-   wordlistName: string;
+   wordlistName?: string;
    workloadProfileId: number;
    kernelOpti: boolean;
    CPUOnly: boolean;
@@ -31,6 +31,10 @@ export type ApiOptionsFormData = {
    potfileName?: string;
    maskQuery?: string;
    maskFilename?: string;
+   customCharset1?: string;
+   customCharset2?: string;
+   customCharset3?: string;
+   customCharset4?: string;
 };
 
 export type ApiTaskDelete = TDaoById;

@@ -23,10 +23,6 @@ export class Options {
    breakpointGPUTemperature!: number;
 
    @ManyToOne(() => Wordlist, (wordlist: Wordlist) => wordlist.id)
-   @JoinColumn({ name: 'wordlist_id', referencedColumnName: 'id' })
-   wordlistId!: number;
-
-   @ManyToOne(() => Wordlist, (wordlist: Wordlist) => wordlist.id)
    @JoinColumn({ name: 'combinator_wordlist_id', referencedColumnName: 'id' })
    combinatorWordlistId!: number;
 
@@ -43,6 +39,10 @@ export class Options {
    @Column('bool', { default: false, name: 'cpu_only' })
    CPUOnly!: boolean;
 
+   @ManyToOne(() => Wordlist, (wordlist: Wordlist) => wordlist.id)
+   @JoinColumn({ name: 'wordlist_id', referencedColumnName: 'id' })
+   wordlistId?: number;
+
    @Column('varchar', { name: 'rule_name', default: '' })
    rules?: string;
 
@@ -52,6 +52,18 @@ export class Options {
    @Column('varchar', { default: '', name: 'mask_query' })
    maskQuery?: string;
 
-   @Column('varchar', { default: '', name: 'mask_filename' })
+   @Column('varchar', { name: 'custom_charset_1' })
+   customCharset1?: string;
+
+   @Column('varchar', { name: 'custom_charset_2' })
+   customCharset2?: string;
+
+   @Column('varchar', { name: 'custom_charset_3' })
+   customCharset3?: string;
+
+   @Column('varchar', { name: 'custom_charset_4' })
+   customCharset4?: string;
+
+   @Column('varchar', { name: 'mask_filename' })
    maskFilename?: string;
 }
