@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mysql
--- Généré le : sam. 08 avr. 2023 à 17:33
+-- Généré le : sam. 15 avr. 2023 à 23:07
 -- Version du serveur : 8.0.30
 -- Version de PHP : 8.0.27
 
@@ -84,7 +84,7 @@ CREATE TABLE `notification` (
 
 CREATE TABLE `options` (
   `id` int NOT NULL,
-  `wordlist_id` int NOT NULL,
+  `wordlist_id` int DEFAULT NULL,
   `combinator_wordlist_id` int DEFAULT NULL,
   `kernel_opti` tinyint(1) DEFAULT '0',
   `rule_name` varchar(100) DEFAULT NULL,
@@ -94,7 +94,11 @@ CREATE TABLE `options` (
   `breakpoint_gpu_temperature` int DEFAULT (90),
   `workload_profile_id` int DEFAULT NULL,
   `cpu_only` tinyint(1) DEFAULT NULL,
-  `potfile_name` varchar(100) DEFAULT NULL
+  `potfile_name` varchar(100) DEFAULT NULL,
+  `custom_charset_1` varchar(50) DEFAULT NULL,
+  `custom_charset_2` varchar(50) DEFAULT NULL,
+  `custom_charset_3` varchar(50) DEFAULT NULL,
+  `custom_charset_4` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Contain the options needed for using task and template_task';
 
 -- --------------------------------------------------------

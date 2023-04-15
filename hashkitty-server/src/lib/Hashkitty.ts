@@ -26,11 +26,10 @@ export class Hashkitty {
    }
 
    private startHTTPServer() {
-      this.parallelizeCpus(() => {
-         if (this.db) {
-            new HttpServer(Constants.defaultApiConfig, this.db).listen();
-         }
-      });
+      if (this.db) {
+         const httpServer = new HttpServer(Constants.defaultApiConfig, this.db);
+         this.parallelizeCpus(() => httpServer.listen());
+      }
    }
 
    private async connectToDb(): Promise<void> {

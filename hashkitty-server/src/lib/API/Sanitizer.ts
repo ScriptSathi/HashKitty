@@ -16,6 +16,7 @@ export class Sanitizer {
    public hasSucceded: boolean;
    public isAnUpdate: boolean;
    public errorMessage: string;
+   public errorMessages: string[];
    private dao: Dao;
    private list: UploadFile;
    private options: Options;
@@ -33,6 +34,7 @@ export class Sanitizer {
       this.hasSucceded = true;
       this.isAnUpdate = false;
       this.errorMessage = '';
+      this.errorMessages = [];
    }
 
    public async analyseTask(form: TaskUpdate): Promise<void> {
@@ -44,8 +46,12 @@ export class Sanitizer {
          255,
          true
       );
-      await this.prepareOptions(form.options);
-      await this.checkHashlist(form.hashlistId);
+      await Promise.all([
+         this.checkHashlist(form.hashlistId),
+         this.checkOptions(form.options),
+      ]);
+      this.task.options = this.options;
+      console.log(this.task.options);
    }
 
    public async analyseTemplate(form: TemplateUpdate): Promise<void> {
@@ -55,7 +61,7 @@ export class Sanitizer {
             this.options = this.template.options;
             this.isAnUpdate = true;
          } else {
-            this.responsesForFailId('template task', form.id);
+            this.setError('wrongData', 'template');
          }
       }
       this.template.name = this.sanitizeText(form.name, 'name', 50);
@@ -65,7 +71,8 @@ export class Sanitizer {
          255,
          true
       );
-      await this.prepareOptions(form.options);
+      await this.checkOptions(form.options);
+      this.template.options = this.options;
    }
 
    public async analyseList({
@@ -109,25 +116,87 @@ export class Sanitizer {
       return str.length > length ? `${str.substring(0, length - 3)}...` : str;
    }
 
-   private async prepareOptions(options: ApiOptionsFormData): Promise<void> {
-      const attackMode = await this.findAttackModeWithId(options.attackModeId);
-      const isCombinatorAttack = attackMode && attackMode.mode === 1;
-      await this.checkWordlist(options.wordlistName);
-      if (isCombinatorAttack) {
-         await this.checkCombinatorWordlist(
-            options.combinatorWordlistName ?? ''
+   private async checkOptions(options: ApiOptionsFormData) {
+      try {
+         const attackMode = await this.dao.attackMode.getById(
+            options.attackModeId
          );
+         if (!attackMode) this.setError('wrongData', 'attackMode');
+         else {
+            this.options.attackModeId = attackMode.id;
+            await this.checkSpecificConfigForSpecificAttackMode(
+               options,
+               attackMode.mode
+            );
+            await this.checkAdvancedConfig(options);
+         }
+      } catch {
+         this.setError('unexpected', 'attackMode');
       }
-      await this.checkWorkloadProfile(options.workloadProfileId);
-      await this.checkAttackMode(options.attackModeId);
+   }
+
+   private async checkSpecificConfigForSpecificAttackMode(
+      options: ApiOptionsFormData,
+      attackMode: number
+   ): Promise<void> {
+      switch (attackMode) {
+         case 0:
+            if (options.wordlistName)
+               await this.checkWordlist(options.wordlistName);
+            else this.setError('mandatory', 'wordlistName');
+            options.rules && this.checkRules(options.rules);
+            break;
+         case 1:
+            if (options.wordlistName)
+               await this.checkWordlist(options.wordlistName);
+            else this.setError('mandatory', 'wordlistName');
+            if (options.combinatorWordlistName)
+               this.checkCombinatorWordlist(options.combinatorWordlistName);
+            else this.setError('mandatory', 'combinatorWordlistName');
+            break;
+         case 3:
+            if (options.maskQuery) this.checkMaskQuery(options.maskQuery);
+            else this.setError('mandatory', 'maskQuery');
+            options.customCharset1 &&
+               this.checkCustomCharset(options.customCharset1, 1);
+            options.customCharset2 &&
+               this.checkCustomCharset(options.customCharset2, 2);
+            options.customCharset3 &&
+               this.checkCustomCharset(options.customCharset3, 3);
+            options.customCharset4 &&
+               this.checkCustomCharset(options.customCharset4, 4);
+            break;
+         case 6:
+            if (options.wordlistName)
+               await this.checkWordlist(options.wordlistName);
+            else this.setError('mandatory', 'wordlistName');
+            if (options.maskQuery) this.checkMaskQuery(options.maskQuery);
+            else this.setError('mandatory', 'maskQuery');
+            break;
+         case 7:
+            if (options.wordlistName)
+               await this.checkWordlist(options.wordlistName);
+            else this.setError('mandatory', 'wordlistName');
+            if (options.maskQuery) this.checkMaskQuery(options.maskQuery);
+            else this.setError('mandatory', 'maskQuery');
+            break;
+         case 9:
+            if (options.wordlistName)
+               await this.checkWordlist(options.wordlistName);
+            else this.setError('mandatory', 'wordlistName');
+            break;
+         default:
+            throw new Error(`The attack mode ${attackMode} is not defined`);
+      }
+   }
+
+   private async checkAdvancedConfig(
+      options: ApiOptionsFormData
+   ): Promise<void> {
       this.breakpointGPUTemperature(options.breakpointGPUTemperature);
-      this.checkMaskQuery(options.maskQuery || '');
       this.checkKernelOptions(options.kernelOpti);
       this.checkCPUOnly(options.CPUOnly);
-      this.checkRules(options.rules ?? []);
       this.checkPotfiles(options.potfileName || '');
-      this.task.options = this.options;
-      this.template.options = this.options;
    }
 
    private async checkWordlist(name: string): Promise<void> {
@@ -136,11 +205,20 @@ export class Sanitizer {
          if (wordlist !== null) {
             this.options.wordlistId = wordlist.id;
          } else {
-            this.incorrectDataSubmitted('wordlist');
+            this.setError('wrongData', 'wordlist');
          }
       } catch (error) {
-         this.unexpectedError('wordlist');
-         logger.debug(error);
+         this.setError('unexpected', 'wordlist');
+      }
+   }
+
+   private checkCustomCharset(query: string, charset: 1 | 2 | 3 | 4) {
+      const validQueries = query.match(/^[\w?]*$/gi);
+      const queryIsSet = query.length > 0;
+      if (!!validQueries && queryIsSet) {
+         this.options[`customCharset${charset}`] = query;
+      } else if (queryIsSet) {
+         this.setError('wrongData', `customCharset${charset}`);
       }
    }
 
@@ -150,11 +228,10 @@ export class Sanitizer {
          if (wordlist !== null) {
             this.options.combinatorWordlistId = wordlist.id;
          } else {
-            this.incorrectDataSubmitted('combinator wordlist');
+            this.setError('wrongData', 'combinatorWordlistId');
          }
       } catch (error) {
-         this.unexpectedError('combinatorWordlistId');
-         logger.debug(error);
+         this.setError('unexpected', 'combinatorWordlistId');
       }
    }
 
@@ -165,14 +242,13 @@ export class Sanitizer {
             if (hashlist !== null) {
                this.task.hashlistId = hashlist.id;
             } else {
-               this.incorrectDataSubmitted('hashlist');
+               this.setError('wrongData', 'hashlist');
             }
          } else {
-            throw 'Wrong data provided for hashlistId';
+            this.setError('wrongData', 'hashlist');
          }
       } catch (error) {
-         this.unexpectedError('hash list');
-         logger.debug(error);
+         this.setError('unexpected', 'hashlist');
       }
    }
 
@@ -185,14 +261,13 @@ export class Sanitizer {
             if (hashtype !== null) {
                this.hashlist.hashTypeId = hashtype.id;
             } else {
-               this.incorrectDataSubmitted('hashtype');
+               this.setError('wrongData', 'hashtype');
             }
          } else {
-            throw 'Wrong data provided for hashTypeId';
+            this.setError('wrongData', 'hashtype');
          }
       } catch (error) {
-         this.unexpectedError('hashtype');
-         logger.debug(error);
+         this.setError('unexpected', 'hashtype');
       }
    }
 
@@ -204,11 +279,10 @@ export class Sanitizer {
          if (workloadProfile !== null) {
             this.options.workloadProfileId = workloadProfile.id;
          } else {
-            this.incorrectDataSubmitted('workload profile');
+            this.setError('wrongData', 'workload profile');
          }
       } catch (error) {
-         this.unexpectedError('workload profile');
-         logger.debug(error);
+         this.setError('unexpected', 'workload profile');
       }
    }
 
@@ -220,14 +294,13 @@ export class Sanitizer {
             } else if (0 < temperature && temperature < 100) {
                this.options.breakpointGPUTemperature = temperature;
             } else {
-               this.incorrectDataSubmitted('breakpointGPUTemperature');
+               this.setError('wrongData', 'breakpointGPUTemperature');
             }
          } else {
-            throw 'Wrong data provided for breakpointGPUTemperature';
+            this.setError('wrongData', 'breakpointGPUTemperature');
          }
       } catch (error) {
-         this.unexpectedError('breakpoint temperature');
-         logger.debug(error);
+         this.setError('unexpected', 'breakpointGPUTemperature');
       }
    }
 
@@ -237,14 +310,13 @@ export class Sanitizer {
             if (mask.match(/^[\w?]*$/gi)) {
                this.options.maskQuery = mask;
             } else {
-               this.incorrectDataSubmitted('maskQuery-');
+               this.setError('wrongData', 'maskQuery');
             }
          } else {
-            throw 'Wrong data provided for the mask query';
+            this.setError('wrongData', 'maskQuery');
          }
       } catch (error) {
-         this.unexpectedError('mask query');
-         logger.debug(error);
+         this.setError('unexpected', 'maskQuery');
       }
    }
 
@@ -254,11 +326,10 @@ export class Sanitizer {
          if (attackMode !== null) {
             this.options.attackModeId = attackMode.id;
          } else {
-            this.responsesForFailId('attack mode', id);
+            this.setError('wrongData', 'attack mode');
          }
       } catch (error) {
-         this.unexpectedError('attack mode');
-         logger.debug(error);
+         this.setError('unexpected', 'attack mode');
       }
    }
 
@@ -267,11 +338,10 @@ export class Sanitizer {
          if (this.isExpectedType(value, 'boolean')) {
             this.options.kernelOpti = value;
          } else {
-            throw 'Wrong data provided for kernelOpti';
+            this.setError('wrongData', 'kernelOpti');
          }
       } catch (error) {
-         this.unexpectedError('kernelOpti');
-         logger.debug(error);
+         this.setError('unexpected', 'kernelOpti');
       }
    }
 
@@ -280,11 +350,10 @@ export class Sanitizer {
          if (this.isExpectedType(value, 'boolean')) {
             this.options.CPUOnly = value;
          } else {
-            throw 'Wrong data provided for CPUOnly';
+            this.setError('wrongData', 'CPUOnly');
          }
       } catch (error) {
-         this.unexpectedError('CPUOnly');
-         logger.debug(error);
+         this.setError('unexpected', 'CPUOnly');
       }
    }
 
@@ -299,12 +368,11 @@ export class Sanitizer {
                });
                if (!fileHasBeenFound) {
                   fileExists = false;
-                  throw 'Wrong data provided for rules';
+                  this.setError('wrongData', 'rules');
                }
             }
          } catch (error) {
-            this.unexpectedError('rules');
-            logger.debug(error);
+            this.setError('unexpected', 'rules');
          }
       }
       if (fileExists) this.options.rules = rules.join();
@@ -321,16 +389,15 @@ export class Sanitizer {
             ) {
                this.options.potfileName = name;
             } else {
-               throw 'Wrong data provided for potfileName';
+               this.setError('wrongData', 'potfile');
             }
          }
       } catch (error) {
-         this.unexpectedError('potfileName');
-         logger.debug(error);
+         this.setError('unexpected', 'potfile');
       }
    }
 
-   private findAttackModeWithId(id: number): Promise<AttackMode | null>   {
+   private findAttackModeWithId(id: number): Promise<AttackMode | null> {
       try {
          return this.dao.findAttackModeById(id);
       } catch {
@@ -355,13 +422,12 @@ export class Sanitizer {
                        : this.removeSpecialCharInString(text)
                  );
          } else {
-            throw new Error('Empty string');
+            this.setError('mandatory', param);
          }
       } catch (e) {
-         logger.error(e);
-         this.emptyString(param);
-         return 'unknown';
+         this.setError('wrongData', param);
       }
+      return 'unknow';
    }
 
    private isExpectedType(
@@ -371,31 +437,32 @@ export class Sanitizer {
       return typeof value === expectedType;
    }
 
-   private incorrectDataSubmitted(badKey: string): void {
-      this.errorMessage = `The format of data ${badKey} is not correct`;
-      this.hasSucceded = false;
-   }
-
-   private responsesForFailId(failName: string, id: number): void {
-      this.errorMessage = `The requested ${failName} with id ${id} does not exist`;
-      this.hasSucceded = false;
-   }
-
-   private unexpectedError(failParam: string): void {
-      this.errorMessage = `An unexpected error occurred with param ${failParam}`;
-      this.hasSucceded = false;
-   }
-
-   private emptyString(failParam: string): void {
-      this.errorMessage = `The provided string for ${failParam} is empty`;
-      this.hasSucceded = false;
-   }
-
    private async setTaskIfIsUpdate(id: number | undefined) {
       if (id) {
          this.task = await this.dao.task.getById(id);
          this.options = this.task.options;
          this.isAnUpdate = true;
       }
+   }
+
+   private setError(
+      errorType: 'unexpected' | 'wrongData' | 'mandatory',
+      fieldName: string
+   ) {
+      this.hasSucceded = false;
+      let msg = '';
+      switch (errorType) {
+         case 'mandatory':
+            msg = `Param ${fieldName} is mandatory`;
+            break;
+         case 'unexpected':
+            msg = `An unexpected error occured with ${fieldName}`;
+            break;
+         case 'wrongData':
+            msg = `Wrong data submitted for ${fieldName}`;
+            break;
+      }
+      logger.debug(msg);
+      this.errorMessages.push(msg);
    }
 }
