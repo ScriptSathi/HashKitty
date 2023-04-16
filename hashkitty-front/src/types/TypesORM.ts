@@ -15,7 +15,7 @@ export type Options = {
    id: number;
    attackModeId: TAttackMode;
    breakpointGPUTemperature: number;
-   wordlistId: TWordlist;
+   wordlistId?: TWordlist;
    workloadProfileId: TWorkloadProfile;
    kernelOpti: boolean;
    CPUOnly: boolean;

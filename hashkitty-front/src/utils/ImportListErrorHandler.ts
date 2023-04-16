@@ -35,10 +35,13 @@ export default class ImportListErrorHandler extends ErrorHandler<ImportListError
    }
 
    public checkHashTypeId(id: number) {
+      const hashtype = this.dbData.hashtypes.find(type => type.id === id);
       if (id < 0) {
          this.setError('hashTypeId', { message: this.requieredFields.message });
-      } else {
+      } else if (hashtype) {
          this.formData.append('hashTypeId', id.toString());
+      } else {
+         this.setError('hashTypeId', { message: this.wrongData.message });
       }
    }
 

@@ -15,6 +15,7 @@ import useStopTask from '../../../../hooks/useStopTask';
 import useScreenSize from '../../../../hooks/useScreenSize';
 import useDeleteTask from '../../../../hooks/useDeleteTask';
 import DeleteButton from '../../Buttons/DeleteButton';
+import CardContentBuilder from '../../../../utils/CardContentBuilder';
 
 type CommonCard = {
    task: TTask;
@@ -53,6 +54,7 @@ export default function RunCard({
    );
 
    const hasErrors = startError.length > 0 || exitInfo.isError;
+   const contentRaws = new CardContentBuilder(task.options);
 
    if (isRunning || process.isPending) {
       setTimeout(() => {
@@ -65,14 +67,6 @@ export default function RunCard({
    } else if (isLoading && (stoppedSucced || hasErrors)) {
       setIsLoading(false);
    }
-
-   const templateTxt = task.templateTaskId ? (
-      <Typography variant="body2" color="text.secondary">
-         Template: {task.templateTaskId?.name}
-      </Typography>
-   ) : (
-      <p />
-   );
 
    const PlayableSvg = isRunning ? StopSVG : StartSVG;
    const iconBtn = isLoading
@@ -119,6 +113,13 @@ export default function RunCard({
       <BaseCard
          title={task.name}
          autoResize
+         tooltip={
+            <>
+               {contentRaws.fullRaws.map(row => (
+                  <p key={row}>{row}</p>
+               ))}
+            </>
+         }
          additionnalBtn={
             <DeleteButton
                tooltip={`Delete the task ${task.name}`}
@@ -129,29 +130,16 @@ export default function RunCard({
       >
          <div className="flex flex-col justify-between min-h-full h-full">
             {!(isTablette || isMobile) && (
-               <div>
-                  <Typography
-                     component="p"
-                     variant="body2"
-                     color="text.secondary"
-                  >
-                     Hash type: {task.hashlistId.hashTypeId.name}
-                  </Typography>
-                  <Typography
-                     component="p"
-                     variant="body2"
-                     color="text.secondary"
-                  >
-                     Hashlist: {task.hashlistId.name}
-                  </Typography>
-                  <Typography
-                     component="p"
-                     variant="body2"
-                     color="text.secondary"
-                  >
-                     Wordlist: {task.options.wordlistId.name}
-                  </Typography>
-                  {templateTxt}
+               <div className="bloc max-h-[85px] overflow-auto">
+                  {contentRaws.shortRaws.map(line => (
+                     <Typography
+                        key={line}
+                        variant="body2"
+                        color="text.secondary"
+                     >
+                        {line}
+                     </Typography>
+                  ))}
                </div>
             )}
             <div className="flex justify-between">

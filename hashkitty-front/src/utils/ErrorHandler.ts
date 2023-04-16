@@ -1,4 +1,4 @@
-import { FieldError, DefaultFormErrors } from '../types/TypesErrorHandler';
+import type { FieldError, DefaultFormErrors } from '../types/TypesErrorHandler';
 
 export default abstract class ErrorHandler<
    FormError extends DefaultFormErrors,
@@ -29,15 +29,6 @@ export default abstract class ErrorHandler<
          isError: true,
          itemId: -1,
          message: 'Required',
-      };
-   }
-
-   protected get requieredFile(): FieldError {
-      this.isValid = false;
-      return {
-         isError: true,
-         itemId: -1,
-         message: 'File needed',
       };
    }
 
