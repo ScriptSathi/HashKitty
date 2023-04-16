@@ -261,7 +261,7 @@ export class Dao {
 
    public async getListContext<List extends ListItem['item']>(
       items: List[],
-      filterCallback: (item: List, task: TTask) => boolean,
+      filterCallback: (item: List, task: TTask) => boolean = () => false,
       isRegisteredInDb = false
    ): Promise<ListItem[]> {
       const tasks = (await this.task.getAll()) as unknown as TTask[];

@@ -103,7 +103,13 @@ export default class ListController {
          const wordlists = await this.dao.db.getRepository(Wordlist).find();
          const items = await this.dao.getListContext(
             wordlists,
-            (wordlists, task) => wordlists.id === task.options.wordlistId.id,
+            (wordlists, task) => {
+               const wordlistExistInTask = !!task.options.wordlistId;
+               return (
+                  wordlistExistInTask &&
+                  wordlists.id === task.options.wordlistId?.id
+               );
+            },
             true
          );
          return {

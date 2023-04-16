@@ -39,19 +39,16 @@ export class HttpServer implements IHttpServer {
       // }))
    }
 
-   public async listen(): Promise<void> {
+   public listen(): void {
       this.server = this.createHttpServer();
 
       this.server.keepAliveTimeout = 61 * 1000;
       this.server.headersTimeout = 65 * 1000;
 
-      return new Promise(resolve => {
-         this.server.listen(this.config.port, () => {
-            logger.info(
-               `PID: ${process.pid} - Http server started successfully on port ${this.serverListenPort}`
-            );
-            resolve();
-         });
+      this.server.listen(this.config.port, () => {
+         logger.info(
+            `PID: ${process.pid} - Http server started successfully on port ${this.serverListenPort}`
+         );
       });
    }
 

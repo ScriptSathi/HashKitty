@@ -10,20 +10,12 @@ export class HashcatGenerator {
    private task: TTask;
    private taskName: string;
    private restorePath: string;
-   private wordlist: string;
    private hashlist: string;
 
    constructor(task: TTask) {
       this.task = task;
       this.taskName = `${task.name}-${task.id}`;
       this.restorePath = path.join(Constants.restorePath, this.taskName);
-      this.wordlist = path.join(
-         Constants.wordlistPath,
-         // Return empty string because Hashcat can use a directory as wordlist
-         this.task.options.wordlistId.name.startsWith('*')
-            ? ''
-            : this.task.options.wordlistId.name
-      );
       this.hashlist = path.join(
          Constants.hashlistsPath,
          this.task.hashlistId.name
@@ -133,6 +125,16 @@ export class HashcatGenerator {
             value: this.task.options.workloadProfileId.profileId,
          });
       }
+      const charsetIds = [1, 2, 3, 4];
+      for (const id of charsetIds) {
+         const key = `customCharset${id}` as `customCharset${1 | 2 | 3 | 4}`;
+         if (this.task.options[key]) {
+            flags.push({
+               key,
+               value: this.task.options[key],
+            });
+         }
+      }
       return this.buildFlags(flags);
    }
 
@@ -190,7 +192,11 @@ export class HashcatGenerator {
    }
 
    private generateCombinationAttackCmd(): string {
-      throw new Error('Combination attacks are not implemented yet');
+      return (
+         `${Constants.defaultBin} ` +
+         this.generateCmdFromFlags(this.prepareStartFlags()) +
+         `${this.hashlist} ${this.wordlist} ${this.combinatorWordlist}`
+      );
    }
 
    private generateBruteForceAttackCmd(): string {
@@ -222,6 +228,26 @@ export class HashcatGenerator {
          `${Constants.defaultBin} ` +
          this.generateCmdFromFlags(this.prepareStartFlags()) +
          `${this.hashlist} ${this.wordlist}`
+      );
+   }
+
+   private get wordlist(): string {
+      return path.join(
+         Constants.wordlistPath,
+         // Return empty string because Hashcat can use a directory as wordlist
+         this.task.options.wordlistId?.name.startsWith('*')
+            ? ''
+            : this.task.options.wordlistId?.name ?? ''
+      );
+   }
+
+   private get combinatorWordlist(): string {
+      return path.join(
+         Constants.wordlistPath,
+         // Return empty string because Hashcat can use a directory as wordlist
+         this.task.options.combinatorWordlistId?.name.startsWith('*')
+            ? ''
+            : this.task.options.combinatorWordlistId?.name ?? ''
       );
    }
 }
