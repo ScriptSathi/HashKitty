@@ -51,7 +51,6 @@ export class Sanitizer {
          this.checkOptions(form.options),
       ]);
       this.task.options = this.options;
-      console.log(this.task.options);
    }
 
    public async analyseTemplate(form: TemplateUpdate): Promise<void> {

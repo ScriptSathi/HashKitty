@@ -80,10 +80,7 @@ export default class TemplateController {
    public async getAll(): Promise<ResponseAttr> {
       try {
          const templates = await this.dao.template.getAll();
-         const items = await this.dao.getListContext(
-            templates,
-            (template, task) => task.templateTaskId?.id === template.id
-         );
+         const items = await this.dao.getListContext(templates);
          return {
             message: '',
             success: true,
@@ -110,10 +107,7 @@ export default class TemplateController {
       }
       try {
          const templates = [await this.dao.template.getById(id)];
-         const items = await this.dao.getListContext(
-            templates,
-            (template, task) => task.templateTaskId?.id === template.id
-         );
+         const items = await this.dao.getListContext(templates);
          return {
             message: '',
             success: true,

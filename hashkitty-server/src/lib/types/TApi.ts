@@ -17,7 +17,7 @@ export type THttpServerConfig = {
 };
 
 export interface IHttpServer {
-   listen(): Promise<void>;
+   listen(): void;
    close(): Promise<void>;
    checkHealth(): void;
 }
@@ -32,7 +32,6 @@ export type TTask = {
    lastestModification: string;
    isfinished: boolean;
    description?: string;
-   templateTaskId?: TemplateTask;
    endeddAt?: Date | null;
 };
 
@@ -40,18 +39,22 @@ export type Options = {
    id: number;
    attackModeId: TAttackMode;
    breakpointGPUTemperature: number;
-   wordlistId: TWordlist;
    combinatorWordlistId: TWordlist;
    workloadProfileId: TWorkloadProfile;
    kernelOpti: Boolean;
    CPUOnly: Boolean;
+   wordlistId?: TWordlist;
    rules?: string;
    potfileName?: string;
    maskQuery?: string;
    maskFilename?: string;
+   customCharset1?: string;
+   customCharset2?: string;
+   customCharset3?: string;
+   customCharset4?: string;
 };
 
-export type TemplateTask = {
+export type TTemplate = {
    id: number;
    name: string;
    description?: string;
@@ -113,7 +116,7 @@ export type ListBase = {
 };
 
 export type ListItem = {
-   item: Partial<TemplateTask | Wordlist | Hashlist | ListBase>;
+   item: Partial<TTemplate | Wordlist | Hashlist | ListBase>;
    canBeDeleted: boolean;
    bindTo: TTask[];
 };
