@@ -8,6 +8,7 @@ import useDeleteTask from '../../../../hooks/useDeleteTask';
 import ApiEndpoints from '../../../../ApiEndpoints';
 import useScreenSize from '../../../../hooks/useScreenSize';
 import DeleteButton from '../../Buttons/DeleteButton';
+import CardContentBuilder from '../../../../utils/CardContentBuilder';
 
 type CommonCard = {
    task: TTask;
@@ -50,6 +51,8 @@ export default function EndCard({
       },
    );
 
+   const contentRaws = new CardContentBuilder(task.options);
+
    const handleDeletion = () => {
       deleteTask().then(() => {
          if (!isError) {
@@ -60,39 +63,37 @@ export default function EndCard({
    };
 
    return (
-      <BaseCard title={task.name} autoResize>
+      <BaseCard
+         title={task.name}
+         autoResize
+         tooltip={
+            <>
+               {contentRaws.fullRaws.map(row => (
+                  <p key={row}>{row}</p>
+               ))}
+            </>
+         }
+      >
          <div className="flex flex-col justify-between min-h-full h-full">
             <div
                className={`flex ${
                   isMobile || isTablette ? 'justify-around' : 'justify-between'
                }`}
             >
-               {!(isMobile || isTablette) && (
-                  <div>
-                     <Typography
-                        component="p"
-                        variant="body2"
-                        color="text.secondary"
-                     >
-                        Hash type: {task.hashlistId.hashTypeId.name}
-                     </Typography>
-                     <Typography
-                        component="p"
-                        variant="body2"
-                        color="text.secondary"
-                     >
-                        Hashlist: {task.hashlistId.name}
-                     </Typography>
-                     <Typography
-                        component="p"
-                        variant="body2"
-                        color="text.secondary"
-                     >
-                        Wordlist: {task.options.wordlistId.name}
-                     </Typography>
+               {!(isTablette || isMobile) && (
+                  <div className="bloc max-h-[100px] overflow-auto">
+                     {contentRaws.shortRaws.map(line => (
+                        <Typography
+                           key={line}
+                           variant="body2"
+                           color="text.secondary"
+                        >
+                           {line}
+                        </Typography>
+                     ))}
                   </div>
                )}
-               <div className="flex items-end">
+               <div className={!isMobile && !isTablette ? 'mt-[35px]' : ''}>
                   <Tooltip title="Show the cracked passwords">
                      <IconButton
                         disabled={isLoading}

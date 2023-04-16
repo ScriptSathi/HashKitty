@@ -240,12 +240,14 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                <h3 className="text-lg mb-[2rem]">Advanced configurations</h3>
                <div className="flex justify-between flex-wrap gap-2">
                   <section className="flex flex-col gap-2 justify-between">
-                     <WordlistField<CreateTaskForm>
-                        customState={[inputWordlist, setInputWordlist]}
-                        wordlists={wordlists}
-                        {...fieldsProps}
-                        sx={{ width: 300 }}
-                     />
+                     {!isBFAttack && (
+                        <WordlistField<CreateTaskForm>
+                           customState={[inputWordlist, setInputWordlist]}
+                           wordlists={wordlists}
+                           {...fieldsProps}
+                           sx={{ width: 300 }}
+                        />
+                     )}
                      {isCombinatorAttack && (
                         <CombinatorAttackField<CreateTaskForm>
                            customState={[

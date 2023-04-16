@@ -9,6 +9,7 @@ import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
 import tooltips from '../../../tooltips';
 import { TTemplate } from '../../../types/TypesORM';
 import RadioItem from './RadioItem';
+import CardContentBuilder from '../../../utils/CardContentBuilder';
 
 type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    list: T[];
@@ -51,10 +52,10 @@ export default function Radios<
          return tooltips.inputs.attackModes[(item as StandardList).mode ?? 0];
       }
       if (useTemplateTooltips) {
-         const templateTooltips = tooltips.inputs.templates(item as TTemplate);
+         const contentRaws = new CardContentBuilder((item as TTemplate).options);
          return (
             <>
-               {templateTooltips.map(row => (
+               {contentRaws.fullRaws.map(row => (
                   <p key={row}>{row}</p>
                ))}
             </>
