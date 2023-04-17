@@ -54,6 +54,10 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
       name: '',
       mode: 0,
    });
+   const [inputCustomCharset1, setCustomCharset1] = useState<string>('');
+   const [inputCustomCharset2, setCustomCharset2] = useState<string>('');
+   const [inputCustomCharset3, setCustomCharset3] = useState<string>('');
+   const [inputCustomCharset4, setCustomCharset4] = useState<string>('');
    const [inputBreakTemp, setBreakTemp] = useState<string | null>('90');
    const [inputCpuOnly, setCpuOnly] = useState<boolean>(false);
    const [inputKernelOpti, setKernelOpti] = useState<boolean>(false);
@@ -233,6 +237,12 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         'combinatorWordlistName',
                         setCombinatorWordlist,
                      ]}
+                     inputCustomCharsets={[
+                        ['customCharset1', setCustomCharset1],
+                        ['customCharset2', setCustomCharset2],
+                        ['customCharset3', setCustomCharset3],
+                        ['customCharset4', setCustomCharset4]
+                     ]}
                   />
                </section>
             </div>
@@ -282,20 +292,24 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                      <section className="flex flex-col gap-y-5 justify-between">
                         <CustomCharsetField<CreateTaskForm>
                            {...fieldsProps}
+                           customState={[inputCustomCharset1, setCustomCharset1]}
                            charsetNumber={1}
                         />
                         <CustomCharsetField<CreateTaskForm>
                            {...fieldsProps}
+                           customState={[inputCustomCharset2, setCustomCharset2]}
                            charsetNumber={2}
                         />
                      </section>
                      <section className="flex flex-col gap-y-5 justify-between">
                         <CustomCharsetField<CreateTaskForm>
                            {...fieldsProps}
+                           customState={[inputCustomCharset3, setCustomCharset3]}
                            charsetNumber={3}
                         />
                         <CustomCharsetField<CreateTaskForm>
                            {...fieldsProps}
+                           customState={[inputCustomCharset4, setCustomCharset4]}
                            charsetNumber={4}
                         />
                      </section>
