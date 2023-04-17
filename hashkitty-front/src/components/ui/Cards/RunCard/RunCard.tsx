@@ -130,7 +130,7 @@ export default function RunCard({
       >
          <div className="flex flex-col justify-between min-h-full h-full">
             {!(isTablette || isMobile) && (
-               <div className="bloc max-h-[85px] overflow-auto">
+               <div className="bloc max-h-[85px] w-full overflow-auto">
                   {contentRaws.shortRaws.map(line => (
                      <Typography
                         key={line}

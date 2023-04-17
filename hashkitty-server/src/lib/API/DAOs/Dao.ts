@@ -199,14 +199,6 @@ export class Dao {
       });
    }
 
-   public async findAttackModeById(id: number): Promise<AttackMode | null> {
-      return await this.db.getRepository(AttackMode).findOne({
-         where: {
-            id: id,
-         },
-      });
-   }
-
    public async findHashlistExistWhere(
       where: FindOptionsWhere<Hashlist>
    ): Promise<boolean> {
@@ -250,8 +242,8 @@ export class Dao {
          case 'wordlist': {
             return tasks.filter(task => {
                const wordlist = (task.options as unknown as Options)
-                  .wordlistId as Wordlist;
-               return wordlist.name === searchFileName;
+                  .wordlistId as Wordlist | null;
+               return wordlist?.name === searchFileName;
             });
          }
          default:
