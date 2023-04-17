@@ -22,6 +22,7 @@ type TemplateProps = {
    inputCpuOnly: TypeSetInput<boolean>;
    inputMaskQuery: TypeSetInput<string>;
    inputRules: TypeSetInput<string[]>;
+   inputCustomCharsets: [TypeSetInput<string>, TypeSetInput<string>, TypeSetInput<string>, TypeSetInput<string>]
 };
 
 export default function TemplateRadio({
@@ -41,6 +42,12 @@ export default function TemplateRadio({
       fieldNameCombinatorWordlist,
       setCombinatorWordlist,
    ],
+   inputCustomCharsets: [
+    [fieldNameCustomCharset1, setCustomCharset1],
+    [fieldNameCustomCharset2, setCustomCharset2],
+    [fieldNameCustomCharset3, setCustomCharset3],
+    [fieldNameCustomCharset4, setCustomCharset4],
+   ]
 }: TemplateProps) {
    const { field: fieldWordlist } = useController<CreateTaskForm>({
       control,
@@ -82,17 +89,28 @@ export default function TemplateRadio({
       control,
       name: fieldNameCombinatorWordlist,
    });
+   const { field: fieldCustomCharset1 } = useController<CreateTaskForm>({
+      control,
+      name: fieldNameCustomCharset1,
+   });
+   const { field: fieldCustomCharset2 } = useController<CreateTaskForm>({
+      control,
+      name: fieldNameCustomCharset2,
+   });
+   const { field: fieldCustomCharset3 } = useController<CreateTaskForm>({
+      control,
+      name: fieldNameCustomCharset3,
+   });
+   const { field: fieldCustomCharset4 } = useController<CreateTaskForm>({
+      control,
+      name: fieldNameCustomCharset4,
+   });
 
    const onChange = ({ elem }: { elem: TTemplate }) => {
-      fieldWordlist.onChange(elem.options.wordlistId.name);
       fieldCombinatorWordlist.onChange(
          elem.options.combinatorWordlistId?.name ?? '',
       );
-      fieldPotfile.onChange(elem.options.potfileName);
       fieldBreakTemp.onChange(elem.options.breakpointGPUTemperature.toString());
-      fielWorkloadProfile.onChange(
-         elem.options.workloadProfileId.profileId.toString(),
-      );
       fieldAttackMode.onChange(elem.options.attackModeId.id.toString());
       fieldCpuOnly.onChange(elem.options.CPUOnly);
       fieldKernelOpti.onChange(elem.options.kernelOpti);
@@ -101,13 +119,46 @@ export default function TemplateRadio({
       fieldRules.onChange(elem.options.rules?.split(',') ?? []);
       setMaskQuery(elem.options.maskQuery || '');
       setKernelOpti(elem.options.kernelOpti);
-      setInputWordlist(elem.options.wordlistId.name);
+      
       setAttackMode(elem.options.attackModeId);
-      setWorkloadProfile(elem.options.workloadProfileId.profileId.toString());
+      
       setCombinatorWordlist(elem.options.combinatorWordlistId?.name ?? '');
       setBreakTemp(elem.options.breakpointGPUTemperature.toString());
       setCpuOnly(elem.options.CPUOnly);
-      if (elem.options.potfileName) setInputPotfile(elem.options.potfileName);
+      if(elem.options.workloadProfileId) {
+        setWorkloadProfile(elem.options.workloadProfileId.profileId.toString());
+        fielWorkloadProfile.onChange(
+            elem.options.workloadProfileId.profileId.toString(),
+         );
+      }
+      if (elem.options.potfileName) {
+        setInputPotfile(elem.options.potfileName);
+        fieldPotfile.onChange(elem.options.potfileName);
+      }
+      if (elem.options.wordlistId) {
+        setInputWordlist(elem.options.wordlistId.name);
+        fieldWordlist.onChange(elem.options.wordlistId.name);
+      }
+      if (elem.options.customCharset1) {
+        const key = `customCharset1`;
+        setCustomCharset1(elem.options[key] as string);
+        fieldCustomCharset1.onChange(elem.options[key]);
+      }
+      if (elem.options.customCharset2) {
+        const key = `customCharset2`;
+        setCustomCharset2(elem.options[key] as string);
+        fieldCustomCharset2.onChange(elem.options[key]);
+      }
+      if (elem.options.customCharset3) {
+        const key = `customCharset3`;
+        setCustomCharset3(elem.options[key] as string);
+        fieldCustomCharset3.onChange(elem.options[key]);
+      }
+      if (elem.options.customCharset4) {
+        const key = `customCharset4`;
+        setCustomCharset4(elem.options[key] as string);
+        fieldCustomCharset4.onChange(elem.options[key]);
+      }
    };
 
    const templateList = list.reduce(
