@@ -1,5 +1,6 @@
-import { ApiOptionsFormData } from '../types/TDAOs';
-import { TaskUpdate, TemplateUpdate, UploadFile } from '../types/TRoutes';
+import path from 'path';
+import type { ApiOptionsFormData } from '../types/TDAOs';
+import type { TaskUpdate, TemplateUpdate, UploadFile } from '../types/TRoutes';
 import { Options } from '../ORM/entity/Options';
 import { Dao } from './DAOs/Dao';
 import { Task } from '../ORM/entity/Task';
@@ -10,7 +11,7 @@ import { Hashlist } from '../ORM/entity/Hashlist';
 import { HashType } from '../ORM/entity/HashType';
 import { UploadFileType } from '../types/TApi';
 import { TemplateTask } from '../ORM/entity/TemplateTask';
-import { AttackMode } from '../ORM/entity/AttackMode';
+import { Wordlist } from '../ORM/entity/Wordlist';
 
 export class Sanitizer {
    public hasSucceded: boolean;
@@ -23,6 +24,7 @@ export class Sanitizer {
    private task: Task;
    private template: TemplateTask;
    private hashlist: Hashlist;
+   private wordlist: Wordlist;
 
    constructor(dao: Dao) {
       this.dao = dao;
@@ -31,6 +33,7 @@ export class Sanitizer {
       this.task = new Task();
       this.template = new TemplateTask();
       this.hashlist = new Hashlist();
+      this.wordlist = new Wordlist();
       this.hasSucceded = true;
       this.isAnUpdate = false;
       this.errorMessage = '';
@@ -86,6 +89,9 @@ export class Sanitizer {
       if (hashTypeId && type === 'hashlist') {
          this.hashlist.name = name;
          await this.checkHashType(hashTypeId);
+      } else if (type === 'wordlist') {
+         await this.checkAddWordlist(fileName);
+         this.wordlist.name = name;
       } else {
          this.list.fileName = name;
       }
@@ -97,6 +103,10 @@ export class Sanitizer {
 
    public getHashlist(): Hashlist {
       return this.hashlist;
+   }
+
+   public getWordlist(): Wordlist {
+      return this.wordlist;
    }
 
    public getTemplate(): TemplateTask {
@@ -141,13 +151,13 @@ export class Sanitizer {
       switch (attackMode) {
          case 0:
             if (options.wordlistName)
-               await this.checkWordlist(options.wordlistName);
+               await this.checkWordlistExistsInOption(options.wordlistName);
             else this.setError('mandatory', 'wordlistName');
             options.rules && this.checkRules(options.rules);
             break;
          case 1:
             if (options.wordlistName)
-               await this.checkWordlist(options.wordlistName);
+               await this.checkWordlistExistsInOption(options.wordlistName);
             else this.setError('mandatory', 'wordlistName');
             if (options.combinatorWordlistName)
                this.checkCombinatorWordlist(options.combinatorWordlistName);
@@ -167,21 +177,21 @@ export class Sanitizer {
             break;
          case 6:
             if (options.wordlistName)
-               await this.checkWordlist(options.wordlistName);
+               await this.checkWordlistExistsInOption(options.wordlistName);
             else this.setError('mandatory', 'wordlistName');
             if (options.maskQuery) this.checkMaskQuery(options.maskQuery);
             else this.setError('mandatory', 'maskQuery');
             break;
          case 7:
             if (options.wordlistName)
-               await this.checkWordlist(options.wordlistName);
+               await this.checkWordlistExistsInOption(options.wordlistName);
             else this.setError('mandatory', 'wordlistName');
             if (options.maskQuery) this.checkMaskQuery(options.maskQuery);
             else this.setError('mandatory', 'maskQuery');
             break;
          case 9:
             if (options.wordlistName)
-               await this.checkWordlist(options.wordlistName);
+               await this.checkWordlistExistsInOption(options.wordlistName);
             else this.setError('mandatory', 'wordlistName');
             break;
          default:
@@ -196,9 +206,10 @@ export class Sanitizer {
       this.checkKernelOptions(options.kernelOpti);
       this.checkCPUOnly(options.CPUOnly);
       this.checkPotfiles(options.potfileName || '');
+      this.checkWorkloadProfile(options.workloadProfileId);
    }
 
-   private async checkWordlist(name: string): Promise<void> {
+   private async checkWordlistExistsInOption(name: string): Promise<void> {
       try {
          const wordlist = await this.dao.findWordlistWhere({ name });
          if (wordlist !== null) {
@@ -257,7 +268,7 @@ export class Sanitizer {
             const hashtype = await this.dao.db
                .getRepository(HashType)
                .findOne({ where: { id } });
-            if (hashtype !== null) {
+            if (hashtype) {
                this.hashlist.hashTypeId = hashtype.id;
             } else {
                this.setError('wrongData', 'hashtype');
@@ -267,6 +278,23 @@ export class Sanitizer {
          }
       } catch (error) {
          this.setError('unexpected', 'hashtype');
+      }
+   }
+
+   private async checkAddWordlist(name: string): Promise<void> {
+      try {
+         const wordlist = await this.dao.db
+            .getRepository(Wordlist)
+            .findOne({ where: { name } });
+         if (wordlist) {
+            this.setError('alreadyExists', 'wordlist');
+         } else {
+            this.wordlist.name = name;
+            this.wordlist.description = '';
+            this.wordlist.path = path.join(Constants.wordlistPath, name);
+         }
+      } catch (error) {
+         this.setError('unexpected', 'wordlist');
       }
    }
 
@@ -316,19 +344,6 @@ export class Sanitizer {
          }
       } catch (error) {
          this.setError('unexpected', 'maskQuery');
-      }
-   }
-
-   private async checkAttackMode(id: number): Promise<void> {
-      try {
-         const attackMode = await this.dao.findAttackModeById(id);
-         if (attackMode !== null) {
-            this.options.attackModeId = attackMode.id;
-         } else {
-            this.setError('wrongData', 'attack mode');
-         }
-      } catch (error) {
-         this.setError('unexpected', 'attack mode');
       }
    }
 
@@ -396,14 +411,6 @@ export class Sanitizer {
       }
    }
 
-   private findAttackModeWithId(id: number): Promise<AttackMode | null> {
-      try {
-         return this.dao.findAttackModeById(id);
-      } catch {
-         return new Promise(() => undefined);
-      }
-   }
-
    private sanitizeText(
       text: string,
       param: string,
@@ -445,7 +452,7 @@ export class Sanitizer {
    }
 
    private setError(
-      errorType: 'unexpected' | 'wrongData' | 'mandatory',
+      errorType: 'unexpected' | 'wrongData' | 'mandatory' | 'alreadyExists',
       fieldName: string
    ) {
       this.hasSucceded = false;
@@ -459,6 +466,9 @@ export class Sanitizer {
             break;
          case 'wrongData':
             msg = `Wrong data submitted for ${fieldName}`;
+            break;
+         case 'alreadyExists':
+            msg = `The ${fieldName} already exists`;
             break;
       }
       logger.debug(msg);

@@ -50,6 +50,10 @@ export default class ListController {
             const hashlist = sanitizer.getHashlist();
             await this.dao.hashlist.update(hashlist);
             name = hashlist.name;
+         } else if (typeData.isWordlist) {
+            const wordlist = sanitizer.getWordlist();
+            await this.dao.db.getRepository(Wordlist).save(wordlist);
+            name = wordlist.name;
          } else {
             name = sanitizer.getList().fileName;
          }

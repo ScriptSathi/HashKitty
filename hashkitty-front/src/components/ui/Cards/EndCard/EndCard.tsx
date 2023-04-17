@@ -81,7 +81,7 @@ export default function EndCard({
                }`}
             >
                {!(isTablette || isMobile) && (
-                  <div className="bloc max-h-[100px] overflow-auto">
+                  <div className="bloc max-h-[100px] w-full overflow-auto">
                      {contentRaws.shortRaws.map(line => (
                         <Typography
                            key={line}
