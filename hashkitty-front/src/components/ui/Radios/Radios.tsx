@@ -52,7 +52,9 @@ export default function Radios<
          return tooltips.inputs.attackModes[(item as StandardList).mode ?? 0];
       }
       if (useTemplateTooltips) {
-         const contentRaws = new CardContentBuilder((item as TTemplate).options);
+         const contentRaws = new CardContentBuilder(
+            (item as TTemplate).options,
+         );
          return (
             <>
                {contentRaws.fullRaws.map(row => (

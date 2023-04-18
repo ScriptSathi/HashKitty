@@ -22,10 +22,11 @@ export default function TemplateCard({
       url: ApiEndpoints.DELETE.template,
       data: template,
    });
-   const {isMobile, isTablette} = useScreenSize();
+   const { isMobile, isTablette } = useScreenSize();
 
    const contentRaws = new CardContentBuilder(template.options);
-   const rawsBasedOnScreenSize = isMobile || isTablette ? contentRaws.shortRaws : contentRaws.fullRaws;
+   const rawsBasedOnScreenSize =
+      isMobile || isTablette ? contentRaws.shortRaws : contentRaws.fullRaws;
 
    const handleDeletion = () => {
       deleteTask().then(() => {

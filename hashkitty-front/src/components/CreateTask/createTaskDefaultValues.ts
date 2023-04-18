@@ -15,6 +15,10 @@ const createTaskDefaultValues = {
    workloadProfile: '3',
    breakpointGPUTemperature: '90',
    templateId: '-1',
+   customCharset1: '',
+   customCharset2: '',
+   customCharset3: '',
+   customCharset4: '',
 } satisfies CreateTaskForm;
 
 export default createTaskDefaultValues;
