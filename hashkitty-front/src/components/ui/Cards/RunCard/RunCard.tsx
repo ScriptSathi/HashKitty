@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Typography from '@mui/material/Typography';
-import { CircularProgress, IconButton, SvgIcon, Tooltip } from '@mui/material';
+import { CircularProgress, SvgIcon } from '@mui/material';
 
 import { TTask } from '../../../../types/TypesORM';
 import BaseCard from '../BaseCard/BaseCard';
@@ -16,6 +16,7 @@ import useScreenSize from '../../../../hooks/useScreenSize';
 import useDeleteTask from '../../../../hooks/useDeleteTask';
 import DeleteButton from '../../Buttons/DeleteButton';
 import CardContentBuilder from '../../../../utils/CardContentBuilder';
+import RunButton from './RunButton';
 
 type CommonCard = {
    task: TTask;
@@ -54,12 +55,15 @@ export default function RunCard({
    );
 
    const hasErrors = startError.length > 0 || exitInfo.isError;
-   const contentRaws = new CardContentBuilder(task.options);
+   const contentRaws = new CardContentBuilder(
+      task.options,
+      task.hashlistId.name,
+   );
 
    if (isRunning || process.isPending) {
       setTimeout(() => {
          fetchStatus();
-         if (process.isRunning) {
+         if (process.isRunning || process.isStopped) {
             setIsLoading(false);
          }
          setIsRunning(process.isRunning || process.isPending);
@@ -149,22 +153,15 @@ export default function RunCard({
                   <p className="">Time left: {status.estimatedStop}</p>
                </div>
                <div className="flex items-end">
-                  <Tooltip title={`${isRunning ? 'Stop' : 'Start'} the task`}>
-                     <IconButton
-                        disabled={isLoading}
-                        onClick={isRunning ? handleStop : handleStart}
-                        onKeyDown={e =>
-                           e.key === 'Enter' && isRunning
-                              ? handleStop()
-                              : handleStart()
-                        }
-                        sx={iconBtn}
-                        size="small"
-                        aria-label="Start/Stop the task"
-                     >
-                        {DisplaySVG}
-                     </IconButton>
-                  </Tooltip>
+                  <RunButton
+                     isLoading={isLoading}
+                     isRunning={isRunning}
+                     handleStart={() => handleStart()}
+                     handleStop={() => handleStop()}
+                     sx={iconBtn}
+                  >
+                     {DisplaySVG}
+                  </RunButton>
                </div>
             </div>
          </div>

@@ -51,7 +51,10 @@ export default function EndCard({
       },
    );
 
-   const contentRaws = new CardContentBuilder(task.options);
+   const contentRaws = new CardContentBuilder(
+      task.options,
+      task.hashlistId.name,
+   );
 
    const handleDeletion = () => {
       deleteTask().then(() => {

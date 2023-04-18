@@ -130,7 +130,7 @@ function CreateTemplate({ closeTaskCreation }: CreateTemplateProps) {
             closeTaskCreation={closeTaskCreation}
             submitButton={
                <Button className="w-full text-lg" type="submit">
-                  <CircularProgress size={28} color="secondary" />
+                  <CircularProgress size={24} color="secondary" />
                </Button>
             }
          >
