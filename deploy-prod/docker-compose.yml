@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+
+  hashkitty-front:
+    container_name: hashkitty-front
+    build:
+      context: '../hashkitty-front/'
+      dockerfile: Dockerfile.prod
+      args:
+        API_ENDPOINT: ${API_ENDPOINT}
+        API_PORT: ${API_PORT}
+    environment:
+      PORT: 80
+    # networks:
+    #   - frontend
+    # depends_on:
+    #   - hashkitty-back
+    restart: always
+    ports:
+      - ${WEB_FRONT_PORT}:80
+
+# networks:
+#   frontend:
+#   backend:
+
+# volumes:
+#   hashkitty-storage:
+#   hashkitty-wordlists:
+
