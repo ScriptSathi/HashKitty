@@ -5,4 +5,12 @@ import svgr from "vite-plugin-svgr";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [svgr(), react()],
+  build: {
+     rollupOptions: {
+        manualChunks: {
+         '@mui/material': ['@mui/material'],
+         '@material-tailwind/react': ['@material-tailwind/react'],
+      }
+     }
+  }
 })
