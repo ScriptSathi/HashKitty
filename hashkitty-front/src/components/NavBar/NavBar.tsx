@@ -1,125 +1,79 @@
 import { NavLink } from 'react-router-dom';
 import { memo, useState } from 'react';
-import {
-   Navbar as TWNavBar,
-   MobileNav,
-   Typography,
-   IconButton,
-} from '@material-tailwind/react';
 
 import logo from '../../assets/images/logo.svg';
 import useScreenSize from '../../hooks/useScreenSize';
 
 import './NavBar.scss';
+import BurgerMenu from './BurgerMenu';
 
 // eslint-disable-next-line react/display-name
 const NavBar = memo(() => {
    const [openNav, setOpenNav] = useState(false);
-   useScreenSize({
+   const { isMobile, isTablette } = useScreenSize({
       callbackOnMobile: () => setOpenNav(false),
    });
 
    const styleNavItems = 'NavBar__button p-1 font-normal text-lg';
 
-   const navList = (
-      <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-         <Typography
-            as="li"
-            variant="small"
-            color="blue-gray"
-            className={styleNavItems}
-         >
-            <NavLink to="/home" className="NavLinks pages">
-               Home
-            </NavLink>
-         </Typography>
-         <Typography
-            as="li"
-            variant="small"
-            color="blue-gray"
-            className={styleNavItems}
-         >
-            <NavLink to="/templates" className="NavLinks pages">
-               Templates
-            </NavLink>
-         </Typography>
-         <Typography
-            as="li"
-            variant="small"
-            color="blue-gray"
-            className={styleNavItems}
-         >
-            <NavLink to="/lists" className="NavLinks pages">
-               Lists
-            </NavLink>
-         </Typography>
-      </ul>
-   );
+   const pages = ['Home', 'Templates', 'Lists']
 
    return (
-      <TWNavBar className="mx-auto text-black max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4 border-none">
+      <nav className="block w-full rounded-xl backdrop-saturate-200 backdrop-blur-2xl bg-opacity-80 border border-white/80 bg-white mx-auto text-black max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4 border-none">
          <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
             <NavLink to="/home" className="flex items-center">
                <img className="logoclassName pr-2.5" src={logo} alt="Logo" />
-               <Typography as="p" className="font-semibold text-lg">
+               <p className="block antialiased font-sans text-inherit font-semibold text-lg">
                   HashKitty
-               </Typography>
+               </p>
             </NavLink>
-            <div className="hidden lg:block">{navList}</div>
-            <IconButton
-               variant="text"
-               className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
-               ripple={false}
-               onClick={() => setOpenNav(!openNav)}
-            >
-               {openNav ? (
-                  <svg
-                     xmlns="http://www.w3.org/2000/svg"
-                     fill="none"
-                     className="h-6 w-6"
-                     viewBox="0 0 24 24"
-                     stroke="currentColor"
-                     strokeWidth={2}
-                  >
-                     <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                     />
-                  </svg>
-               ) : (
-                  <svg
-                     xmlns="http://www.w3.org/2000/svg"
-                     className="h-6 w-6"
-                     fill="none"
-                     stroke="currentColor"
-                     strokeWidth={2}
-                  >
-                     <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 6h16M4 12h16M4 18h16"
-                     />
-                  </svg>
-               )}
-            </IconButton>
+            <div className="hidden lg:block">
+               <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+                  {pages.map(pageName => (
+                     <li
+                        key={pageName}
+                        className="styleNavItems block antialiased font-sans text-blue-gray-900 NavBar__button p-1 font-normal text-lg"
+                     >
+                        <NavLink to={`/${pageName.toLowerCase()}`} className="NavLinks pages">
+                           {pageName}
+                        </NavLink>
+                     </li>
+                  ))}
+               </ul>
+            </div>
+            {isMobile || isTablette &&
+               <BurgerMenu
+                  isOpen={openNav}
+                  onClick={() => setOpenNav(!openNav)}
+               />
+            }
          </div>
          {openNav && (
-            <MobileNav
-               animate={{
-                  mount: {
-                     opacity: 1,
-                     height: `auto`,
-                     transition: { duration: 0.3, times: '[0.4, 0, 0.2, 1]' },
-                  },
+            <div
+               className="block w-full basis-full overflow-hidden lg:hidden"
+               style={{
+                  height: 'auto',
+                  opacity: 1,
                }}
-               open={openNav}
-               className="lg:hidden"
+               data-collapse="navbar"
             >
-               <div className="container mx-auto">{navList}</div>
-            </MobileNav>
+               <div className="container mx-auto pb-2 transition-all">
+                  <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+                     {pages.map(pageName => (
+                     <li
+                        key={pageName}
+                        className="styleNavItems block antialiased font-sans text-blue-gray-900 NavBar__button p-1 font-normal text-lg"
+                     >
+                        <NavLink to={`/${pageName.toLowerCase()}`} className="NavLinks pages">
+                           {pageName}
+                        </NavLink>
+                     </li>
+                     ))}
+                  </ul>
+               </div>
+            </div>
          )}
-      </TWNavBar>
+      </nav>
    );
 });
 

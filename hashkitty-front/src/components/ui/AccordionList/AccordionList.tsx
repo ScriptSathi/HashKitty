@@ -87,7 +87,12 @@ function AccordionList<List extends ListItemAvailable>({
                      </div>
                   )}
                   <Button
-                     className="ml-auto h-[15px] w-[100px]"
+                     className="w-fit ml-auto text-xs font-bold"
+                     sx={{
+                        marginLeft: 'auto',
+                        height: 15,
+                        fontSize: '0.75rem',
+                     }}
                      onClick={e => {
                         e.stopPropagation();
                         setIsClickedImport(!isClickedImport);

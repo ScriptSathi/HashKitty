@@ -193,8 +193,11 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                   />
                   <div>
                      <Button
-                        size="sm"
-                        className="mb-3 text-xs text-center h-[30px] py-1"
+                        size="small"
+                        sx={{
+                           marginBottom: .6,
+                        }}
+                        fontSize={11}
                         onClick={() => setIsClickedImport(!isClickedImport)}
                      >
                         Import a hash list
