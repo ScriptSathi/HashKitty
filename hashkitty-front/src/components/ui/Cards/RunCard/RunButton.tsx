@@ -38,6 +38,8 @@ function RunButton({
    return (
       <Tooltip title={`${isRunning ? 'Stop' : 'Start'} the task`}>
          <IconButton
+            className="Mui-focusVisible"
+            disableRipple
             disabled={isLoading}
             onClick={isRunning ? handleStop : handleStart}
             onKeyDown={e =>

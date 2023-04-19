@@ -28,8 +28,8 @@ export class DaoTasks implements IDaoSub<Task> {
       const tasks = await this.db.find({ relations: this.dbRelations });
       return tasks.sort((a, b) => {
          return (
-            new Date(b.lastestModification).valueOf() -
-            new Date(a.lastestModification).valueOf()
+            new Date(b.endeddAt ?? b.lastestModification).valueOf() -
+            new Date(a.endeddAt ?? a.lastestModification).valueOf()
          );
       });
    }
