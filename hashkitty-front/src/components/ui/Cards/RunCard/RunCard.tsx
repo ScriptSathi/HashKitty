@@ -64,8 +64,8 @@ export default function RunCard({
       setTimeout(() => {
          fetchStatus();
          if (process.isRunning || process.isStopped) {
-            if(process.isStopped) {
-                handleRefresh()
+            if (process.isStopped) {
+               handleRefresh();
             }
             setIsLoading(false);
          }

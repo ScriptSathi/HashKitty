@@ -193,9 +193,9 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                   />
                   <div>
                      <Button
-                        size="small"
                         sx={{
-                           marginBottom: .6,
+                           marginBottom: 0.6,
+                           paddingY: 0,
                         }}
                         fontSize={11}
                         onClick={() => setIsClickedImport(!isClickedImport)}
@@ -244,7 +244,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                         ['customCharset1', setCustomCharset1],
                         ['customCharset2', setCustomCharset2],
                         ['customCharset3', setCustomCharset3],
-                        ['customCharset4', setCustomCharset4]
+                        ['customCharset4', setCustomCharset4],
                      ]}
                   />
                </section>
@@ -295,24 +295,36 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                      <section className="flex flex-col gap-y-5 justify-between">
                         <CustomCharsetField<CreateTaskForm>
                            {...fieldsProps}
-                           customState={[inputCustomCharset1, setCustomCharset1]}
+                           customState={[
+                              inputCustomCharset1,
+                              setCustomCharset1,
+                           ]}
                            charsetNumber={1}
                         />
                         <CustomCharsetField<CreateTaskForm>
                            {...fieldsProps}
-                           customState={[inputCustomCharset2, setCustomCharset2]}
+                           customState={[
+                              inputCustomCharset2,
+                              setCustomCharset2,
+                           ]}
                            charsetNumber={2}
                         />
                      </section>
                      <section className="flex flex-col gap-y-5 justify-between">
                         <CustomCharsetField<CreateTaskForm>
                            {...fieldsProps}
-                           customState={[inputCustomCharset3, setCustomCharset3]}
+                           customState={[
+                              inputCustomCharset3,
+                              setCustomCharset3,
+                           ]}
                            charsetNumber={3}
                         />
                         <CustomCharsetField<CreateTaskForm>
                            {...fieldsProps}
-                           customState={[inputCustomCharset4, setCustomCharset4]}
+                           customState={[
+                              inputCustomCharset4,
+                              setCustomCharset4,
+                           ]}
                            charsetNumber={4}
                         />
                      </section>

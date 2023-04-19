@@ -22,7 +22,12 @@ type TemplateProps = {
    inputCpuOnly: TypeSetInput<boolean>;
    inputMaskQuery: TypeSetInput<string>;
    inputRules: TypeSetInput<string[]>;
-   inputCustomCharsets: [TypeSetInput<string>, TypeSetInput<string>, TypeSetInput<string>, TypeSetInput<string>]
+   inputCustomCharsets: [
+      TypeSetInput<string>,
+      TypeSetInput<string>,
+      TypeSetInput<string>,
+      TypeSetInput<string>,
+   ];
 };
 
 export default function TemplateRadio({
@@ -43,11 +48,11 @@ export default function TemplateRadio({
       setCombinatorWordlist,
    ],
    inputCustomCharsets: [
-    [fieldNameCustomCharset1, setCustomCharset1],
-    [fieldNameCustomCharset2, setCustomCharset2],
-    [fieldNameCustomCharset3, setCustomCharset3],
-    [fieldNameCustomCharset4, setCustomCharset4],
-   ]
+      [fieldNameCustomCharset1, setCustomCharset1],
+      [fieldNameCustomCharset2, setCustomCharset2],
+      [fieldNameCustomCharset3, setCustomCharset3],
+      [fieldNameCustomCharset4, setCustomCharset4],
+   ],
 }: TemplateProps) {
    const { field: fieldWordlist } = useController<CreateTaskForm>({
       control,
@@ -119,45 +124,47 @@ export default function TemplateRadio({
       fieldRules.onChange(elem.options.rules?.split(',') ?? []);
       setMaskQuery(elem.options.maskQuery || '');
       setKernelOpti(elem.options.kernelOpti);
-      
+
       setAttackMode(elem.options.attackModeId);
-      
+
       setCombinatorWordlist(elem.options.combinatorWordlistId?.name ?? '');
       setBreakTemp(elem.options.breakpointGPUTemperature.toString());
       setCpuOnly(elem.options.CPUOnly);
-      if(elem.options.workloadProfileId) {
-        setWorkloadProfile(elem.options.workloadProfileId.profileId.toString());
-        fielWorkloadProfile.onChange(
+      if (elem.options.workloadProfileId) {
+         setWorkloadProfile(
+            elem.options.workloadProfileId.profileId.toString(),
+         );
+         fielWorkloadProfile.onChange(
             elem.options.workloadProfileId.profileId.toString(),
          );
       }
       if (elem.options.potfileName) {
-        setInputPotfile(elem.options.potfileName);
-        fieldPotfile.onChange(elem.options.potfileName);
+         setInputPotfile(elem.options.potfileName);
+         fieldPotfile.onChange(elem.options.potfileName);
       }
       if (elem.options.wordlistId) {
-        setInputWordlist(elem.options.wordlistId.name);
-        fieldWordlist.onChange(elem.options.wordlistId.name);
+         setInputWordlist(elem.options.wordlistId.name);
+         fieldWordlist.onChange(elem.options.wordlistId.name);
       }
       if (elem.options.customCharset1) {
-        const key = `customCharset1`;
-        setCustomCharset1(elem.options[key] as string);
-        fieldCustomCharset1.onChange(elem.options[key]);
+         const key = `customCharset1`;
+         setCustomCharset1(elem.options[key] as string);
+         fieldCustomCharset1.onChange(elem.options[key]);
       }
       if (elem.options.customCharset2) {
-        const key = `customCharset2`;
-        setCustomCharset2(elem.options[key] as string);
-        fieldCustomCharset2.onChange(elem.options[key]);
+         const key = `customCharset2`;
+         setCustomCharset2(elem.options[key] as string);
+         fieldCustomCharset2.onChange(elem.options[key]);
       }
       if (elem.options.customCharset3) {
-        const key = `customCharset3`;
-        setCustomCharset3(elem.options[key] as string);
-        fieldCustomCharset3.onChange(elem.options[key]);
+         const key = `customCharset3`;
+         setCustomCharset3(elem.options[key] as string);
+         fieldCustomCharset3.onChange(elem.options[key]);
       }
       if (elem.options.customCharset4) {
-        const key = `customCharset4`;
-        setCustomCharset4(elem.options[key] as string);
-        fieldCustomCharset4.onChange(elem.options[key]);
+         const key = `customCharset4`;
+         setCustomCharset4(elem.options[key] as string);
+         fieldCustomCharset4.onChange(elem.options[key]);
       }
    };
 

@@ -9,7 +9,6 @@ export default defineConfig({
      rollupOptions: {
         manualChunks: {
          '@mui/material': ['@mui/material'],
-         '@material-tailwind/react': ['@material-tailwind/react'],
       }
      }
   }
