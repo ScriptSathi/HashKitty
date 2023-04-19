@@ -91,7 +91,8 @@ function AccordionList<List extends ListItemAvailable>({
                      sx={{
                         marginLeft: 'auto',
                         height: 15,
-                        fontSize: '0.75rem',
+                        fontSize: '0.65rem',
+                        fontWeight: 'bold',
                      }}
                      onClick={e => {
                         e.stopPropagation();

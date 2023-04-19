@@ -62,7 +62,7 @@ export default function FrameHoverCard({
                <CardActions sx={{ display: 'block' }}>{children}</CardActions>
             </div>
             {footer && (
-               <div className="fixed bottom-[0px] box-border w-full p-5">
+               <div className="fixed bottom-[0px] left-[0px] box-border w-[100vw] p-5">
                   {footer}
                </div>
             )}

@@ -1,4 +1,9 @@
-import { type SxProps, type Theme, Tooltip, Button as TWButton } from '@mui/material';
+import {
+   type SxProps,
+   type Theme,
+   Tooltip,
+   Button as TWButton,
+} from '@mui/material';
 
 import { HTMLAttributes } from 'react';
 
@@ -23,24 +28,29 @@ export default function Button({
    return (
       <Tooltip title={tooltip}>
          <TWButton
-            variant='contained'
+            variant="contained"
             type={type}
             {...args}
             sx={{
                backgroundColor: 'black',
                border: 'solid 4px black',
-               fontSize: fontSize,
+               fontFamily: 'inherit',
+               fontWeight: 'bold',
+               fontSize,
                color: 'white',
+               paddingX: 1,
+               paddingY: 0.8,
                '&:hover': {
                   border: 'solid 4px black',
                },
                '&:active': {
                   border: 'solid 4px #FC6F6F',
+                  color: 'white',
                },
-               ...sx
+               ...sx,
             }}
             size={size}
-            className={`${args.className} flex items-center justify-center active:bg-[#FC6F6F] active:text-white rounded-md hover:bg-white hover:text-black border-solid`}
+            className={`${args.className} flex uppercase items-center justify-center active:bg-[#FC6F6F] active:text-white rounded-md hover:bg-white hover:text-black border-solid`}
          >
             {children || 'button'}
          </TWButton>
