@@ -8,6 +8,7 @@ import ErrorPage from './pages/ErrorPage/ErrorPage';
 import Templates from './pages/Templates/Templates';
 
 import './assets/styles/main.scss';
+import './index.css';
 import Lists from './pages/Lists/Lists';
 
 const theme = createTheme({
