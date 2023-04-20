@@ -21,7 +21,11 @@ module.exports = {
       tsconfigRootDir: '.',
    },
    plugins: ['react', '@typescript-eslint', 'prettier'],
-   ignorePatterns: ['vite.config.ts', 'tailwind.config.cjs'],
+   ignorePatterns: [
+      'vite.config.ts',
+      'tailwind.config.cjs',
+      'postcss.config.cjs',
+   ],
    rules: {
       'react/react-in-jsx-scope': 0,
       'lines-between-class-members': 'off',

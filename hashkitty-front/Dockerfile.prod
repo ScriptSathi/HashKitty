@@ -5,21 +5,26 @@ FROM node:hydrogen-slim as build
 WORKDIR /app
 COPY src/ /app/src/
 COPY public /app/public/
-COPY package.json package-lock.json tsconfig.json tsconfig.node.json /app/
+COPY \
+    package.json \
+    package-lock.json \
+    tsconfig.json \
+    tsconfig.node.json \
+    custom.d.ts index.html \
+    vite.config.ts \
+    postcss.config.cjs \
+    tailwind.config.cjs /app/
 RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm set cache /usr/src/app/.npm
 RUN npm ci
 RUN npm run build
 
 # Production container
-FROM gcr.io/distroless/nodejs20-debian11
+FROM nginx:1.23
 
-COPY --from=build /app /
+COPY --from=build /app/dist /usr/share/nginx/html
 
 ARG API_ENDPOINT
 ARG API_PORT
 ENV REACT_APP_API_ENDPOINT $API_ENDPOINT
 ENV REACT_APP_API_PORT $API_PORT
-
-EXPOSE $PORT
-CMD npm run preview
