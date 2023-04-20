@@ -10,11 +10,11 @@ RUN apt install -f
 
 #install nvm
 RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-RUN . ~/.nvm/nvm.sh && nvm install v18.12.1
+RUN . ~/.nvm/nvm.sh && nvm install v19.8.1
 
-ENV PATH /bin/versions/node/v18.12.1/bin:$PATH
-ENV NVM_BIN /bin/versions/node/v18.12.1/bin
-ENV NVM_INC /bin/versions/node/v18.12.1/include/node
+ENV PATH /bin/versions/node/v19.8.1/bin:$PATH
+ENV NVM_BIN /bin/versions/node/v19.8.1/bin
+ENV NVM_INC /bin/versions/node/v19.8.1/include/node
 
 WORKDIR /app
 COPY src/ /app/src/

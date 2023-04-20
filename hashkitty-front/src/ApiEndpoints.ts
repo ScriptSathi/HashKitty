@@ -1,13 +1,11 @@
 export default class ApiEndpoints {
    public static readonly mandatoryFetchOptions = {} satisfies RequestInit;
    public static readonly domaineName =
-      import.meta.env?.REACT_APP_API_ENDPOINT || 'localhost';
-   public static readonly apiPort =
-      import.meta.env?.REACT_APP_API_PORT || '1337';
+      import.meta.env?.VITE_API_ENDPOINT ?? 'localhost';
+   public static readonly apiPort = import.meta.env?.VITE_API_PORT ?? '1337';
    public static readonly endpoint = '/api';
-   public static readonly apiUrl: string = `http://${this.domaineName}:${this.apiPort}${this.endpoint}`;
-   public static readonly apiPOSTAddList: string = `${this.apiUrl}/list`;
-   public static readonly apiNotifications: string = `${this.apiUrl}/notifications`;
+   public static readonly protocol = this.apiPort === '443' ? 'https' : 'http';
+   public static readonly apiUrl: string = `${this.protocol}://${this.domaineName}:${this.apiPort}${this.endpoint}`;
    public static get GET() {
       return {
          notifications: `${this.apiUrl}/notifications`,

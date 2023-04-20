@@ -1,29 +1,136 @@
 version: '3.9'
 services:
 
+  traefik:
+    image: traefik:v2.9.7
+    container_name: "traefik"
+    restart: always
+    networks:
+      hashkitty:
+        ipv4_address: 172.123.0.2
+    command:
+#      - "--log.level=DEBUG"
+      - "--api.dashboard=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=fake-email@hashkitty.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    labels:
+      - "traefik.enable=true"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=(Host(`${TRAEFIK_URL}`))"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.middlewares=dashboardauth"
+      - "traefik.http.middlewares.dashboardauth.basicauth.users=${TRAEFIK_USERNAME}:${TRAEFIK_PASSWORD}"
+      # HTTPS Redirect
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https@docker"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - traefik:/letsencrypt
+
+  mysql:
+    image: "mysql:8.0.30"
+    container_name: ${DB_ENDPOINT}
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    networks:
+      - hashkitty
+    ports:
+      - ${DB_PORT}:3306
+    volumes:
+      - storage:/var/lib/mysql
+      - ../hashkitty-server/sqldump:/docker-entrypoint-initdb.d:ro
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.0-apache
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: ${DB_ENDPOINT}
+      PMA_USER: root
+      PMA_PASSWORD: root
+      PMA_ARBITRARY: 1
+    networks:
+      - hashkitty
+    restart: always
+    ports:
+      - ${PHPMYADMIN_PORT}:80
+
   hashkitty-front:
     container_name: hashkitty-front
     build:
       context: '../hashkitty-front/'
       dockerfile: Dockerfile.prod
-      args:
-        API_ENDPOINT: ${API_ENDPOINT}
-        API_PORT: ${API_PORT}
-    environment:
-      PORT: 80
-    # networks:
-    #   - frontend
-    # depends_on:
-    #   - hashkitty-back
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=hashkitty_external_network"
+      - "traefik.http.services.hashkitty_web.loadbalancer.server.port=80"
+      - "traefik.http.routers.hashkitty_web.rule=Host(`${WEB_ENDPOINT}`)"
+      - "traefik.http.routers.hashkitty_web.entrypoints=websecure"
+      - "traefik.http.routers.hashkitty_web.tls.certresolver=letsencrypt"
+    networks:
+      - hashkitty
+    depends_on:
+      - hashkitty-back
     restart: always
-    ports:
-      - ${WEB_FRONT_PORT}:80
 
-# networks:
-#   frontend:
-#   backend:
+  hashkitty-back:
+    container_name: hashkitty-back
+    restart: always
+    build:
+      context: '../hashkitty-server/'
+      args:
+        PORT: 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=hashkitty_external_network"
+      - "traefik.http.services.hashkitty_back.loadbalancer.server.port=80"
+      - "traefik.http.routers.hashkitty_back.rule=Host(`${API_ENDPOINT}`)"
+      - "traefik.http.routers.hashkitty_back.entrypoints=websecure"
+      - "traefik.http.routers.hashkitty_back.tls.certresolver=letsencrypt"
+    environment:
+      DB_ENDPOINT: ${DB_ENDPOINT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      WORDLISTS_DIR_PATH: ${WORDLISTS_DIR_PATH}
+    volumes:
+      - wordlists:${WORDLISTS_DIR_PATH}
+    networks:
+      - hashkitty
+    depends_on:
+      - mysql
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
 
-# volumes:
-#   hashkitty-storage:
-#   hashkitty-wordlists:
+networks:
+  hashkitty:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.123.0.0/24
+          gateway: 172.123.0.1
+volumes:
+  traefik:
+  storage:
+  wordlists:
 
