@@ -5,7 +5,7 @@ import ApiEndpoints from '../ApiEndpoints';
 export default function useFetchNotifications() {
    const [notifications, setNotifications] = useState<TNotification[]>([]);
    const [isLoading, setIsLoading] = useState(false);
-   const url = ApiEndpoints.apiNotifications;
+   const url = ApiEndpoints.GET.notifications;
    const defaultHeaders = { 'Content-Type': 'application/json' };
 
    async function refreshNotifications() {
