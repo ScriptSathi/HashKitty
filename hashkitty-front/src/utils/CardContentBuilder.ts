@@ -31,7 +31,7 @@ export default class CardContentBuilder {
          !isCombinatorAttack &&
          !!option.maskQuery;
 
-      const rules = option.rules?.split(',');
+      const rules = option.rules?.split(',').filter(e => e);
       const raws = [
          `Attack mode: ${option.attackModeId.mode} - ${option.attackModeId.name}`,
       ];
@@ -53,10 +53,11 @@ export default class CardContentBuilder {
          if (option.customCharset4)
             raws.push(`Custom charset 4 : ${option.customCharset4}`);
       }
-      if (rules)
+      if (rules && rules?.length > 0) {
          raws.push(
             `${rules.length > 1 ? 'Rules' : 'Rule'} : ${rules.join(', ')}`,
          );
+      }
       this.shortRaws = raws;
    }
 }

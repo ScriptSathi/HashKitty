@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Path, PathValue } from 'react-hook-form';
 import {
    CreateTemplateForm,
@@ -15,9 +16,10 @@ function KernelOptiCheckBox<Form extends CreateTemplateForm>({
    register,
    setValue,
    className,
-   customState,
+   customState = undefined,
 }: KernelOptiCheckBoxProps<Form>) {
-   const [inputCheck, setCheck] = customState ?? [false, () => {}];
+   const state = useState(false);
+   const [inputCheck, setCheck] = customState ?? state;
    const fieldName = 'kernelOpti' as Path<Form>;
    return (
       <CheckBox<Form>
@@ -35,7 +37,7 @@ function KernelOptiCheckBox<Form extends CreateTemplateForm>({
 }
 
 KernelOptiCheckBox.defaultProps = {
-   customState: [false, () => {}],
+   customState: undefined,
    className: '',
 };
 

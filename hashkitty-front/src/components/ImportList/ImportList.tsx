@@ -12,7 +12,7 @@ import DragNDrop from '../ui/DragNDrop/DragNDrop';
 import InputDropdown from '../ui/Inputs/InputDropdown';
 
 type ImportListProps = {
-   closeImportWindow: () => void;
+   closeImportWindow: (doRefresh?: boolean) => void;
    type: UploadFileType;
 };
 
@@ -57,7 +57,9 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
          formData.append('file', form.file, form.file.name);
          if (isHashlist)
             formData.append('hashTypeId', form.hashTypeId?.toString() || '-1');
-         sendForm({ formData, setHeaders: false }, () => closeImportWindow());
+         sendForm({ formData, setHeaders: false }, () =>
+            closeImportWindow(true),
+         );
       }
    };
 

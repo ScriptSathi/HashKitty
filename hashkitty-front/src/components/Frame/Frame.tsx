@@ -29,7 +29,7 @@ export default function Frame({ children, isLoading, className }: FrameProps) {
                ))}
             </div>
          </header>
-         <div className="flex justify-center">
+         <div className="flex justify-center mb-[100px]">
             {isLoading ? (
                <CircularProgress className="mt-96" color="secondary" />
             ) : (

@@ -59,9 +59,9 @@ function AccordionList<List extends ListItemAvailable>({
    });
    const isEmptyList = list.length > 0;
 
-   const closeImportWindow = () => {
+   const closeImportWindow = (doRefresh = false) => {
       setIsClickedImport(!isClickedImport);
-      setTimeout(() => refreshLists(), 1000);
+      if (doRefresh) setTimeout(() => refreshLists(), 1000);
    };
 
    const handleDeletion = (fileName: string): void => {
@@ -87,8 +87,9 @@ function AccordionList<List extends ListItemAvailable>({
                      </div>
                   )}
                   <Button
-                     className="w-fit ml-auto text-xs font-bold"
+                     className="w-fit text-xs font-bold"
                      sx={{
+                        marginTop: 0.5,
                         marginLeft: 'auto',
                         height: 15,
                         fontSize: '0.65rem',

@@ -94,9 +94,9 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
       refresh,
    } = useFetchAllList();
 
-   const closeImportWindow = () => {
+   const closeImportWindow = (doRefresh = false) => {
       setIsClickedImport(!isClickedImport);
-      setTimeout(() => refresh(), 1000);
+      if (doRefresh) setTimeout(() => refresh(), 1000);
    };
 
    const isStraightAttack = inputAttackMode?.mode === 0;
@@ -194,7 +194,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                   <div>
                      <Button
                         sx={{
-                           marginBottom: 0.6,
+                           marginBottom: 1.2,
                            paddingY: 0,
                         }}
                         fontSize={11}

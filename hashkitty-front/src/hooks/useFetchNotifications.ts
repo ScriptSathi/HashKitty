@@ -39,7 +39,7 @@ export default function useFetchNotifications() {
    useEffect(() => {
       const interval = setInterval(() => {
          refreshNotifications();
-      }, 1000);
+      }, 500);
       return () => clearInterval(interval);
    }, []);
 

@@ -1,4 +1,5 @@
 import { Path, PathValue } from 'react-hook-form';
+import { useState } from 'react';
 import type {
    CreateTemplateForm,
    FieldProps,
@@ -14,10 +15,12 @@ type CPUOnlyCheckBoxProps<Form extends CreateTemplateForm> = {
 function CPUOnlyCheckBox<Form extends CreateTemplateForm>({
    register,
    setValue,
-   customState,
    className,
+   customState = undefined,
 }: CPUOnlyCheckBoxProps<Form>) {
-   const [inputCheck, setCheck] = customState ?? [false, () => {}];
+   const state = useState(false);
+   const [inputCheck, setCheck] = customState ?? state;
+
    const fieldName = 'cpuOnly' as Path<Form>;
    return (
       <CheckBox<Form>
@@ -35,7 +38,7 @@ function CPUOnlyCheckBox<Form extends CreateTemplateForm>({
 }
 
 CPUOnlyCheckBox.defaultProps = {
-   customState: [false, () => {}],
+   customState: undefined,
    className: '',
 };
 

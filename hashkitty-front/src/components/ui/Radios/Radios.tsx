@@ -90,14 +90,13 @@ export default function Radios<
                {errorMessage()}
             </p>
          </div>
-         <div className="h-[160px] w-[275px] overflow-y-scroll">
+         <div className="h-[170px] w-[275px] overflow-y-scroll">
             <RadioGroup
                className="ml-[20px] flex-column"
                aria-labelledby="template-radio"
             >
                {list.map(elem => (
                   <RadioItem<T, Form>
-                     className="flex justify-between"
                      key={elem.id}
                      showTooltips={useAttackModeTooltips || useTemplateTooltips}
                      elem={elem}

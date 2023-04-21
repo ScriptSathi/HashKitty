@@ -7,7 +7,7 @@ COPY src/ /app/src/
 COPY public /app/public/
 COPY \
     docker/nginx.conf \
-    .env.production \
+    docker/.env \
     package.json \
     package-lock.json \
     tsconfig.json \

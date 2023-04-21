@@ -7,8 +7,8 @@ import BaseCard from '../BaseCard/BaseCard';
 import useStartTask from '../../../../hooks/useStartTask';
 import ApiEndpoints from '../../../../ApiEndpoints';
 import useFetchStatus from '../../../../hooks/useFetchStatus';
-import StartSVG from '../../../../assets/images/playTask.svg';
-import StopSVG from '../../../../assets/images/stopTask.svg';
+import { ReactComponent as StartSVG } from '../../../../assets/images/playTask.svg';
+import { ReactComponent as StopSVG } from '../../../../assets/images/stopTask.svg';
 
 import './RunCard.scss';
 import useStopTask from '../../../../hooks/useStopTask';

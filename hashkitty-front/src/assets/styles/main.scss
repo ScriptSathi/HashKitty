@@ -29,9 +29,9 @@
 	 height: 1.15em;
 	 border: 0.15em solid black;
 	 border-radius: 0.15em;
-	 transform: translateY(-0.075em);
 	 display: grid;
 	 place-content: center;
+	 padding-top: 2px;
 
 	 &::before {
 		 content: "";

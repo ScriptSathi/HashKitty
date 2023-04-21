@@ -36,6 +36,7 @@ export default function Button({
                border: 'solid 4px black',
                fontFamily: 'inherit',
                fontWeight: 'bold',
+               boxShadow: 'unset',
                fontSize,
                color: 'white',
                paddingX: 1,
@@ -44,13 +45,14 @@ export default function Button({
                   border: 'solid 4px black',
                },
                '&:active': {
+                  backgroundColor: '#FC6F6F',
                   border: 'solid 4px #FC6F6F',
                   color: 'white',
                },
                ...sx,
             }}
             size={size}
-            className={`${args.className} flex uppercase items-center justify-center active:bg-[#FC6F6F] active:text-white rounded-md hover:bg-white hover:text-black border-solid`}
+            className={`${args.className} flex uppercase items-center justify-center rounded-md hover:bg-white hover:text-black`}
          >
             {children || 'button'}
          </TWButton>

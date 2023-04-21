@@ -63,7 +63,7 @@ function RadioItem<
          />
          {displayTooltip && (
             <InfoTooltip
-               className={`mr-[10px] ${isHover ? 'visible' : 'hidden'}`}
+               className={isHover ? 'visible' : 'hidden'}
                tooltip={tooltipText}
             />
          )}
