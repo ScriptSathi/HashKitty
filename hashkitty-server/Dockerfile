@@ -24,8 +24,4 @@ RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm i
 RUN npm run compile
 
-ARG PORT
-ENV PORT $PORT
-EXPOSE $PORT
-
 CMD node /app/build/src/index.js

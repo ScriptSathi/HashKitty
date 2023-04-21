@@ -7,7 +7,7 @@ services:
     restart: always
     networks:
       hashkitty:
-        ipv4_address: 172.123.0.2
+        ipv4_address: 172.123.0.3
     command:
 #      - "--log.level=DEBUG"
       - "--api.dashboard=true"
@@ -74,8 +74,8 @@ services:
   hashkitty-front:
     container_name: hashkitty-front
     build:
-      context: '../hashkitty-front/'
-      dockerfile: Dockerfile.prod
+      context: '../hashkitty-front'
+      dockerfile: docker/Dockerfile.prod
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=hashkitty_external_network"
@@ -93,9 +93,7 @@ services:
     container_name: hashkitty-back
     restart: always
     build:
-      context: '../hashkitty-server/'
-      args:
-        PORT: 80
+      context: '../hashkitty-server'
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=hashkitty_external_network"
