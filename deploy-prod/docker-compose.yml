@@ -7,7 +7,7 @@ services:
     restart: always
     networks:
       hashkitty:
-        ipv4_address: 172.123.0.3
+        ipv4_address: 172.123.0.2
     command:
 #      - "--log.level=DEBUG"
       - "--api.dashboard=true"
@@ -50,26 +50,13 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
     networks:
-      - hashkitty
+      hashkitty:
+        ipv4_address: 172.123.0.3
     ports:
       - ${DB_PORT}:3306
     volumes:
       - storage:/var/lib/mysql
       - ../hashkitty-server/sqldump:/docker-entrypoint-initdb.d:ro
-
-  phpmyadmin:
-    image: phpmyadmin:5.2.0-apache
-    container_name: phpmyadmin
-    environment:
-      PMA_HOST: ${DB_ENDPOINT}
-      PMA_USER: root
-      PMA_PASSWORD: root
-      PMA_ARBITRARY: 1
-    networks:
-      - hashkitty
-    restart: always
-    ports:
-      - ${PHPMYADMIN_PORT}:80
 
   hashkitty-front:
     container_name: hashkitty-front
@@ -84,7 +71,8 @@ services:
       - "traefik.http.routers.hashkitty_web.entrypoints=websecure"
       - "traefik.http.routers.hashkitty_web.tls.certresolver=letsencrypt"
     networks:
-      - hashkitty
+      hashkitty:
+        ipv4_address: 172.123.0.5
     depends_on:
       - hashkitty-back
     restart: always
@@ -110,7 +98,8 @@ services:
     volumes:
       - wordlists:${WORDLISTS_DIR_PATH}
     networks:
-      - hashkitty
+      hashkitty:
+        ipv4_address: 172.123.0.6
     depends_on:
       - mysql
     deploy:

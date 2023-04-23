@@ -1,25 +1,23 @@
 # [Hashkitty](https://github.com/ScriptSathi/HashKitty)
 
+![GitHub License](https://img.shields.io/github/license/ScriptSathi/HashKitty?style=flat-square)
+![GitHub top language](https://img.shields.io/github/languages/top/ScriptSathi/HashKitty?style=flat-square)
+![Github commits](https://img.shields.io/github/commit-activity/m/ScriptSathi/HashKitty?style=flat-square)
+
 Hashkitty is another web user interface for Hashcat, fully written in Typescript.
 
 ## Disclaimer
 
-This is a first draft so you may encounter bugs, or unfinnished things
-The project is not even in it's alpha version, so be patient please 🙏
+The project is currently in **Alpha Version**. It may encounter bugs or any weird behaviours. If you notice any, please submit an issue with as much details as possible.
 
 ## Prerequisites
 
 - `Hashcat v6.2.6 or later` 
-- `Node v18.15.0 or later` 
-- `Docker Compose` (for deploying mysql server)
+- `Docker Compose`
 
 ## Install
 
-If you do not have the `Hashcat` binary install, you can use the docker for this. But make sure you have the same version of `Cuda` install on you machine. To check the version in docker image, refere to the [Dockerfile](./hashkitty-server/Dockerfile)
-
-### Docker warning
-
-Due to big changes in the front-end, the front docker is not operationnal, so please keep using the below configuration 
+If you want to deploy this project with Docker, please check the [Docker README](DOCKER.md)
 
 ### Basic install
 

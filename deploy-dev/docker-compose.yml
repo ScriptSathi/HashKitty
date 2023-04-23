@@ -6,7 +6,7 @@ services:
     restart: always
     networks:
       hashkitty:
-        ipv4_address: 172.124.0.4
+        ipv4_address: 172.124.0.2
     command:
 #      - "--log.level=DEBUG"
       - "--api.dashboard=true"
@@ -49,7 +49,8 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
     networks:
-      - hashkitty
+      hashkitty:
+        ipv4_address: 172.124.0.3
     ports:
       - ${DB_PORT}:3306
     volumes:
@@ -63,11 +64,12 @@ services:
       PMA_USER: root
       PMA_PASSWORD: root
       PMA_ARBITRARY: 1
-    networks:
-      - hashkitty
     restart: always
     ports:
       - ${PHPMYADMIN_PORT}:80
+    networks:
+      hashkitty:
+        ipv4_address: 172.124.0.6
 
   hashkitty-front:
     build:
@@ -84,7 +86,8 @@ services:
       - "traefik.http.routers.hashkitty_web.entrypoints=websecure"
       - "traefik.http.routers.hashkitty_web.tls.certresolver=letsencrypt"
     networks:
-      - hashkitty
+      hashkitty:
+        ipv4_address: 172.124.0.4
     depends_on:
       - hashkitty-back
     restart: always
@@ -112,15 +115,16 @@ services:
       - wordlists:${WORDLISTS_DIR_PATH}
       - ../hashkitty-server:/app
     networks:
-      - hashkitty
+      hashkitty:
+        ipv4_address: 172.124.0.5
     depends_on:
       - mysql
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           capabilities: [gpu]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
 
 networks:
   hashkitty:
