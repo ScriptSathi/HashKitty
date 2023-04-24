@@ -17,11 +17,13 @@ The project is currently in **Alpha Version**. It may encounter bugs or any weir
 
 ## Install
 
-If you want to deploy this project with Docker, please check the [Docker README](DOCKER.md)
+### Docker
 
-### Basic install
+If you want to deploy this project with Docker, please check the [Docker install](DOCKER.md)
 
-First start the mysql server with the docker compose
+### Standalone install
+
+If you just want to install it in local for testing, you need to have a mysql server deployed. You can use the database below to do so. 
 
 ```
 cd deploy-dev
@@ -42,6 +44,6 @@ Then compile the api and start it
 ```
 cd hashkitty-server
 npm ci
-npm run build
+npm run compile
 node build/src/index.js
 ```

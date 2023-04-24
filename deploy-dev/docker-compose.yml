@@ -110,9 +110,9 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_DATABASE: ${DB_DATABASE}
-      WORDLISTS_DIR_PATH: ${WORDLISTS_DIR_PATH}
+      WORDLISTS_DIR_PATH: ${PATH_FOR_LISTS_IN_DOCKER}
     volumes:
-      - wordlists:${WORDLISTS_DIR_PATH}
+      - ${LOCALPATH_WHERE_WORDLISTS_ARE_STORED}:${PATH_FOR_LISTS_IN_DOCKER}
       - ../hashkitty-server:/app
     networks:
       hashkitty:
@@ -136,5 +136,4 @@ networks:
 volumes:
   traefik:
   storage:
-  wordlists:
 

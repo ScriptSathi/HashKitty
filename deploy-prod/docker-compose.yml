@@ -49,11 +49,10 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_TCP_PORT: ${DB_PORT}
     networks:
       hashkitty:
         ipv4_address: 172.123.0.3
-    ports:
-      - ${DB_PORT}:3306
     volumes:
       - storage:/var/lib/mysql
       - ../hashkitty-server/sqldump:/docker-entrypoint-initdb.d:ro
@@ -91,17 +90,18 @@ services:
       - "traefik.http.routers.hashkitty_back.tls.certresolver=letsencrypt"
     environment:
       DB_ENDPOINT: ${DB_ENDPOINT}
+      DB_PORT: ${DB_PORT}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_DATABASE: ${DB_DATABASE}
-      WORDLISTS_DIR_PATH: ${WORDLISTS_DIR_PATH}
-    volumes:
-      - wordlists:${WORDLISTS_DIR_PATH}
+      WORDLISTS_DIR_PATH: ${PATH_FOR_LISTS_IN_DOCKER}
     networks:
       hashkitty:
         ipv4_address: 172.123.0.6
     depends_on:
       - mysql
+    volumes:
+      - ${LOCALPATH_WHERE_WORDLISTS_ARE_STORED}:${PATH_FOR_LISTS_IN_DOCKER}/wordlists
     deploy:
       resources:
         reservations:
@@ -119,5 +119,3 @@ networks:
 volumes:
   traefik:
   storage:
-  wordlists:
-

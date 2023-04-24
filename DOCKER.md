@@ -21,8 +21,10 @@ $ nvidia-smi
 So the exact version I have is `CUDA Version: 12.1`, this is the image you need to set in the [API Dockerfile](./hashkitty-server/Dockerfile)
 For example in this case, according to the available tags for [Cuda container](https://hub.docker.com/r/nvidia/cuda/tags)
 ```
-FROM nvidia/cuda:12.1.0-base-ubuntu20.04
+FROM nvidia/cuda:11.2.0-devel-ubuntu20.04
 ```
+
+It is important to take the `devel` build on top of `ubuntu`. Otherwise you can get issues with the installation of dependencies.
 
 ### Install the docker plugin for NVIDIA
 
@@ -70,9 +72,21 @@ docker-compose -p hashkitty up -d
 
 ## Add traefik to `/etc/hosts`
 
-If you did not change the default endpoints and ips, the line you need to add to your hosts file should look like this
+If you did not change the default endpoints and ips, the line you need to add to your hosts file should look like this.
+The **IP correspond to the traefik container**.
 
 ```
-# Add this inside your /etc/hosts file
+# Add this inside your /etc/hosts file. 
 172.123.0.2     traefik.lan  api.hashkitty.lan  hashkitty.lan
+```
+
+## Troubleshooting
+
+### MySQL startup with error `Permission Denied`
+
+If you have any problems with MySql that does not start, please reach the path `./hashkitty-server/sqldump` and then change the permissions of the folder.
+It is because the file is mounted inside the container and cannot be read by the database
+
+```
+chmod 777 ./hashkitty-server/sqldump
 ```
