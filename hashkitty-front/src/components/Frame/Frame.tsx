@@ -4,7 +4,7 @@ import NavBar from '../NavBar/NavBar';
 import useFetchNotifications from '../../hooks/useFetchNotifications';
 
 type FrameProps = {
-   children: React.ReactNode;
+   children?: React.ReactNode;
    isLoading?: boolean;
    className?: string | undefined;
 };
@@ -43,4 +43,5 @@ export default function Frame({ children, isLoading, className }: FrameProps) {
 Frame.defaultProps = {
    isLoading: false,
    className: undefined,
+   children: undefined,
 };

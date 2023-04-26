@@ -2,28 +2,14 @@ import { useState } from 'react';
 import duration from 'humanize-duration';
 import { TuseFetch } from '../types/THooks';
 
-import { THashcatRunningStatus, THashcatStatus } from '../types/TApi';
+import {
+   ResponseStatus,
+   THashcatRunningStatus,
+   THashcatStatus,
+} from '../types/TApi';
 
-type Tstate = {
+export type TFetchStatus = {
    data: THashcatStatus;
-   loading: boolean;
-   error: unknown;
-   exitInfo: {
-      message: string;
-      isError: boolean;
-   };
-};
-
-type Tstatus = {
-   estimatedStop: string;
-   runningProgress: string;
-   speed: string;
-};
-
-type ReturnUseFetchStatus = {
-   sessionName: string;
-   data: THashcatStatus;
-   status: Tstatus;
    loading: boolean;
    error: unknown;
    exitInfo: {
@@ -35,7 +21,17 @@ type ReturnUseFetchStatus = {
       isPending: boolean;
       isStopped: boolean;
    };
-   fetchStatus: () => void;
+};
+
+type Tstatus = {
+   estimatedStop: string;
+   runningProgress: string;
+   speed: string;
+};
+
+type ReturnUseFetchStatus = {
+   status: Tstatus;
+   fetchStatus: () => Promise<TFetchStatus>;
 };
 
 function filterateStatusData(
@@ -84,7 +80,7 @@ export default function useFetchStatus({
    url,
    headers = {},
 }: Omit<TuseFetch, 'method' | 'data'>): ReturnUseFetchStatus {
-   const [state, setState] = useState<Tstate>({
+   const defaultState = {
       data: <THashcatStatus>{},
       loading: true,
       error: null,
@@ -92,16 +88,16 @@ export default function useFetchStatus({
          message: '',
          isError: false,
       },
-   });
+      process: {
+         isRunning: false,
+         isPending: false,
+         isStopped: true,
+      },
+   } satisfies TFetchStatus;
    const [status, setStatus] = useState<Tstatus>({
       estimatedStop: 'Not running',
       runningProgress: '0',
       speed: '0',
-   });
-   const [process, setProcess] = useState({
-      isRunning: false,
-      isPending: false,
-      isStopped: true,
    });
 
    const defaultHeaders = { 'Content-Type': 'application/json' };
@@ -109,65 +105,49 @@ export default function useFetchStatus({
       method: 'GET',
       headers: { ...defaultHeaders, ...headers },
    };
-   function fetchStatus() {
-      fetch(url, reqOptions)
-         .then(res => res.json())
-         .then(
-            res => {
-               setState({
-                  data: res.status.runningStatus,
-                  loading: false,
-                  error: null,
-                  exitInfo: res.status.exitInfo || '',
-               });
-               if (Object.keys(res.status.runningStatus).length > 0)
-                  setStatus(filterateStatusData(res.status.runningStatus));
-               if (res.status.processState === 'stopped') {
-                  setProcess({
-                     isRunning: false,
-                     isPending: false,
-                     isStopped: true,
-                  });
-               } else if (res.status.processState === 'pending') {
-                  setProcess({
-                     isRunning: false,
-                     isPending: true,
-                     isStopped: false,
-                  });
-               } else if (res.status.processState === 'running') {
-                  setProcess({
-                     isRunning: true,
-                     isPending: false,
-                     isStopped: false,
-                  });
-               }
+   const fetchStatus = async () => {
+      try {
+         const jsonRes = await fetch(url, reqOptions);
+         const res: ResponseStatus = await jsonRes.json();
+         const fetchState = {
+            data: res.status,
+            loading: false,
+            error: null,
+            exitInfo: res.status.exitInfo,
+            process: {
+               isRunning: false,
+               isPending: false,
+               isStopped: true,
             },
-            err => {
-               setState({
-                  data: <THashcatStatus>{},
-                  loading: false,
-                  error: err,
-                  exitInfo: {
-                     message: err,
-                     isError: true,
-                  },
-               });
-               setProcess({
-                  isRunning: false,
-                  isPending: false,
-                  isStopped: true,
-               });
-            },
-         );
-   }
+         };
+
+         if (Object.keys(res.status.runningStatus).length > 0)
+            setStatus(
+               filterateStatusData(
+                  <THashcatRunningStatus>res.status.runningStatus,
+               ),
+            );
+         if (res.status.processState === 'pending') {
+            fetchState.process = {
+               isRunning: false,
+               isPending: true,
+               isStopped: false,
+            };
+         } else if (res.status.processState === 'running') {
+            fetchState.process = {
+               isRunning: true,
+               isPending: false,
+               isStopped: false,
+            };
+         }
+         return fetchState;
+      } catch (err) {
+         return defaultState;
+      }
+   };
+
    return {
       fetchStatus,
-      sessionName: state.data?.runningStatus?.session || '',
       status,
-      data: state.data,
-      error: state.error,
-      loading: state.loading,
-      exitInfo: state.exitInfo,
-      process,
    };
 }

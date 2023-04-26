@@ -1,16 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import { CircularProgress, SvgIcon } from '@mui/material';
 
-import { TTask } from '../../../../types/TypesORM';
+import type { TTask } from '../../../../types/TypesORM';
+import type { THashcatStatus } from '../../../../types/TApi';
 import BaseCard from '../BaseCard/BaseCard';
 import useStartTask from '../../../../hooks/useStartTask';
 import ApiEndpoints from '../../../../ApiEndpoints';
-import useFetchStatus from '../../../../hooks/useFetchStatus';
+import useFetchStatus, { TFetchStatus } from '../../../../hooks/useFetchStatus';
 import { ReactComponent as StartSVG } from '../../../../assets/images/playTask.svg';
 import { ReactComponent as StopSVG } from '../../../../assets/images/stopTask.svg';
-
-import './RunCard.scss';
 import useStopTask from '../../../../hooks/useStopTask';
 import useScreenSize from '../../../../hooks/useScreenSize';
 import useDeleteTask from '../../../../hooks/useDeleteTask';
@@ -18,31 +17,42 @@ import DeleteButton from '../../Buttons/DeleteButton';
 import CardContentBuilder from '../../../../utils/CardContentBuilder';
 import RunButton from './RunButton';
 
+import './RunCard.scss';
+
 type CommonCard = {
    task: TTask;
    isRunning: boolean;
    handleRefresh: () => void;
 };
 
-export default function RunCard({
+function RunCard({
    task,
    handleRefresh,
    isRunning: initIsRunning,
 }: CommonCard) {
-   const { isTablette, isMobile } = useScreenSize({});
-   const [isLoading, setIsLoading] = useState(false);
-   const { fetchStatus, exitInfo, process, status } = useFetchStatus({
+   const { isTablette, isMobile } = useScreenSize();
+   const [taskStatus, setTaskStatus] = useState<TFetchStatus>({
+      data: {} as THashcatStatus,
+      loading: true,
+      error: null,
+      exitInfo: {
+         message: '',
+         isError: false,
+      },
+      process: {
+         isRunning: false,
+         isPending: false,
+         isStopped: true,
+      },
+   });
+   const { fetchStatus, status } = useFetchStatus({
       url: ApiEndpoints.GET.taskStatus,
    });
-   const {
-      startTask,
-      hasStarted,
-      error: startError,
-   } = useStartTask({
+   const { startTask, hasStarted } = useStartTask({
       url: ApiEndpoints.POST.startTask,
       data: task,
    });
-   const { stopTask, stoppedSucced } = useStopTask({
+   const { stopTask } = useStopTask({
       url: ApiEndpoints.GET.stopTask,
    });
    const { deleteTask, isError } = useDeleteTask({
@@ -50,40 +60,40 @@ export default function RunCard({
       data: task,
    });
 
-   const [isRunning, setIsRunning] = useState(
-      initIsRunning || hasStarted || process.isRunning,
-   );
+   const [isRunning, setIsRunning] = useState(initIsRunning || hasStarted);
 
-   const hasErrors = startError.length > 0 || exitInfo.isError;
    const contentRaws = new CardContentBuilder(
       task.options,
       task.hashlistId.name,
    );
 
-   if (isRunning || process.isPending) {
-      setTimeout(() => {
-         fetchStatus();
-         if (process.isRunning || process.isStopped) {
-            if (process.isStopped) {
-               handleRefresh();
-            }
-            setIsLoading(false);
-         }
-         setIsRunning(process.isRunning || process.isPending);
-      }, 500);
-   } else if (isLoading && (stoppedSucced || hasErrors)) {
-      setIsLoading(false);
-   }
+   useEffect(() => {
+      let intervalProcessId: number | undefined;
+      if (isRunning) {
+         intervalProcessId = setInterval(() => {
+            (async () => {
+               const statusState = await fetchStatus();
+               if (statusState.process.isStopped) {
+                  setIsRunning(false);
+                  handleRefresh();
+                  clearInterval(intervalProcessId);
+               }
+               setTaskStatus(statusState);
+            })();
+         }, 500);
+      }
+      return () => clearInterval(intervalProcessId);
+   }, [isRunning]);
 
    const PlayableSvg = isRunning ? StopSVG : StartSVG;
-   const iconBtn = isLoading
+   const iconBtn = taskStatus.process.isPending
       ? {}
       : {
            '&:hover': { borderColor: '#FC6F6F' },
            border: 'solid 3px black',
            position: 'static',
         };
-   const DisplaySVG = isLoading ? (
+   const DisplaySVG = taskStatus.process.isPending ? (
       <CircularProgress size={40} thickness={3} color="secondary" />
    ) : (
       <SvgIcon
@@ -98,12 +108,10 @@ export default function RunCard({
    function handleStart() {
       startTask();
       setIsRunning(true);
-      setIsLoading(true);
    }
 
    function handleStop() {
       stopTask();
-      setIsLoading(true);
       setIsRunning(false);
    }
 
@@ -157,7 +165,7 @@ export default function RunCard({
                </div>
                <div className="flex items-end">
                   <RunButton
-                     isLoading={isLoading}
+                     isLoading={taskStatus.process.isPending}
                      isRunning={isRunning}
                      handleStart={() => handleStart()}
                      handleStop={() => handleStop()}
@@ -171,3 +179,5 @@ export default function RunCard({
       </BaseCard>
    );
 }
+
+export default RunCard;

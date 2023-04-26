@@ -1,4 +1,10 @@
-import { THashlist, TTask, TTemplate } from './TypesORM';
+import {
+   TAttackMode,
+   THashType,
+   THashlist,
+   TTask,
+   TTemplate,
+} from './TypesORM';
 
 export type THashcatRunningStatus = {
    session: string;
@@ -26,8 +32,14 @@ export type THashcatRunningStatus = {
 
 export type THashcatStatus = {
    processState: 'running' | 'pending' | 'stopped';
-   exitInfo: string;
-   runningStatus: THashcatRunningStatus;
+   taskInfos: Partial<{
+      name: string;
+   }>;
+   exitInfo: {
+      message: string;
+      isError: boolean;
+   };
+   runningStatus: Partial<THashcatRunningStatus>;
 };
 
 type ApiOptionsFormData = {
@@ -92,4 +104,31 @@ export type ListItem<Item extends ListItemAvailable> = {
    item: Item;
    canBeDeleted: boolean;
    bindTo: TTask[];
+};
+
+export type ResponseBase = {
+   message: string;
+   success: boolean;
+   httpCode: number;
+   error?: string;
+};
+
+export type ResponseStatus = ResponseBase & {
+   status: THashcatStatus;
+};
+
+// TODO ALL BELOW - Add this type to hooks
+export type ResponseCrackedPasswds = ResponseBase & {
+   passwds: string[];
+};
+
+export type ResponseList<
+   List extends
+      | THashType
+      | TAttackMode
+      | TTask
+      | Notification
+      | ListItem<ListItemAvailable>,
+> = ResponseBase & {
+   items: List[];
 };

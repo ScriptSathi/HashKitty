@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Switch from '@mui/material/Switch';
 
 import ApiEndpoints from '../../ApiEndpoints';
@@ -7,12 +7,13 @@ import CreateCard from '../../components/ui/Cards/CreateCard/CreateCard';
 import RunCard from '../../components/ui/Cards/RunCard/RunCard';
 import EndCard from '../../components/ui/Cards/EndCard/EndCard';
 import useFetchItems from '../../hooks/useFetchItems';
-import useFetchStatus from '../../hooks/useFetchStatus';
+import useFetchStatus, { TFetchStatus } from '../../hooks/useFetchStatus';
 import useScreenSize from '../../hooks/useScreenSize';
 import BackgroundBlur from '../../components/ui/BackgroundBlur/BackGroundBlur';
 import CreateTask from '../../components/CreateTask/CreateTask';
 import ResultsCard from '../../components/TaskResults/TaskResults';
 import { TTask } from '../../types/TypesORM';
+import { THashcatStatus } from '../../types/TApi';
 
 export default function HomePage() {
    const defaultResults = {
@@ -22,13 +23,27 @@ export default function HomePage() {
    };
    const [isClickedCreation, setIsClickedCreation] = useState(false);
    const [switchClicked, setSwitchClicked] = useState(false);
+   const [taskStatus, setTaskStatus] = useState<TFetchStatus>({
+      data: {} as THashcatStatus,
+      loading: true,
+      error: null,
+      exitInfo: {
+         message: '',
+         isError: false,
+      },
+      process: {
+         isRunning: false,
+         isPending: false,
+         isStopped: true,
+      },
+   });
    const [results, setResults] = useState(defaultResults);
    const { isTablette, isMobile } = useScreenSize();
    const { items, refresh, isLoading } = useFetchItems<TTask>({
       method: 'GET',
       url: ApiEndpoints.GET.tasks,
    });
-   const { sessionName } = useFetchStatus({
+   const { fetchStatus } = useFetchStatus({
       url: ApiEndpoints.GET.taskStatus,
    });
    const [tasks, endedTasks] = items.reduce(
@@ -50,9 +65,20 @@ export default function HomePage() {
    const runTaskTitle = 'Runnable tasks';
    const endTaskTitle = 'Ended tasks';
 
+   useEffect(() => {
+      const fetchRunningTaskName = async () => {
+         setTaskStatus(await fetchStatus());
+      };
+      fetchRunningTaskName();
+   }, []);
+
+   if (isLoading) {
+      // To prevent loading of RunCard with the default task status values
+      return <Frame isLoading />;
+   }
    if ((isTablette || isMobile) && (isClickedCreation || results.isClicked)) {
       return (
-         <Frame isLoading={isLoading}>
+         <Frame>
             {isClickedCreation && (
                <CreateTask closeTaskCreation={closeTaskCreation} />
             )}
@@ -68,7 +94,7 @@ export default function HomePage() {
    }
    if (isMobile) {
       return (
-         <Frame isLoading={isLoading}>
+         <Frame>
             <div className="mt-5 flex flex-col items-center">
                <h2 className="flex justify-center text-3xl my-[25px]">
                   {switchClicked ? endTaskTitle : runTaskTitle}
@@ -102,7 +128,7 @@ export default function HomePage() {
                               task={task}
                               handleRefresh={refresh}
                               isRunning={
-                                 sessionName === `${task.name}-${task.id}`
+                                 taskStatus.data.taskInfos?.name === task.name
                               }
                            />
                         ))}
@@ -114,7 +140,7 @@ export default function HomePage() {
       );
    }
    return (
-      <Frame isLoading={isLoading}>
+      <Frame>
          <div
             className={`grid grid-cols-2 ${
                isClickedCreation ? 'overflow-hidden' : ''
@@ -134,7 +160,9 @@ export default function HomePage() {
                         key={task.id}
                         handleRefresh={refresh}
                         task={task}
-                        isRunning={sessionName === `${task.name}-${task.id}`}
+                        isRunning={
+                           taskStatus.data.taskInfos?.name === task.name
+                        }
                      />
                   ))}
                </div>
