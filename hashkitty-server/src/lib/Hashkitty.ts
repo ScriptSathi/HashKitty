@@ -28,7 +28,8 @@ export class Hashkitty {
    private startHTTPServer() {
       if (this.db) {
          const httpServer = new HttpServer(Constants.defaultApiConfig, this.db);
-         this.parallelizeCpus(() => httpServer.listen());
+         httpServer.listen();
+         // this.parallelizeCpus(() => httpServer.listen());
       }
    }
 

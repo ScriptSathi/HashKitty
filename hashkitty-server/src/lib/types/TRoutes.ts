@@ -21,7 +21,6 @@ export type ResponseAttr = {
    status?: Partial<THashcatStatus>;
    passwds?: string[];
    items?: (HashType | AttackMode | Task | Notification | ListItem)[];
-   fail?: string;
    error?: string;
 };
 

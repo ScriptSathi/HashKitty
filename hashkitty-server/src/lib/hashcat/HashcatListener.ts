@@ -30,6 +30,9 @@ export class HashcatListener {
       this.handleTaskHasFinnished = handleTaskHasFinnished;
       this.state = {
          processState: 'pending',
+         taskInfos: {
+            name: this.task.name,
+         },
          exitInfo: {
             message: '',
             isError: false,

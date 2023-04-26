@@ -89,6 +89,9 @@ export type THashcatRunningStatus = {
 
 export type THashcatStatus = {
    processState: 'running' | 'pending' | 'stopped';
+   taskInfos: Partial<{
+      name: string;
+   }>;
    exitInfo: {
       message: string;
       isError: boolean;
