@@ -30,7 +30,7 @@ function RunCard({
    handleRefresh,
    isRunning: initIsRunning,
 }: CommonCard) {
-   const { isTablette, isMobile } = useScreenSize();
+   const { isDesktop } = useScreenSize();
    const [taskStatus, setTaskStatus] = useState<TFetchStatus>({
       data: {} as THashcatStatus,
       loading: true,
@@ -61,6 +61,7 @@ function RunCard({
    });
 
    const [isRunning, setIsRunning] = useState(initIsRunning || hasStarted);
+   const [isPending, setIsPending] = useState(taskStatus.process.isPending);
 
    const contentRaws = new CardContentBuilder(
       task.options,
@@ -70,6 +71,7 @@ function RunCard({
    useEffect(() => {
       let intervalProcessId: number | undefined;
       if (isRunning) {
+         setIsPending(false);
          intervalProcessId = setInterval(() => {
             (async () => {
                const statusState = await fetchStatus();
@@ -86,14 +88,14 @@ function RunCard({
    }, [isRunning]);
 
    const PlayableSvg = isRunning ? StopSVG : StartSVG;
-   const iconBtn = taskStatus.process.isPending
+   const iconBtn = taskStatus.process.isPending || isPending
       ? {}
       : {
            '&:hover': { borderColor: '#FC6F6F' },
            border: 'solid 3px black',
            position: 'static',
         };
-   const DisplaySVG = taskStatus.process.isPending ? (
+   const DisplaySVG = taskStatus.process.isPending || isPending ? (
       <CircularProgress size={40} thickness={3} color="secondary" />
    ) : (
       <SvgIcon
@@ -107,6 +109,7 @@ function RunCard({
 
    function handleStart() {
       startTask();
+      setIsPending(true);
       setIsRunning(true);
    }
 
@@ -144,7 +147,7 @@ function RunCard({
          }
       >
          <div className="flex flex-col justify-between min-h-full h-full">
-            {!(isTablette || isMobile) && (
+            {isDesktop && (
                <div className="bloc max-h-[85px] w-full overflow-auto">
                   {contentRaws.shortRaws.map(line => (
                      <Typography

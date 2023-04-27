@@ -154,7 +154,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
       );
    }
 
-   if ((isTablette ?? isMobile) && isClickedImport) {
+   if ((isTablette || isMobile) && isClickedImport) {
       return (
          <ImportList closeImportWindow={closeImportWindow} type="hashlist" />
       );

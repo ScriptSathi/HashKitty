@@ -21,7 +21,7 @@ export default function BaseCard({
    additionnalBtn,
    tooltip,
 }: TBaseCard) {
-   const { isTablette, isMobile } = useScreenSize({});
+   const { isTablette, isMobile, isDesktop } = useScreenSize();
    const [isMouseOver, setIsMouseOver] = useState(false);
 
    const fullSize = {
@@ -35,7 +35,7 @@ export default function BaseCard({
    const sizingBehaviour =
       bigCard && autoResize === null
          ? bigCard
-         : autoResize && !(isTablette || isMobile);
+         : autoResize && isDesktop;
 
    const size = sizingBehaviour ? fullSize : smallSize;
    const titleSize = sizingBehaviour ? 'h5' : 'h6';

@@ -34,7 +34,7 @@ export default function EndCard({
    handleRefresh,
    clickedResults,
 }: CommonCard) {
-   const { isMobile, isTablette } = useScreenSize({});
+   const { isMobile, isTablette, isDesktop } = useScreenSize({});
    const [results, setResults] = clickedResults;
 
    const { deleteTask, isError, isLoading } = useDeleteTask({
@@ -83,7 +83,7 @@ export default function EndCard({
                   isMobile || isTablette ? 'justify-around' : 'justify-between'
                }`}
             >
-               {!(isTablette || isMobile) && (
+               {isDesktop && (
                   <div className="bloc max-h-[100px] w-full overflow-auto">
                      {contentRaws.shortRaws.map(line => (
                         <Typography
@@ -142,7 +142,7 @@ export default function EndCard({
                      {task.hashlistId.numberOfCrackedPasswords}
                   </p>
                </div>
-               {!(isMobile || isTablette) && (
+               {isDesktop && (
                   <div className="flex items-end">
                      <DeleteButton
                         tooltip={`Delete the task ${task.name}`}
