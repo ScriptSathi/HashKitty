@@ -30,6 +30,7 @@ import {
    TTask,
    UploadFileType,
 } from '../../types/TApi';
+import { Events } from '../../utils/Events';
 
 export class Dao {
    public static get UnexpectedError(): string {
@@ -129,6 +130,7 @@ export class Dao {
    public attackMode: DaoAttackMode;
    public hashType: DaoHashType;
    public notification: DaoNotification;
+   private sendNotification: Events['sendNotification'];
 
    constructor(db: DataSource) {
       this.db = db;
@@ -138,6 +140,7 @@ export class Dao {
       this.attackMode = new DaoAttackMode(db);
       this.hashType = new DaoHashType(db);
       this.notification = new DaoNotification(db);
+      this.sendNotification = new Events(this.notification).sendNotification;
    }
 
    public async reloadWordlistInDB(): Promise<void> {
@@ -161,7 +164,14 @@ export class Dao {
          const isGenericWordlist = file.name.includes('*');
          return !isGenericWordlist && !filesInDir.includes(file.name);
       });
-      dbElemToDelete.map(wl => this.db.getRepository(Wordlist).delete(wl.id));
+      dbElemToDelete.map(wl => {
+         this.db.getRepository(Wordlist).delete(wl.id)
+            .catch(() => this.sendNotification(
+               'error',
+               `An error occured while trying to delete the wordlist "${wl.name}" from the database.\n` +
+                  'This error occured when the file does not exist on the file system but is bind to an existing task and cannot be deleted.'
+            ));
+      });
    }
 
    public async taskExistById(id: number): Promise<boolean> {
