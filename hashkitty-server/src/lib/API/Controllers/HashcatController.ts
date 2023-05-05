@@ -12,16 +12,14 @@ export default class HashcatController {
 
    constructor(dao: Dao) {
       this.dao = dao;
+
       this.sendNotification = new Events(
          this.dao.notification
       ).sendNotification;
       this.hashcat = new Hashcat(this.dao, this.sendNotification);
    }
 
-   public async exec(
-      execType: 'restore' | 'start',
-      taskId: number
-   ): Promise<ResponseAttr> {
+   public async exec(taskId: number): Promise<ResponseAttr> {
       if (this.hashcat.isRunning) {
          this.sendNotification(
             'warning',
@@ -38,11 +36,7 @@ export default class HashcatController {
       }
       try {
          const task = (await this.dao.task.getById(taskId)) as unknown as TTask;
-         if (execType === 'restore') {
-            this.hashcat.restore(task);
-         } else {
-            this.hashcat.exec(task);
-         }
+         this.hashcat.exec(task);
          return {
             httpCode: 200,
             message: 'Hashcat has started successfully',

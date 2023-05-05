@@ -110,6 +110,8 @@ export type UploadFileType =
    | 'hashlist'
    | 'potfile';
 
+export type HashkittyStoredFilesType = 'restore' | UploadFileType;
+
 export type ListBase = {
    id: number;
    name: string;

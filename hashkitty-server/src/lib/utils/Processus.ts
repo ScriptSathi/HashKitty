@@ -8,7 +8,7 @@ import { THashcatRunningStatus } from '../types/THashcat';
 export type TProcessStdout = {
    exit: {
       message: string;
-      code: number;
+      code: number | null;
    };
    status: THashcatRunningStatus | {};
    anyOutput: string | string[];
@@ -48,7 +48,9 @@ export class Processus {
 
    private onParentProcessMessage = (message: string): void => {
       if (message === 'exit') {
-         this.proc.kill();
+         // Here, we send a "quit" request to hashcat instead of killing the process (this.proc.kill())
+         // because we need to ask hashcat to make the restore file.
+         this.proc.stdin.write('quit');
       }
    };
 
@@ -70,29 +72,26 @@ export class Processus {
       }
    };
 
-   private onExit = (code: number): void => {
+   private onExit = (code: number | null): void => {
       let exitMessage = '';
-      if (code !== 0 && code !== null && code !== 1) {
+      const { isCracked, isExausted, isAborted, isError } =
+         this.hashcatExitCode(code);
+      if (isError) {
          exitMessage = 'close';
          logger.error(
             new Error(`Command '${this.cmd}' failed with code ${code}`)
          );
-      } else if (code === null) {
-         exitMessage = 'close';
+      } else if (isAborted) {
+         exitMessage = 'stopped';
          code = 999; // add artificial code to avoid processResponse.exit.code = -1
          logger.info(
             `A request has been sent to stop the process: ${this.cmd[0]}`
          );
-      } else if (code === 0) {
+      } else if (isCracked) {
          exitMessage = 'ended';
          logger.info(`Process: ${this.cmd[0]} ended correctly`);
-      } else if (code === 1) {
+      } else if (isExausted) {
          exitMessage = 'exhausted';
-      } else {
-         exitMessage = 'error';
-         logger.info(
-            `Process: ${this.cmd[0]} ended with an unknown status code ${code} !`
-         );
       }
       parentPort &&
          parentPort.postMessage(
@@ -105,6 +104,32 @@ export class Processus {
          );
    };
 
+   private hashcatExitCode(code: number | null) {
+      // From https://github.com/hashcat/hashcat/blob/master/docs/status_codes.txt
+      const exitCodes = {
+         isCracked: false,
+         isExausted: false,
+         isAborted: false,
+         isError: false,
+      };
+      switch (code) {
+         case 0:
+            exitCodes.isCracked = true;
+            break;
+         case 1:
+            exitCodes.isExausted = true;
+            break;
+         case 2 || null:
+            exitCodes.isAborted = true;
+            break;
+         default:
+            exitCodes.isError = true;
+            break;
+      }
+
+      return exitCodes;
+   }
+
    private processResponses({
       exit,
       status,
@@ -112,11 +137,11 @@ export class Processus {
    }: Partial<TProcessStdout>): TProcessStdout {
       return {
          exit: {
-            message: exit?.message || '',
-            code: exit?.code || -1,
+            message: exit?.message ?? '',
+            code: exit?.code ?? -1000,
          },
-         status: status || {},
-         anyOutput: anyOutput || '',
+         status: status ?? {},
+         anyOutput: anyOutput ?? '',
       };
    }
 }

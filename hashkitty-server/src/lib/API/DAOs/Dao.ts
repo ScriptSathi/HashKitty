@@ -165,12 +165,16 @@ export class Dao {
          return !isGenericWordlist && !filesInDir.includes(file.name);
       });
       dbElemToDelete.map(wl => {
-         this.db.getRepository(Wordlist).delete(wl.id)
-            .catch(() => this.sendNotification(
-               'error',
-               `An error occured while trying to delete the wordlist "${wl.name}" from the database.\n` +
-                  'This error occured when the file does not exist on the file system but is bind to an existing task and cannot be deleted.'
-            ));
+         this.db
+            .getRepository(Wordlist)
+            .delete(wl.id)
+            .catch(() =>
+               this.sendNotification(
+                  'error',
+                  `An error occured while trying to delete the wordlist "${wl.name}" from the database.\n` +
+                     'This error occured when the file does not exist on the file system but is bind to an existing task and cannot be deleted.'
+               )
+            );
       });
    }
 

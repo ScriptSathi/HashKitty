@@ -80,7 +80,9 @@ export class HashcatListener {
                'error',
                `Process: ${this.task.name} ended with an error !`
             );
-            logger.debug('Status: Error');
+            break;
+         case 'stopped':
+            this.sendNotification('success', 'Hashcat have been stopped');
             break;
          default:
             this.sendNotification(
@@ -118,7 +120,8 @@ export class HashcatListener {
    private isProcessExited(processStdout: TProcessStdout): boolean {
       try {
          return (
-            processStdout.exit.message !== '' && processStdout.exit.code >= 0
+            processStdout.exit.message !== '' &&
+            (processStdout.exit.code ?? -1000) >= 0
          );
       } catch (e) {
          return false;

@@ -4,6 +4,7 @@ import { Constants } from '../Constants';
 import { TTask } from '../types/TApi';
 import { CmdData, PartialCmdData } from '../types/THashcat';
 import { hashcatParam } from './hashcatParams';
+import { FsUtils } from '../utils/FsUtils';
 
 export class HashcatGenerator {
    public outputFilePath: string;
@@ -11,10 +12,12 @@ export class HashcatGenerator {
    private taskName: string;
    private restorePath: string;
    private hashlist: string;
+   private fsUtils: FsUtils;
 
-   constructor(task: TTask) {
+   constructor(task: TTask, taskName: string) {
       this.task = task;
-      this.taskName = `${task.name}-${task.id}`;
+      this.taskName = taskName;
+      this.fsUtils = new FsUtils();
       this.restorePath = path.join(Constants.restorePath, this.taskName);
       this.hashlist = path.join(
          Constants.hashlistsPath,
@@ -26,7 +29,14 @@ export class HashcatGenerator {
       );
    }
 
-   public generateStartCmd(): string {
+   public async generateCmd(): Promise<string> {
+      const restoreFileExists = await this.fsUtils.fileExist(
+         this.taskName,
+         'restore'
+      );
+
+      if (restoreFileExists) return this.generateRestoreCmd();
+
       switch (this.task.options.attackModeId.mode) {
          case 0:
             return this.generateStraightAttackCmd();
@@ -45,14 +55,6 @@ export class HashcatGenerator {
                `No implementation of the attack mode ${this.task.options.attackModeId.mode}`
             );
       }
-   }
-
-   public generateRestoreCmd(): string {
-      return (
-         `${Constants.defaultBin} ` +
-         this.generateCmdFromFlags(this.prepareRestoreFlags()) +
-         `${this.hashlist} ${this.wordlist}`
-      );
    }
 
    private get mandatoryStartFlags(): PartialCmdData[] {
@@ -140,7 +142,8 @@ export class HashcatGenerator {
 
    private prepareRestoreFlags(): CmdData[] {
       const flags = this.defaultFlags;
-      return this.buildFlags(flags);
+      const restoreFlag: PartialCmdData = { key: 'restore' };
+      return this.buildFlags([...flags, restoreFlag]);
    }
 
    private generateCmdFromFlags(flags: CmdData[]): string {
@@ -228,6 +231,13 @@ export class HashcatGenerator {
          `${Constants.defaultBin} ` +
          this.generateCmdFromFlags(this.prepareStartFlags()) +
          `${this.hashlist} ${this.wordlist}`
+      );
+   }
+
+   private generateRestoreCmd(): string {
+      return (
+         `${Constants.defaultBin} ` +
+         this.generateCmdFromFlags(this.prepareRestoreFlags())
       );
    }
 

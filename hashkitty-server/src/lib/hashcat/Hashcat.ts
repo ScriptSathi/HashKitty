@@ -51,9 +51,9 @@ export class Hashcat {
          : false;
    }
 
-   public exec(task: TTask): void {
-      const generator = new HashcatGenerator(task);
-      this.cmd = generator.generateStartCmd();
+   public async exec(task: TTask): Promise<void> {
+      const generator = new HashcatGenerator(task, this.buildTaskName(task));
+      this.cmd = await generator.generateCmd();
       this.registerCurrentJob({
          task,
          outputFilePath: generator.outputFilePath,
@@ -67,23 +67,13 @@ export class Hashcat {
 
    public stop(): void {
       if (this.hashcatWorker) {
-         this.sendNotification('info', 'Stopping the hashcat process');
+         this.sendNotification('info', 'Stopping Hashcat');
          this.hashcatWorker.postMessage('exit');
       }
    }
 
-   public restore(task: TTask): void {
-      const generator = new HashcatGenerator(task);
-      this.cmd = generator.generateRestoreCmd();
-      this.registerCurrentJob({
-         task,
-         outputFilePath: generator.outputFilePath,
-      });
-      if (this.hashlistHaveNeverBeenCracked(task)) {
-         this.startListener(task);
-      } else {
-         this.closeTask(task);
-      }
+   public buildTaskName(task: TTask): string {
+      return `${task.name}-${task.id}`;
    }
 
    private get outputFileExists(): boolean {

@@ -3,7 +3,7 @@ import { logger } from './Logger';
 import { Constants } from '../Constants';
 import path = require('path');
 import { UploadedFile } from 'express-fileupload';
-import { UploadFileType } from '../types/TApi';
+import type { UploadFileType, HashkittyStoredFilesType } from '../types/TApi';
 
 export class FsUtils {
    public static listFileInDir(path: string): string[] {
@@ -87,7 +87,7 @@ export class FsUtils {
 
    public async fileExist(
       fileName: string,
-      fileType: UploadFileType
+      fileType: HashkittyStoredFilesType
    ): Promise<boolean> {
       const baseDir = this.getFilePathFromType(fileType);
       const existsPath = path.join(baseDir, fileName);
@@ -99,7 +99,7 @@ export class FsUtils {
       }
    }
 
-   private getFilePathFromType(fileType: UploadFileType): string {
+   private getFilePathFromType(fileType: HashkittyStoredFilesType): string {
       switch (fileType) {
          case 'hashlist':
             return Constants.hashlistsPath;
@@ -109,6 +109,8 @@ export class FsUtils {
             return Constants.rulesPath;
          case 'potfile':
             return Constants.potfilesPath;
+         case 'restore':
+            return Constants.restorePath;
          default:
             throw new Error('Wrong data submitted');
       }

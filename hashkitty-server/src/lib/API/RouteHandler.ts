@@ -53,18 +53,7 @@ export class RouteHandler {
       const { id } = req.body;
       const taskId = parseInt(id) || -1;
       const { message, success, error, httpCode } =
-         await this.hashcatController.exec('start', taskId);
-      res.status(httpCode).json({ message, success, error, httpCode });
-   };
-
-   public restoreHashcat = async (
-      req: ReceivedRequest<ReqID>,
-      res: ResponseSend
-   ): Promise<void> => {
-      const { id } = req.body;
-      const taskId = parseInt(id) || -1;
-      const { message, success, error, httpCode } =
-         await this.hashcatController.exec('restore', taskId);
+         await this.hashcatController.exec(taskId);
       res.status(httpCode).json({ message, success, error, httpCode });
    };
 
@@ -76,7 +65,7 @@ export class RouteHandler {
 
    public stopHashcat = (_: ReceivedRequest, res: ResponseSend): void => {
       const { message, httpCode, status, success } =
-         this.hashcatController.getStatus();
+         this.hashcatController.stop();
       res.status(httpCode).json({ message, httpCode, status, success });
    };
 

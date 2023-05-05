@@ -31,7 +31,6 @@ export class ApiRouter {
       this.router.get('/rules', this.routeHandler.getFilesInRulesDir);
       this.router.get('/notifications', this.routeHandler.getNotifications);
       this.router.post('/start', this.routeHandler.execHashcat);
-      this.router.post('/restore', this.routeHandler.restoreHashcat);
       this.router.post('/template', this.routeHandler.updateTemplateTask);
       this.router.post('/tasks', this.routeHandler.updateTask);
       this.router.post('/list', this.routeHandler.uploadList);
