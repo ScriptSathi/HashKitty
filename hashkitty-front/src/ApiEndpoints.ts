@@ -1,5 +1,5 @@
 export default class ApiEndpoints {
-   public static readonly mandatoryFetchOptions = {} satisfies RequestInit;
+   public static readonly mandatoryFetchOptions: RequestInit = {};
    public static readonly domaineName =
       import.meta.env?.VITE_API_ENDPOINT ?? 'localhost';
    public static readonly apiPort = import.meta.env?.VITE_API_PORT ?? '1337';
@@ -36,7 +36,6 @@ export default class ApiEndpoints {
          task: `${this.apiUrl}/tasks`,
          template: `${this.apiUrl}/template`,
          taskResults: `${this.apiUrl}/results`,
-         restore: `${this.apiUrl}/restore`,
       };
    }
 }

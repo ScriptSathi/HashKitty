@@ -33,9 +33,7 @@ export default function BaseCard({
       height: 150,
    };
    const sizingBehaviour =
-      bigCard && autoResize === null
-         ? bigCard
-         : autoResize && isDesktop;
+      bigCard && autoResize === null ? bigCard : autoResize && isDesktop;
 
    const size = sizingBehaviour ? fullSize : smallSize;
    const titleSize = sizingBehaviour ? 'h5' : 'h6';

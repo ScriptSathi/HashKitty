@@ -7,7 +7,11 @@ type UseScreenSizeProps = {
 export default function useScreenSize({
    callbackOnMobile = () => {},
    callbackOnLargeScreen = () => {},
-}: UseScreenSizeProps = {}): { isMobile: boolean; isTablette: boolean; isDesktop: boolean } {
+}: UseScreenSizeProps = {}): {
+   isMobile: boolean;
+   isTablette: boolean;
+   isDesktop: boolean;
+} {
    const initScreenWidth = window.innerWidth;
    const [isTablette, setIsTablette] = useState(
       initScreenWidth >= 520 && initScreenWidth <= 960,

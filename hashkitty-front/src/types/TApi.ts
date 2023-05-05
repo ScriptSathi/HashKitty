@@ -13,7 +13,7 @@ export type THashcatRunningStatus = {
    };
    status: number;
    target: string;
-   progress: number[];
+   progress: [number, number];
    restore_point: number;
    recovered_hashes: number[];
    recovered_salts: number[];

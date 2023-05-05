@@ -54,6 +54,11 @@ export class HashcatListener {
          this.onExitProcess(processStdout);
       } else if (this.isProcessSendStatus(processStdout)) {
          this.state.runningStatus = <THashcatRunningStatus>processStdout.status;
+
+         // Bellow is populated here because if it's done in the front-end, the Date.now() can be different because of UTC
+         const timeStamp = this.state.runningStatus.estimated_stop * 1000;
+         this.state.runningStatus.estimated_stop =
+            timeStamp - Date.now().valueOf();
       } else {
          if (this.isProcessSendArrayInfo(processStdout)) {
             logger.debug(

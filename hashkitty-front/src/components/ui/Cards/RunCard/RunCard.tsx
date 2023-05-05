@@ -88,29 +88,33 @@ function RunCard({
    }, [isRunning]);
 
    const PlayableSvg = isRunning ? StopSVG : StartSVG;
-   const iconBtn = taskStatus.process.isPending || isPending
-      ? {}
-      : {
-           '&:hover': { borderColor: '#FC6F6F' },
-           border: 'solid 3px black',
-           position: 'static',
-        };
-   const DisplaySVG = taskStatus.process.isPending || isPending ? (
-      <CircularProgress size={40} thickness={3} color="secondary" />
-   ) : (
-      <SvgIcon
-         sx={{ height: 30, width: 30 }}
-         viewBox="9 9 40 40"
-         fontSize="inherit"
-      >
-         <PlayableSvg />
-      </SvgIcon>
-   );
+   const iconBtn =
+      taskStatus.process.isPending || isPending
+         ? {}
+         : {
+              '&:hover': { borderColor: '#FC6F6F' },
+              border: 'solid 3px black',
+              position: 'static',
+           };
+   const DisplaySVG =
+      taskStatus.process.isPending || isPending ? (
+         <CircularProgress size={40} thickness={3} color="secondary" />
+      ) : (
+         <SvgIcon
+            sx={{ height: 30, width: 30 }}
+            viewBox="9 9 40 40"
+            fontSize="inherit"
+         >
+            <PlayableSvg />
+         </SvgIcon>
+      );
 
-   function handleStart() {
-      startTask();
-      setIsPending(true);
-      setIsRunning(true);
+   async function handleStart() {
+      const startSucced = await startTask();
+      if (startSucced) {
+         setIsPending(true);
+         setIsRunning(true);
+      }
    }
 
    function handleStop() {

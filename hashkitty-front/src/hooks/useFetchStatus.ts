@@ -38,18 +38,21 @@ function filterateStatusData(
    status: THashcatRunningStatus,
 ): Omit<Tstatus, 'isRunning'> {
    function getFirstDigitsOfNumber(number: number): number {
-      return parseInt(number.toString().split('.')[0], number);
+      return Math.trunc(number);
    }
-   const runningProgress = `${
-      (status.progress[0] / status.progress[1]) * 100
-   }%`;
-   const timeLeft = status.estimated_stop * 1000 - Date.now().valueOf();
+   function getRunningProgess([nbOfWordsTested, totalWordsToTest]: [
+      number,
+      number,
+   ]): number {
+      return Math.trunc((nbOfWordsTested / totalWordsToTest) * 100);
+   }
+   const runningProgress = `${getRunningProgess(status.progress)}%`;
    const estimatedStop =
-      timeLeft > 0
-         ? duration(status.estimated_stop * 1000 - Date.now().valueOf(), {
+      status.estimated_stop > 0
+         ? duration(status.estimated_stop, {
               largest: 2,
               maxDecimalPoints: 0,
-              units: ['y', 'mo', 'w', 'd', 'h', 'm'],
+              //   units: ['y', 'mo', 'w', 'd', 'h', 'm'],
            })
          : '0 minutes';
    const unFormatedSpeed = status.devices[0].speed;
@@ -80,7 +83,7 @@ export default function useFetchStatus({
    url,
    headers = {},
 }: Omit<TuseFetch, 'method' | 'data'>): ReturnUseFetchStatus {
-   const defaultState = {
+   const defaultState: TFetchStatus = {
       data: <THashcatStatus>{},
       loading: true,
       error: null,
@@ -93,7 +96,7 @@ export default function useFetchStatus({
          isPending: false,
          isStopped: true,
       },
-   } satisfies TFetchStatus;
+   };
    const [status, setStatus] = useState<Tstatus>({
       estimatedStop: 'Not running',
       runningProgress: '0',

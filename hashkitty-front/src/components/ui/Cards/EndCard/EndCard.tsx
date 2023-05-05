@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import { IconButton, Tooltip } from '@mui/material';
@@ -36,25 +37,31 @@ export default function EndCard({
 }: CommonCard) {
    const { isMobile, isTablette, isDesktop } = useScreenSize({});
    const [results, setResults] = clickedResults;
+   const [endedSince, setEndedSince] = useState('0 minutes');
 
    const { deleteTask, isError, isLoading } = useDeleteTask({
       url: ApiEndpoints.DELETE.task,
       data: task,
    });
 
-   const endedSince = duration(
-      Date.parse(task.endeddAt || '') - Date.now().valueOf(),
-      {
-         largest: 1,
-         maxDecimalPoints: 0,
-         units: ['y', 'mo', 'w', 'd', 'h', 'm'],
-      },
-   );
-
    const contentRaws = new CardContentBuilder(
       task.options,
       task.hashlistId.name,
    );
+
+   useEffect(() => {
+      const intervalId = setInterval(() => {
+         const endedSinceStr = duration(
+            Date.parse(task.endeddAt || '') - Date.now().valueOf(),
+            {
+               largest: 1,
+               maxDecimalPoints: 0,
+            },
+         );
+         setEndedSince(endedSinceStr);
+      }, 10000);
+      return () => clearInterval(intervalId);
+   }, []);
 
    const handleDeletion = () => {
       deleteTask().then(() => {

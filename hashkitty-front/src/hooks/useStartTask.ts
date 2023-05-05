@@ -11,7 +11,7 @@ export default function useStartTask({
    data,
    headers = {},
 }: TuseStartTask): {
-   startTask: () => void;
+   startTask: () => Promise<boolean>;
    hasStarted: boolean;
    error: string;
    isLoading: boolean;
@@ -31,21 +31,20 @@ export default function useStartTask({
          body: JSON.stringify(data),
       };
    }
-   function startTask() {
+   async function startTask(): Promise<boolean> {
       setError('');
-      fetch(url, reqOptions)
-         .then(res => res.json())
-         .then(
-            res => {
-               if (res.success) setHasStarted(true);
-               else setError(res.message);
-               setIsLoading(false);
-            },
-            () => {
-               setIsLoading(false);
-               setError('An unexpected error occured');
-            },
-         );
+      try {
+         const jsonRes = await fetch(url, reqOptions);
+         const res = await jsonRes.json();
+         if (res.success) setHasStarted(true);
+         else setError(res.message);
+         setIsLoading(false);
+         return res.success;
+      } catch {
+         setIsLoading(false);
+         setError('An unexpected error occured');
+         return false;
+      }
    }
    return { startTask, hasStarted, error, isLoading };
 }
