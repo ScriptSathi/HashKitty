@@ -50,15 +50,18 @@ export default function EndCard({
    );
 
    useEffect(() => {
-      const intervalId = setInterval(() => {
-         const endedSinceStr = duration(
+      function endedSinceStr() {
+         return duration(
             Date.parse(task.endeddAt || '') - Date.now().valueOf(),
             {
                largest: 1,
                maxDecimalPoints: 0,
             },
          );
-         setEndedSince(endedSinceStr);
+      }
+      setEndedSince(endedSinceStr());
+      const intervalId = setInterval(() => {
+         setEndedSince(endedSinceStr());
       }, 10000);
       return () => clearInterval(intervalId);
    }, []);
