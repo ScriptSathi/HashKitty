@@ -6,6 +6,8 @@
 
 Hashkitty is another web user interface for Hashcat, fully written in Typescript.
 
+![Hashkitty demo](demo.gif)
+
 ## Disclaimer
 
 The project is currently in **Alpha Version**. It may encounter bugs or any weird behaviours. If you notice any, please submit an issue with as much details as possible.
@@ -23,7 +25,7 @@ If you want to deploy this project with Docker, please check the [Docker install
 
 ### Standalone install
 
-If you just want to install it in local for testing, you need to have a mysql server deployed. You can use the database below to do so. 
+If you just want to install it in local for testing, you need to have a mysql server deployed. You can use the database below to do so.
 
 ```
 cd deploy-dev
