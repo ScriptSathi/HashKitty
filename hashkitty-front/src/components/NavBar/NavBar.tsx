@@ -1,14 +1,17 @@
 import { NavLink } from 'react-router-dom';
-import { memo, useState } from 'react';
+import { memo, useContext, useRef, useState } from 'react';
 
 import logo from '../../assets/images/logo.svg';
 import useScreenSize from '../../hooks/useScreenSize';
 
 import './NavBar.scss';
 import BurgerMenu from './BurgerMenu';
+import MaterialUISwitch from '../ui/MUISwitch/MUISwitch';
+import ColorModeContext from '../../App/ColorModeContext';
 
-// eslint-disable-next-line react/display-name
 const NavBar = memo(() => {
+   const switchRef = useRef(null);
+   const colorMode = useContext(ColorModeContext);
    const [openNav, setOpenNav] = useState(false);
    useScreenSize({
       callbackOnMobile: () => setOpenNav(false),
@@ -24,7 +27,7 @@ const NavBar = memo(() => {
                   HashKitty
                </p>
             </NavLink>
-            <div className="hidden lg:block">
+            <div className="hidden lg:flex gap-6">
                <ul className="flex mb-0 mt-0 flex-row items-center gap-6">
                   {pages.map(pageName => (
                      <li
@@ -40,11 +43,21 @@ const NavBar = memo(() => {
                      </li>
                   ))}
                </ul>
+               <MaterialUISwitch
+                  checked={colorMode.theme.isDarkTheme}
+                  ref={switchRef}
+                  onChange={colorMode.toggleColorMode}
+               />
             </div>
-            <div className="block lg:hidden">
+            <div className="flex lg:hidden">
                <BurgerMenu
                   isOpen={openNav}
                   onClick={() => setOpenNav(!openNav)}
+               />
+               <MaterialUISwitch
+                  checked={colorMode.theme.isDarkTheme}
+                  ref={switchRef}
+                  onChange={colorMode.toggleColorMode}
                />
             </div>
          </div>
@@ -80,4 +93,5 @@ const NavBar = memo(() => {
    );
 });
 
+NavBar.displayName = 'NavBar';
 export default NavBar;
