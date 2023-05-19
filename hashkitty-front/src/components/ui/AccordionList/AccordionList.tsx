@@ -108,6 +108,7 @@ function AccordionList<List extends ListItemAvailable>({
                   )}
                   <Button
                      className="w-fit text-xs font-bold"
+                     sizeBorder="medium"
                      sx={{
                         marginTop: 0.5,
                         marginLeft: 'auto',

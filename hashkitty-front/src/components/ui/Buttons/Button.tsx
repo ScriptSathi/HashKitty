@@ -13,6 +13,7 @@ type ButtonProps = {
    sx?: SxProps<Theme>;
    fontSize?: number;
    type?: 'submit' | 'button';
+   sizeBorder?: 'small' | 'medium' | 'large';
    size?: 'small' | 'medium' | 'large';
    tooltip?: string;
 } & Omit<HTMLAttributes<HTMLButtonElement>, 'color'>;
@@ -21,6 +22,7 @@ export default function Button({
    children = undefined,
    type = 'button',
    size,
+   sizeBorder,
    tooltip,
    fontSize,
    sx,
@@ -37,22 +39,28 @@ export default function Button({
             {...args}
             sx={{
                backgroundColor: colors.opposite,
-               border: `solid 4px ${colors.opposite}`,
+               border: `solid ${sizeBorder === 'large' ? '4' : '3'}px ${
+                  colors.opposite
+               }`,
                fontFamily: 'inherit',
                fontWeight: 'bold',
                boxShadow: 'unset',
                fontSize,
                color: colors.fontOpposite,
                paddingX: 1,
-               paddingY: 0.8,
+               paddingY: 1,
                '&:hover': {
-                  border: `solid 4px ${colors.opposite}`,
+                  border: `solid ${sizeBorder === 'large' ? '4' : '3'}px ${
+                     colors.opposite
+                  }`,
                   color: colors.font,
                   backgroundColor: colors.main,
                },
                '&:active': {
                   backgroundColor: colors.intermediate1,
-                  border: `solid 4px ${colors.intermediate1}`,
+                  border: `solid ${sizeBorder === 'large' ? '4' : '3'}px ${
+                     colors.intermediate1
+                  }`,
                   color: '#FFFFFF',
                },
                ...sx,
@@ -69,6 +77,7 @@ export default function Button({
 Button.defaultProps = {
    type: 'button',
    size: 'large',
+   sizeBorder: 'large',
    tooltip: '',
    fontSize: 15,
    sx: {},

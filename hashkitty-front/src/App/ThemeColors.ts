@@ -20,7 +20,7 @@ export default class ThemeColors {
       fontAlternative: 'grey',
       intermediate1: '#FC6F6F',
       intermediate2: '',
-      boxShadow: 'rgba(0,0,0,0.2)',
+      boxShadow: 'rgba(0,0,0,0.15)',
    };
 
    public dark: ThemeColorsAvailable = {
@@ -32,6 +32,6 @@ export default class ThemeColors {
       fontAlternative: '#a6afc1',
       intermediate1: '#FC6F6F',
       intermediate2: '#3d4c69',
-      boxShadow: 'rgba(255,255,255,0.15)',
+      boxShadow: 'rgba(166,175,193,0.2)',
    };
 }

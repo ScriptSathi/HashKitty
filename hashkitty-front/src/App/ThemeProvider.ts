@@ -31,6 +31,7 @@ export default class ThemeProvider {
    public muiTheme(): Theme {
       return createTheme({
          palette: {
+            mode: this.mode,
             primary: {
                main: this.colors.main,
             },
