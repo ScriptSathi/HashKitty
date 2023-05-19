@@ -65,6 +65,7 @@ export default class ThemeProvider {
             MuiPaper: {
                styleOverrides: {
                   root: {
+                     backgroundColor: this.colors.secondary,
                      boxShadow:
                         `0px 3px 1px -2px ${this.colors.boxShadow},` +
                         `0px 2px 2px 0px ${this.colors.boxShadow},` +

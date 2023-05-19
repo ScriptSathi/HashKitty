@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Dropzone from 'react-dropzone';
 
 import './DragNDrop.scss';
@@ -10,6 +10,7 @@ import {
 } from 'react-hook-form';
 import asFileImg from '../../../assets/images/DragNDropOk.svg';
 import importAFileImg from '../../../assets/images/DragNDropEmpty.svg';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type DropzoneProps<Form extends object> = {
    register: UseFormRegister<Form>;
@@ -27,6 +28,9 @@ export default function DragNDrop<Form extends object>({
 }: DropzoneProps<Form>) {
    const [isMouseOver, setIsMouseOver] = useState(false);
    const [file, setFile] = useState<File | undefined>(undefined);
+   const {
+      theme: { isDarkTheme, colors },
+   } = useContext(ColorModeContext);
 
    const onDrop = (acceptedFiles: File[]) => {
       setFile(acceptedFiles[acceptedFiles.length - 1]);
@@ -47,6 +51,23 @@ export default function DragNDrop<Form extends object>({
       setIsMouseOver(false);
    };
 
+   function getBorderTheme() {
+      if (file) {
+         return isDarkTheme
+            ? 'DragNDrop__boxFull DragNDrop__boxFull_darkThemeBorder'
+            : 'DragNDrop__boxFull DragNDrop__boxFull_lightThemeBorder';
+      }
+      return isDarkTheme
+         ? 'DragNDrop__boxEmpty DragNDrop__boxEmpty_dark'
+         : 'DragNDrop__boxEmpty DragNDrop__boxEmpty_light';
+   }
+
+   function logoColor() {
+      if (isMouseOver) return 'DragNDrop__onHover';
+      if (isDarkTheme) return 'DragNDrop__invertImg';
+      return '';
+   }
+
    return (
       <Dropzone onDrop={onDrop}>
          {({ getRootProps, getInputProps }) => (
@@ -55,19 +76,22 @@ export default function DragNDrop<Form extends object>({
                   {...getRootProps()}
                   onMouseEnter={onMouseEnter}
                   onMouseLeave={onMouseLeave}
-                  className={`w-full h-full flex items-center justify-center ${
-                     file ? 'DragNDrop__boxFull' : 'DragNDrop__boxEmpty'
-                  }`}
+                  className={`w-full h-full flex items-center justify-center ${getBorderTheme()}`}
                >
                   <div className="flex flex-col items-center">
                      <img
-                        className={`inline ${
-                           isMouseOver && 'DragNDrop__onHover'
-                        }`}
+                        className={`inline ${logoColor()}`}
                         src={file ? asFileImg : importAFileImg}
                         alt="Import a list"
                      />
-                     <p className="DragNDrop__text">
+                     <p
+                        className="DragNDrop__text"
+                        style={{
+                           color: isMouseOver
+                              ? colors.intermediate1
+                              : colors.fontAlternative,
+                        }}
+                     >
                         {file
                            ? file.name.replace(/(.{19})..+/, '$1…')
                            : 'Drag & Drop'}

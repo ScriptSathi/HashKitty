@@ -82,7 +82,6 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
          </ImportFrame>
       );
    }
-
    return (
       <ImportFrame
          formMethods={formMethods}

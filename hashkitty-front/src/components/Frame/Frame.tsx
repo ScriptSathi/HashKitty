@@ -8,20 +8,16 @@ import ColorModeContext from '../../App/ColorModeContext';
 type FrameProps = {
    children?: React.ReactNode;
    isLoading?: boolean;
-   className?: string | undefined;
 };
 
-export default function Frame({ children, isLoading, className }: FrameProps) {
+export default function Frame({ children, isLoading }: FrameProps) {
    const {
       theme: { colors },
    } = useContext(ColorModeContext);
    const { notifications, deleteNotification } = useFetchNotifications();
-
+   document.body.style.backgroundColor = colors.main;
    return (
-      <div
-         className={`h-[100vh] ${className}`}
-         style={{ backgroundColor: colors.main }}
-      >
+      <>
          <header>
             <NavBar />
             <div className="flex flex-wrap justify-center px-[15vw]">
@@ -30,7 +26,10 @@ export default function Frame({ children, isLoading, className }: FrameProps) {
                      key={notif.id}
                      onClose={() => deleteNotification(notif.id, i)}
                      severity={notif.status}
-                     className=" w-full"
+                     sx={{
+                        backgroundColor: colors.alerts[notif.status],
+                     }}
+                     className="w-full"
                   >
                      {notif.message}
                   </Alert>
@@ -49,12 +48,11 @@ export default function Frame({ children, isLoading, className }: FrameProps) {
                </main>
             )}
          </div>
-      </div>
+      </>
    );
 }
 
 Frame.defaultProps = {
    isLoading: false,
-   className: undefined,
    children: undefined,
 };

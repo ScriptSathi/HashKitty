@@ -8,6 +8,12 @@ export type ThemeColorsAvailable = {
    intermediate1: string;
    intermediate2: string;
    boxShadow: string;
+   alerts: {
+      error: string;
+      warning: string;
+      info: string;
+      success: string;
+   };
 };
 
 export default class ThemeColors {
@@ -21,6 +27,12 @@ export default class ThemeColors {
       intermediate1: '#FC6F6F',
       intermediate2: '',
       boxShadow: 'rgba(0,0,0,0.15)',
+      alerts: {
+         error: '',
+         warning: '',
+         info: '',
+         success: '',
+      },
    };
 
    public dark: ThemeColorsAvailable = {
@@ -33,5 +45,11 @@ export default class ThemeColors {
       intermediate1: '#FC6F6F',
       intermediate2: '#3d4c69',
       boxShadow: 'rgba(166,175,193,0.2)',
+      alerts: {
+         error: 'rgb(108, 25, 25)',
+         warning: 'rgb(108, 83, 25)',
+         info: 'rgb(17, 74, 98)',
+         success: 'rgb(37, 96, 45)',
+      },
    };
 }
