@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography';
 
+import { useContext } from 'react';
 import type { TTemplate } from '../../../../types/TypesORM';
 import BaseCard from '../BaseCard/BaseCard';
 import ApiEndpoints from '../../../../ApiEndpoints';
@@ -8,6 +9,7 @@ import DeleteButton from '../../Buttons/DeleteButton';
 import type { ListItem } from '../../../../types/TApi';
 import CardContentBuilder from '../../../../utils/CardContentBuilder';
 import useScreenSize from '../../../../hooks/useScreenSize';
+import ColorModeContext from '../../../../App/ColorModeContext';
 
 type TemplateCardProps = {
    template: ListItem<TTemplate>;
@@ -23,6 +25,9 @@ export default function TemplateCard({
       data: template,
    });
    const { isMobile, isTablette } = useScreenSize();
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
 
    const contentRaws = new CardContentBuilder(template.options);
    const rawsBasedOnScreenSize =
@@ -59,7 +64,11 @@ export default function TemplateCard({
       >
          <div className="max-h-[170px] overflow-auto">
             {rawsBasedOnScreenSize.map(line => (
-               <Typography key={line} variant="body2" color="text.secondary">
+               <Typography
+                  key={line}
+                  variant="body2"
+                  sx={{ color: colors.font }}
+               >
                   {line}
                </Typography>
             ))}

@@ -5,6 +5,9 @@ import {
    Path,
    UseFormRegister,
 } from 'react-hook-form';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useContext } from 'react';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type InputDropdownProps<Item extends object | string, Form extends object> = {
    label: string;
@@ -42,6 +45,9 @@ export default function InputDropdown<
    isOptionEqualToValue,
    ...autoCompleteProps
 }: InputDropdownProps<Item, Form>) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    return (
       <Autocomplete<Item, boolean, boolean, boolean>
          multiple={isMultiple}
@@ -51,6 +57,7 @@ export default function InputDropdown<
          isOptionEqualToValue={isOptionEqualToValue}
          {...autoCompleteProps}
          sx={{ width }}
+         popupIcon={<ArrowDropDownIcon sx={{ color: colors.font }} />}
          renderInput={params => (
             <TextField
                {...params}

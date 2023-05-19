@@ -7,7 +7,7 @@ import {
 } from 'react-hook-form';
 import { CardContent, SxProps, Theme } from '@mui/material';
 import useScreenSize from '../../../../hooks/useScreenSize';
-import FrameHoverCard from './FrameHoverCard';
+import Modal from './Modal';
 
 interface Props<Form extends FieldValues> {
    onSubmit: SubmitHandler<Form>;
@@ -19,7 +19,7 @@ interface Props<Form extends FieldValues> {
    sx?: SxProps<Theme> | undefined;
 }
 
-function FrameHoverCardForm<Form extends object>({
+function ModalForm<Form extends object>({
    onSubmit,
    submitButton,
    closeTaskCreation,
@@ -33,7 +33,7 @@ function FrameHoverCardForm<Form extends object>({
    return (
       <FormProvider {...formMethods}>
          <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-            <FrameHoverCard
+            <Modal
                footer={submitButton}
                title={`Create a new ${name}`}
                closeFrame={closeTaskCreation}
@@ -47,13 +47,13 @@ function FrameHoverCardForm<Form extends object>({
                >
                   {children}
                </CardContent>
-            </FrameHoverCard>
+            </Modal>
          </form>
       </FormProvider>
    );
 }
-FrameHoverCardForm.defaultProps = {
+ModalForm.defaultProps = {
    sx: undefined,
 };
 
-export default FrameHoverCardForm;
+export default ModalForm;

@@ -1,10 +1,11 @@
 import { Card, CardActions, CardHeader } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 import useOnKeyPress from '../../../../hooks/useOnKeyPress';
 import useScreenSize from '../../../../hooks/useScreenSize';
+import ColorModeContext from '../../../../App/ColorModeContext';
 
-type FrameHoverCardProps = {
+type ModalProps = {
    title: string;
    closeFrame: () => void;
    children: ReactNode;
@@ -14,7 +15,7 @@ type FrameHoverCardProps = {
    height?: number;
 };
 
-export default function FrameHoverCard({
+export default function Modal({
    title,
    closeFrame,
    children,
@@ -22,14 +23,20 @@ export default function FrameHoverCard({
    className,
    width,
    height,
-}: FrameHoverCardProps) {
+}: ModalProps) {
    useOnKeyPress('Escape', closeFrame);
    const { isMobile, isTablette } = useScreenSize();
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
 
    if (isMobile || isTablette) {
       return (
          <>
-            <div className={`relative box-border m-5 ${className}`}>
+            <div
+               className={`relative box-border m-5 ${className}`}
+               style={{ backgroundColor: colors.main, color: colors.font }}
+            >
                <div className="flex justify-between w-full items-center mt-5">
                   <CardHeader
                      component="h3"
@@ -82,6 +89,8 @@ export default function FrameHoverCard({
             margin: 1,
             paddingX: 2.5,
             cursor: 'default',
+            backgroundColor: colors.main,
+            color: colors.font,
          }}
       >
          <div className="relative m-5 h-full">
@@ -125,7 +134,7 @@ export default function FrameHoverCard({
    );
 }
 
-FrameHoverCard.defaultProps = {
+Modal.defaultProps = {
    className: '',
    footer: undefined,
    width: 800,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import { IconButton, Tooltip } from '@mui/material';
@@ -10,6 +10,7 @@ import ApiEndpoints from '../../../../ApiEndpoints';
 import useScreenSize from '../../../../hooks/useScreenSize';
 import DeleteButton from '../../Buttons/DeleteButton';
 import CardContentBuilder from '../../../../utils/CardContentBuilder';
+import ColorModeContext from '../../../../App/ColorModeContext';
 
 type CommonCard = {
    task: TTask;
@@ -35,7 +36,10 @@ export default function EndCard({
    handleRefresh,
    clickedResults,
 }: CommonCard) {
-   const { isMobile, isTablette, isDesktop } = useScreenSize({});
+   const { isMobile, isTablette, isDesktop } = useScreenSize();
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const [results, setResults] = clickedResults;
    const [endedSince, setEndedSince] = useState('0 minutes');
 
@@ -99,7 +103,9 @@ export default function EndCard({
                         <Typography
                            key={line}
                            variant="body2"
-                           color="text.secondary"
+                           sx={{
+                              color: colors.fontAlternative,
+                           }}
                         >
                            {line}
                         </Typography>
@@ -127,8 +133,15 @@ export default function EndCard({
                               listName: task.hashlistId.name,
                            })
                         }
+                        sx={{
+                           color: colors.opposite,
+                           '&:hover, &.Mui-focusVisible': {
+                              backgroundColor: colors.intermediate2,
+                              color: colors.intermediate1,
+                           },
+                        }}
                      >
-                        <SummarizeIcon className="IconBtn__icon" />
+                        <SummarizeIcon />
                      </IconButton>
                   </Tooltip>
                </div>

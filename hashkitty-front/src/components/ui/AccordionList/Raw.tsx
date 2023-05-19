@@ -1,7 +1,9 @@
 import { TableCell, TableRow } from '@mui/material';
+import { useContext } from 'react';
 import DeleteButton from '../Buttons/DeleteButton';
 import { ListItemAvailable } from '../../../types/TApi';
 import { TTask } from '../../../types/TypesORM';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type RawsProps = {
    item: ListItemAvailable;
@@ -18,6 +20,9 @@ export default function Raw({
    bindToTasks,
    deleteDisabled,
 }: RawsProps) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const tooltip = (): string => {
       if (bindToTasks.length === 0) {
          return `Delete the file ${item.name}`;
@@ -34,7 +39,7 @@ export default function Raw({
       <TableRow key={item.name}>
          <TableCell component="th" scope="row">
             <div className="flex items-center justify-between">
-               <p>{item.name}</p>
+               <p style={{ color: colors.font }}>{item.name}</p>
                <DeleteButton
                   disabled={deleteDisabled}
                   tooltip={tooltip()}

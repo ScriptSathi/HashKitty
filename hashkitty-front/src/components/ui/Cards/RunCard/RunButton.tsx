@@ -1,5 +1,6 @@
 import { IconButton, SxProps, Theme, Tooltip } from '@mui/material';
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
+import ColorModeContext from '../../../../App/ColorModeContext';
 
 type RunButtonProps = {
    isRunning: boolean;
@@ -18,6 +19,9 @@ function RunButton({
    sx,
    children,
 }: RunButtonProps) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    if (isLoading) {
       return (
          <IconButton
@@ -26,7 +30,13 @@ function RunButton({
             onKeyDown={e =>
                e.key === 'Enter' && isRunning ? handleStop() : handleStart()
             }
-            sx={sx}
+            sx={{
+               color: colors.opposite,
+               '&:hover, &.Mui-focusVisible': {
+                  backgroundColor: colors.intermediate2,
+               },
+               ...sx,
+            }}
             size="small"
             aria-label="Start/Stop the task"
          >

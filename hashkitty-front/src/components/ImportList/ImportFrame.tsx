@@ -6,7 +6,7 @@ import {
    UseFormReturn,
 } from 'react-hook-form';
 import { CardContent } from '@mui/material';
-import FrameHoverCard from '../ui/Cards/FrameHoverCard/FrameHoverCard';
+import Modal from '../ui/Cards/Modal/Modal';
 import useScreenSize from '../../hooks/useScreenSize';
 import { ApiImportList, UploadFileType } from '../../types/TApi';
 
@@ -32,7 +32,7 @@ export default function ImportFrame({
    return (
       <FormProvider {...formMethods}>
          <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-            <FrameHoverCard
+            <Modal
                footer={submitButton}
                title={`Import a ${type}`}
                closeFrame={closeImportWindow}
@@ -51,7 +51,7 @@ export default function ImportFrame({
                >
                   {children}
                </CardContent>
-            </FrameHoverCard>
+            </Modal>
          </form>
       </FormProvider>
    );

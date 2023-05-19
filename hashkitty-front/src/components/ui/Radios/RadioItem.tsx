@@ -1,9 +1,10 @@
 import { FormControlLabel, Radio, Typography } from '@mui/material';
 import { FieldValues, Path, UseFormRegister } from 'react-hook-form';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import InfoTooltip from '../Tooltips/InfoTooltip';
 import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
 import { TTemplate } from '../../../types/TypesORM';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type RadioItemProps<
    T extends StandardList | TTemplate,
@@ -35,6 +36,9 @@ function RadioItem<
    tooltipText,
    fieldName,
 }: RadioItemProps<T, Form>) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const [isHover, setIsHover] = useState(false);
    const displayTooltip = isHover && showTooltips;
    return (
@@ -50,6 +54,9 @@ function RadioItem<
                <Radio
                   checked={checkValidation ? checkValidation(elem) : undefined}
                   color="secondary"
+                  sx={{
+                     color: colors.font,
+                  }}
                />
             }
             label={<Typography sx={{ fontSize: 14 }}>{elem.name}</Typography>}

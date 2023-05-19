@@ -20,68 +20,65 @@
 	 url("../fonts/Inter-Medium.ttf") format("truetype");
 	 font-weight: 500;
  }
- .checkBox {
-	 appearance: none;
-	 background-color: white;
-	 font: inherit;
-	 color: $main-color;
-	 width: 1.15em;
-	 height: 1.15em;
-	 border: 0.15em solid black;
-	 border-radius: 0.15em;
-	 display: grid;
-	 place-content: center;
-	 padding-top: 2px;
+.checkBox {
+	appearance: none;
+	background-color: white;
+	font: inherit;
+	color: $main-color;
+	width: 1.15em;
+	height: 1.15em;
+	border: 0.15em solid black;
+	border-radius: 0.15em;
+	display: grid;
+	place-content: center;
+	padding-top: 2px;
 
-	 &::before {
-		 content: "";
-		 width: 0.65em;
-		 height: 0.65em;
-		 transform: scale(0);
-		 transition: 180ms transform ease-in-out;
-		 box-shadow: inset 1em 1em $main-color;
-	 }
-	 &:checked::before {
-		 transform: scale(1);
-		 transform-origin: bottom left;
-		 background-color: $main-color;
-		 clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-	 }
- }
+	&::before {
+		content: "";
+		width: 0.65em;
+		height: 0.65em;
+		transform: scale(0);
+		transition: 180ms transform ease-in-out;
+		box-shadow: inset 1em 1em $main-color;
+	}
+	&:checked::before {
+		transform: scale(1);
+		transform-origin: bottom left;
+		background-color: $main-color;
+		clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+	}
+}
 
- .smallCheckbox {
-	 appearance: none;
-	 background-color: white;
-	 font: inherit;
-	 color: $main-color;
-	 width: 1em;
-	 height: 1em;
-	 border: 0.15em solid black;
-	 border-radius: 0.15em;
-	 transform: translateY(-0.075em);
-	 display: grid;
-	 place-content: center;
+.smallCheckbox {
+	appearance: none;
+	background-color: white;
+	font: inherit;
+	color: $main-color;
+	width: 1em;
+	height: 1em;
+	border: 0.15em solid black;
+	border-radius: 0.15em;
+	transform: translateY(-0.075em);
+	display: grid;
+	place-content: center;
 
-	 &::before {
-		 content: "";
-		 width: 0.5em;
-		 height: 0.5em;
-		 transform: scale(0);
-		 transition: 180ms transform ease-in-out;
-		 box-shadow: inset 1em 1em $main-color;
-	 }
-	 &:checked::before {
-		 transform: scale(1);
-		 transform-origin: bottom left;
-		 background-color: $main-color;
-		 clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-	 }
- }
+	&::before {
+		content: "";
+		width: 0.5em;
+		height: 0.5em;
+		transform: scale(0);
+		transition: 180ms transform ease-in-out;
+		box-shadow: inset 1em 1em $main-color;
+	}
+	&:checked::before {
+		transform: scale(1);
+		transform-origin: bottom left;
+		background-color: $main-color;
+		clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+	}
+}
 
 .IconBtn {
-	&__icon:hover {
-		color: $main-color;
-	}
 	&__back {
 		color: 'black';
 	}

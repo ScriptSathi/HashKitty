@@ -1,8 +1,9 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { CardActions, CardHeader, Tooltip } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import useScreenSize from '../../../../hooks/useScreenSize';
+import ColorModeContext from '../../../../App/ColorModeContext';
 
 type TBaseCard = {
    children: React.ReactNode;
@@ -22,6 +23,9 @@ export default function BaseCard({
    tooltip,
 }: TBaseCard) {
    const { isTablette, isMobile, isDesktop } = useScreenSize();
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const [isMouseOver, setIsMouseOver] = useState(false);
 
    const fullSize = {
@@ -48,7 +52,13 @@ export default function BaseCard({
    return (
       <Tooltip title={tooltip}>
          <Card
-            sx={{ ...size, borderRadius: '1rem', maxWidth: 345, margin: 1 }}
+            sx={{
+               ...size,
+               borderRadius: '1rem',
+               maxWidth: 345,
+               margin: 1,
+               backgroundColor: colors.secondary,
+            }}
             onMouseEnter={() => setIsMouseOver(true)}
             onMouseLeave={() => setIsMouseOver(false)}
          >
@@ -70,6 +80,7 @@ export default function BaseCard({
                         lineHeight: 0,
                         width: '20vh',
                         height: 40,
+                        color: colors.font,
                         ...headerStyleOnScreenSize,
                      }}
                      className="break-normal"
@@ -87,6 +98,7 @@ export default function BaseCard({
                   sx={{
                      height: '100%',
                      width: '100%',
+                     color: colors.font,
                      ...contentStyleOnScreenSize,
                   }}
                   style={{ marginLeft: 0 }}

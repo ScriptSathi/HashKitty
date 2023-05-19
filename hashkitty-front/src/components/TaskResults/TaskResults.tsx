@@ -1,11 +1,12 @@
 import { CircularProgress } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import ApiEndpoints from '../../ApiEndpoints';
 import useFetchPassword from '../../hooks/useFetchPassword';
-import FrameHoverCard from '../ui/Cards/FrameHoverCard/FrameHoverCard';
+import Modal from '../ui/Cards/Modal/Modal';
 import './TaskResuslts.scss';
 import useScreenSize from '../../hooks/useScreenSize';
 import CheckBox from '../ui/Inputs/CheckBox';
+import ColorModeContext from '../../App/ColorModeContext';
 
 type TaskResultsProps = {
    listName: string;
@@ -19,6 +20,9 @@ export default function TaskResults({
    closeResults,
 }: TaskResultsProps) {
    const { isMobile, isTablette } = useScreenSize();
+   const {
+      theme: { colors, isDarkTheme },
+   } = useContext(ColorModeContext);
    document.body.style.userSelect = 'none';
    const [onlyPasswds, setOnlyPasswds] = useState(false);
    const { passwds, isLoaded, error } = useFetchPassword({
@@ -39,11 +43,7 @@ export default function TaskResults({
       return passwds;
    }
    return (
-      <FrameHoverCard
-         className="select-none"
-         closeFrame={closeResults}
-         title={listName}
-      >
+      <Modal className="select-none" closeFrame={closeResults} title={listName}>
          <CheckBox
             title="Show only passwords"
             checked={onlyPasswds}
@@ -52,17 +52,24 @@ export default function TaskResults({
          <div
             className={`${
                isMobile || isTablette ? 'h-[75vh]' : 'h-[45vh]'
-            } ml-0 mt-3 bg-black rounded-[2rem] w-full py-3 px-5 select-text ${
+            } ml-0 mt-3 rounded-[2rem] w-full py-3 px-5 select-text ${
                isLoaded && error.length <= 0
                   ? 'overflow-y-scroll'
                   : 'flex items-center justify-center'
             }`}
-            style={{ marginLeft: 0 }}
+            style={{
+               marginLeft: 0,
+               backgroundColor: isDarkTheme ? colors.secondary : 'black',
+            }}
          >
             {isLoaded &&
                error.length <= 0 &&
                filtratePasswds().map(passwd => (
-                  <p className="m-0 text-white" key={passwd}>
+                  <p
+                     className="m-0"
+                     key={passwd}
+                     style={{ color: isDarkTheme ? colors.font : 'white' }}
+                  >
                      {passwd}
                   </p>
                ))}
@@ -71,6 +78,6 @@ export default function TaskResults({
             )}
             {!isLoaded && <CircularProgress />}
          </div>
-      </FrameHoverCard>
+      </Modal>
    );
 }

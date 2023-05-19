@@ -154,11 +154,12 @@ export class Dao {
          wl.name = file;
          wl.description = '';
          wl.path = `${Constants.wordlistPath}/${file}`;
-         try {
-            this.db.getRepository(Wordlist).save(wl);
-         } catch (e) {
-            logger.error('An error occured', e);
-         }
+         this.db
+            .getRepository(Wordlist)
+            .save(wl)
+            .catch(error =>
+               this.sendNotification('error', `An error occured - ${error}`)
+            );
       });
       const dbElemToDelete = wordlistInDb.filter(file => {
          const isGenericWordlist = file.name.includes('*');

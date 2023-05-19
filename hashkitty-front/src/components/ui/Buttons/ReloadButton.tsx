@@ -8,6 +8,8 @@ import {
    Tooltip,
 } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
+import { useContext } from 'react';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type ReloadButtonProps = {
    isLoading: boolean;
@@ -25,11 +27,20 @@ function ReloadButton({
    sx,
    ...args
 }: ReloadButtonProps) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    return (
       <Tooltip title={tooltip}>
          <span>
             <IconButton
-               sx={sx}
+               sx={{
+                  color: colors.opposite,
+                  '&:hover, &.Mui-focusVisible': {
+                     backgroundColor: colors.intermediate2,
+                  },
+                  ...sx,
+               }}
                disabled={disabled || isLoading}
                onClick={e => {
                   e.stopPropagation();
@@ -41,7 +52,7 @@ function ReloadButton({
                {isLoading ? (
                   <CircularProgress size={24} color="secondary" />
                ) : (
-                  <CachedIcon className="IconBtn__icon" />
+                  <CachedIcon />
                )}
             </IconButton>
          </span>

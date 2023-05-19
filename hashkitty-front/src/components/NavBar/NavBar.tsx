@@ -11,7 +11,10 @@ import ColorModeContext from '../../App/ColorModeContext';
 
 const NavBar = memo(() => {
    const switchRef = useRef(null);
-   const colorMode = useContext(ColorModeContext);
+   const {
+      toggleColorMode,
+      theme: { colors, isDarkTheme },
+   } = useContext(ColorModeContext);
    const [openNav, setOpenNav] = useState(false);
    useScreenSize({
       callbackOnMobile: () => setOpenNav(false),
@@ -19,10 +22,20 @@ const NavBar = memo(() => {
    const pages = ['Home', 'Templates', 'Lists'];
 
    return (
-      <nav className="block w-full rounded-xl backdrop-saturate-200 backdrop-blur-2xl bg-opacity-80 border border-white/80 bg-white mx-auto text-black max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4 border-none">
-         <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
+      <nav
+         className="block w-full mx-auto max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4"
+         style={{ backgroundColor: colors.main }}
+      >
+         <div
+            className="container mx-auto flex items-center justify-between"
+            style={{ color: colors.font }}
+         >
             <NavLink to="/home" className="flex items-center">
-               <img className="logoclassName pr-2.5" src={logo} alt="Logo" />
+               <img
+                  className={`pr-2.5 w-[50px] ${isDarkTheme && 'NavBar__logo'}`}
+                  src={logo}
+                  alt="Logo"
+               />
                <p className="block antialiased font-sans text-inherit font-semibold text-lg">
                   HashKitty
                </p>
@@ -32,7 +45,7 @@ const NavBar = memo(() => {
                   {pages.map(pageName => (
                      <li
                         key={pageName}
-                        className="styleNavItems block antialiased font-sans text-blue-gray-900 NavBar__button p-1 font-normal text-lg"
+                        className="styleNavItems block antialiased font-sans NavBar__button p-1 font-normal text-lg"
                      >
                         <NavLink
                            to={`/${pageName.toLowerCase()}`}
@@ -44,20 +57,20 @@ const NavBar = memo(() => {
                   ))}
                </ul>
                <MaterialUISwitch
-                  checked={colorMode.theme.isDarkTheme}
+                  checked={isDarkTheme}
                   ref={switchRef}
-                  onChange={colorMode.toggleColorMode}
+                  onChange={toggleColorMode}
                />
             </div>
-            <div className="flex lg:hidden">
+            <div className="flex lg:hidden gap-6">
+               <MaterialUISwitch
+                  checked={isDarkTheme}
+                  ref={switchRef}
+                  onChange={toggleColorMode}
+               />
                <BurgerMenu
                   isOpen={openNav}
                   onClick={() => setOpenNav(!openNav)}
-               />
-               <MaterialUISwitch
-                  checked={colorMode.theme.isDarkTheme}
-                  ref={switchRef}
-                  onChange={colorMode.toggleColorMode}
                />
             </div>
          </div>
@@ -75,7 +88,8 @@ const NavBar = memo(() => {
                      {pages.map(pageName => (
                         <li
                            key={pageName}
-                           className="styleNavItems block antialiased font-sans text-blue-gray-900 NavBar__button p-1 font-normal text-lg"
+                           className="styleNavItems block antialiased font-sans NavBar__button p-1 font-normal text-lg"
+                           style={{ color: colors.font }}
                         >
                            <NavLink
                               to={`/${pageName.toLowerCase()}`}

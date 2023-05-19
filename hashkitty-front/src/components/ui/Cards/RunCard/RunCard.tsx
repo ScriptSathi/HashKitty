@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import { CircularProgress, SvgIcon } from '@mui/material';
 
@@ -18,6 +18,7 @@ import CardContentBuilder from '../../../../utils/CardContentBuilder';
 import RunButton from './RunButton';
 
 import './RunCard.scss';
+import ColorModeContext from '../../../../App/ColorModeContext';
 
 type CommonCard = {
    task: TTask;
@@ -31,6 +32,9 @@ function RunCard({
    isRunning: initIsRunning,
 }: CommonCard) {
    const { isDesktop } = useScreenSize();
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const [taskStatus, setTaskStatus] = useState<TFetchStatus>({
       data: {} as THashcatStatus,
       loading: true,
@@ -92,8 +96,8 @@ function RunCard({
       taskStatus.process.isPending || isPending
          ? {}
          : {
-              '&:hover': { borderColor: '#FC6F6F' },
-              border: 'solid 3px black',
+              '&:hover': { borderColor: colors.intermediate1 },
+              border: `solid 3px ${colors.opposite}`,
               position: 'static',
            };
    const DisplaySVG =
@@ -157,7 +161,7 @@ function RunCard({
                      <Typography
                         key={line}
                         variant="body2"
-                        color="text.secondary"
+                        color={colors.fontAlternative}
                      >
                         {line}
                      </Typography>

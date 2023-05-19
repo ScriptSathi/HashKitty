@@ -9,7 +9,7 @@ import {
    CircularProgress,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Button from '../ui/Buttons/Button';
 import CreateTaskOrTemplateErrorHandler from '../../utils/CreateTaskOrTemplateErrorHandler';
 import useFetchAllList from '../../hooks/useFetchAllLists';
@@ -24,7 +24,7 @@ import BackgroundBlur from '../ui/BackgroundBlur/BackGroundBlur';
 import ImportList from '../ImportList/ImportList';
 import useScreenSize from '../../hooks/useScreenSize';
 import InputDropdown from '../ui/Inputs/InputDropdown';
-import FrameHoverCardForm from '../ui/Cards/FrameHoverCard/FrameHoverCardForm';
+import FrameHoverCardForm from '../ui/Cards/Modal/ModalForm';
 import { CreateTaskErrors } from '../../types/TypesErrorHandler';
 import BreakPointTempField from '../HashcatFields/BreakPointTempField';
 import KernelOptiCheckBox from '../HashcatFields/KernelOptiCheckBox';
@@ -37,6 +37,7 @@ import AttackModeRadio from '../HashcatFields/AttackModeRadio';
 import PotfileField from '../HashcatFields/PotfileField';
 import CustomCharsetField from '../HashcatFields/CustomCharsetField';
 import type { TAttackMode } from '../../types/TypesORM';
+import ColorModeContext from '../../App/ColorModeContext';
 
 type CreateTaskProps = {
    closeTaskCreation: () => void;
@@ -44,6 +45,9 @@ type CreateTaskProps = {
 
 export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
    const { isTablette, isMobile } = useScreenSize();
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const [inputWordlist, setInputWordlist] = useState<string | null>(null);
    const [inputMaskQuery, setInputMaskQuery] = useState<string>('');
    const [inputPotfile, setInputPotfile] = useState<string | null>(null);
@@ -189,7 +193,7 @@ export default function CreateTask({ closeTaskCreation }: CreateTaskProps) {
                      error={!!errors.name && !!errors.name.message}
                      label="Name *"
                      helperText={errors.name?.message}
-                     sx={{ marginTop: 0.5 }}
+                     sx={{ marginTop: 0.5, color: colors.font }}
                   />
                   <div>
                      <Button

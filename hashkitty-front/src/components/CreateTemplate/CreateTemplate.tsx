@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { CircularProgress } from '@mui/material';
-import FrameHoverCardForm from '../ui/Cards/FrameHoverCard/FrameHoverCardForm';
+import FrameHoverCardForm from '../ui/Cards/Modal/ModalForm';
 import {
    AttackModeAvailable,
    CreateTemplateForm,

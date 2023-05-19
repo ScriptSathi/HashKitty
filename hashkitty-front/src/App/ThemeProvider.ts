@@ -13,11 +13,11 @@ export default class ThemeProvider {
    }
 
    public mode: 'light' | 'dark';
-   public theme: ThemeColorsAvailable;
+   public colors: ThemeColorsAvailable;
 
    constructor(mode?: 'light' | 'dark') {
       this.mode = mode || ThemeProvider.getUserSystemTheme();
-      this.theme = new ThemeColors()[this.mode];
+      this.colors = new ThemeColors()[this.mode];
    }
 
    public get isDarkTheme() {
@@ -32,21 +32,21 @@ export default class ThemeProvider {
       return createTheme({
          palette: {
             primary: {
-               main: this.theme.main,
+               main: this.colors.main,
             },
             secondary: {
-               main: this.theme.intermediate1,
+               main: this.colors.intermediate1,
             },
          },
          components: {
             MuiSwitch: {
                styleOverrides: {
                   track: {
-                     backgroundColor: 'black',
+                     backgroundColor: this.colors.opposite,
                   },
                   root: {
                      '& .MuiSwitch-colorSecondary': {
-                        color: 'black',
+                        color: this.colors.opposite,
                      },
                   },
                },
@@ -55,8 +55,52 @@ export default class ThemeProvider {
                styleOverrides: {
                   option: {
                      '&:hover': {
-                        color: 'white',
-                        backgroundColor: `${this.theme.intermediate1} !important`,
+                        color: this.colors.font,
+                        backgroundColor: `${this.colors.intermediate1} !important`,
+                     },
+                  },
+               },
+            },
+            MuiPaper: {
+               styleOverrides: {
+                  root: {
+                     boxShadow:
+                        `0px 3px 1px -2px ${this.colors.boxShadow},` +
+                        `0px 2px 2px 0px ${this.colors.boxShadow},` +
+                        `0px 1px 5px 0px ${this.colors.boxShadow}`,
+                  },
+               },
+            },
+            MuiTextField: {
+               styleOverrides: {
+                  root: {
+                     '& .MuiInputLabel-root': {
+                        color: this.colors.font,
+                        '&.Mui-focused': {
+                           color: this.colors.font,
+                        },
+                     },
+                     '& .MuiOutlinedInput-notchedOutline': {
+                        border: `1px solid ${this.colors.fontAlternative}`,
+                     },
+                     '& .MuiOutlinedInput-root': {
+                        backgroundColor: `${this.colors.secondary} !important`,
+                        color: this.colors.font,
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                           border: `1px solid ${this.colors.fontAlternative}`,
+                        },
+                        '&.Mui-focused': {
+                           color: this.colors.font,
+                           '&:hover .MuiOutlinedInput-notchedOutline': {
+                              border: `2px solid ${this.colors.font}`,
+                           },
+                           '& > fieldset': {
+                              borderColor: this.colors.font,
+                              '&:hover': {
+                                 border: `1px solid ${this.colors.fontAlternative}`,
+                              },
+                           },
+                        },
                      },
                   },
                },

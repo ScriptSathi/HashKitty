@@ -12,7 +12,7 @@ import {
    Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Button from '../Buttons/Button';
 import BackgroundBlur from '../BackgroundBlur/BackGroundBlur';
 import ImportList from '../../ImportList/ImportList';
@@ -24,6 +24,7 @@ import {
 import useSendForm from '../../../hooks/useSendForm';
 import ApiEndpoints from '../../../ApiEndpoints';
 import Raw from './Raw';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type AccordionListProps<List extends ListItemAvailable> = {
    list: ListItem<List>[];
@@ -48,6 +49,9 @@ function AccordionList<List extends ListItemAvailable>({
    displayAdditionnalStack,
    ...args
 }: AccordionListProps<List>) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const singularName = name
       .toLowerCase()
       .substring(0, name.length - 1) as UploadFileType;
@@ -72,10 +76,26 @@ function AccordionList<List extends ListItemAvailable>({
 
    return (
       <>
-         <Paper sx={{ boxShadow: 'none', maxWidth: 700 }}>
-            <Accordion expanded={expanded} {...args}>
+         <Paper
+            sx={{
+               boxShadow: 'none',
+               maxWidth: 700,
+               backgroundColor: colors.secondary,
+               color: colors.font,
+            }}
+         >
+            <Accordion
+               expanded={expanded}
+               {...args}
+               sx={{
+                  backgroundColor: colors.secondary,
+                  color: colors.font,
+               }}
+            >
                <AccordionSummary
-                  expandIcon={!expanded && <ExpandMoreIcon />}
+                  expandIcon={
+                     !expanded && <ExpandMoreIcon sx={{ color: colors.font }} />
+                  }
                   aria-controls="panel1a-content"
                   id="panel1a-header"
                   className="flex justify-between"
@@ -110,14 +130,18 @@ function AccordionList<List extends ListItemAvailable>({
                            <SnackbarContent
                               key={link}
                               sx={{
-                                 color: 'white',
-                                 backgroundColor: '#FC6F6F',
+                                 color: colors.main,
+                                 backgroundColor: colors.intermediate1,
                               }}
                               message={
-                                 <Typography className="m-0 p-0 text-black">
+                                 <Typography
+                                    className="m-0 p-0"
+                                    style={{ color: colors.font }}
+                                 >
                                     {text}{' '}
                                     <a
-                                       className="text-white cursor-pointer underline"
+                                       className="cursor-pointer underline"
+                                       style={{ color: colors.fontOpposite }}
                                        href={link}
                                     >
                                        {link}
@@ -133,7 +157,9 @@ function AccordionList<List extends ListItemAvailable>({
                         {isEmptyList ? (
                            <>
                               <TableRow>
-                                 <TableCell>Name</TableCell>
+                                 <TableCell sx={{ color: colors.font }}>
+                                    Name
+                                 </TableCell>
                               </TableRow>
                               {list.map(
                                  ({
@@ -157,7 +183,11 @@ function AccordionList<List extends ListItemAvailable>({
                            </>
                         ) : (
                            <TableRow>
-                              <TableCell component="th" scope="row">
+                              <TableCell
+                                 sx={{ color: colors.font }}
+                                 component="th"
+                                 scope="row"
+                              >
                                  No items found
                               </TableCell>
                            </TableRow>

@@ -5,7 +5,8 @@ import {
    Button as TWButton,
 } from '@mui/material';
 
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, useContext } from 'react';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type ButtonProps = {
    children: React.ReactNode;
@@ -25,6 +26,9 @@ export default function Button({
    sx,
    ...args
 }: ButtonProps) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    return (
       <Tooltip title={tooltip}>
          <TWButton
@@ -32,27 +36,29 @@ export default function Button({
             type={type}
             {...args}
             sx={{
-               backgroundColor: 'black',
-               border: 'solid 4px black',
+               backgroundColor: colors.opposite,
+               border: `solid 4px ${colors.opposite}`,
                fontFamily: 'inherit',
                fontWeight: 'bold',
                boxShadow: 'unset',
                fontSize,
-               color: 'white',
+               color: colors.fontOpposite,
                paddingX: 1,
                paddingY: 0.8,
                '&:hover': {
-                  border: 'solid 4px black',
+                  border: `solid 4px ${colors.opposite}`,
+                  color: colors.font,
+                  backgroundColor: colors.main,
                },
                '&:active': {
-                  backgroundColor: '#FC6F6F',
-                  border: 'solid 4px #FC6F6F',
-                  color: 'white',
+                  backgroundColor: colors.intermediate1,
+                  border: `solid 4px ${colors.intermediate1}`,
+                  color: '#FFFFFF',
                },
                ...sx,
             }}
             size={size}
-            className={`${args.className} flex uppercase items-center justify-center rounded-md hover:bg-white hover:text-black`}
+            className={`${args.className} flex uppercase items-center justify-center rounded-md`}
          >
             {children || 'button'}
          </TWButton>

@@ -1,7 +1,9 @@
 import { Alert, CircularProgress } from '@mui/material';
 
+import { useContext } from 'react';
 import NavBar from '../NavBar/NavBar';
 import useFetchNotifications from '../../hooks/useFetchNotifications';
+import ColorModeContext from '../../App/ColorModeContext';
 
 type FrameProps = {
    children?: React.ReactNode;
@@ -10,10 +12,16 @@ type FrameProps = {
 };
 
 export default function Frame({ children, isLoading, className }: FrameProps) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const { notifications, deleteNotification } = useFetchNotifications();
 
    return (
-      <div className={className}>
+      <div
+         className={`h-[100vh] ${className}`}
+         style={{ backgroundColor: colors.main }}
+      >
          <header>
             <NavBar />
             <div className="flex flex-wrap justify-center px-[15vw]">
@@ -33,7 +41,12 @@ export default function Frame({ children, isLoading, className }: FrameProps) {
             {isLoading ? (
                <CircularProgress className="mt-96" color="secondary" />
             ) : (
-               <main className="block px-[6vw] w-full">{children}</main>
+               <main
+                  className="block px-[6vw] w-full"
+                  style={{ color: colors.font }}
+               >
+                  {children}
+               </main>
             )}
          </div>
       </div>

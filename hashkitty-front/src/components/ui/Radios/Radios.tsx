@@ -5,11 +5,13 @@ import {
    Path,
    UseFormRegister,
 } from 'react-hook-form';
+import { useContext } from 'react';
 import { RadioOnChangeEvent, StandardList } from '../../../types/TComponents';
 import tooltips from '../../../tooltips';
 import { TTemplate } from '../../../types/TypesORM';
 import RadioItem from './RadioItem';
 import CardContentBuilder from '../../../utils/CardContentBuilder';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type RadiosProps<T extends StandardList, Form extends FieldValues> = {
    list: T[];
@@ -40,6 +42,9 @@ export default function Radios<
    checkValidation,
    onChangeElem,
 }: RadiosProps<T, Form>) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    const errorMessage = () => {
       if (errors && errors[fieldName]) {
          return errors[fieldName]?.message as string;
@@ -69,7 +74,12 @@ export default function Radios<
    if (list.length === 0) {
       return (
          <>
-            <h3 className="ml-[10px] text-lg text-gray-600">{name}</h3>
+            <h3
+               className="ml-[10px] text-lg"
+               style={{ color: colors.fontAlternative }}
+            >
+               {name}
+            </h3>
             <div className="h-[160px] w-[275px] overflow-y-scroll">
                <p className="ml-[10px]">No element found</p>
             </div>
@@ -80,9 +90,14 @@ export default function Radios<
    return (
       <>
          <div className="flex">
-            <h3 className="ml-[10px] text-lg text-gray-600">{name}</h3>
+            <h3
+               className="ml-[10px] text-lg"
+               style={{ color: colors.fontAlternative }}
+            >
+               {name}
+            </h3>
             <p
-               className="text-red-500 ml-auto mr-[50px] mt-[3px]"
+               className="ml-auto mr-[50px] mt-[3px]"
                style={{
                   fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
                }}

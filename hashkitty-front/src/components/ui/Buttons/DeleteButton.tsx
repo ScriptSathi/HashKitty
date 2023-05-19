@@ -1,5 +1,7 @@
 import { CircularProgress, IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useContext } from 'react';
+import ColorModeContext from '../../../App/ColorModeContext';
 
 type DeleteButtonProps = {
    isLoading: boolean;
@@ -15,6 +17,9 @@ function DeleteButton({
    tooltip,
    ...args
 }: DeleteButtonProps) {
+   const {
+      theme: { colors },
+   } = useContext(ColorModeContext);
    return (
       <Tooltip title={tooltip}>
          <span>
@@ -22,12 +27,21 @@ function DeleteButton({
                disabled={disabled || isLoading}
                onClick={handleDeletion}
                onKeyDown={e => e.key === 'Delete' && handleDeletion()}
+               sx={{
+                  color: colors.opposite,
+                  '&:hover, &.Mui-focusVisible': {
+                     backgroundColor: colors.intermediate2,
+                  },
+                  '&.Mui-disabled': {
+                     color: colors.intermediate2,
+                  },
+               }}
                {...args}
             >
                {isLoading ? (
                   <CircularProgress size={24} color="secondary" />
                ) : (
-                  <DeleteIcon className="IconBtn__icon" />
+                  <DeleteIcon />
                )}
             </IconButton>
          </span>
