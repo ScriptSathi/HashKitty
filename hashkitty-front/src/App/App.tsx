@@ -13,6 +13,8 @@ export default function App() {
    } = useContext(ColorModeContext);
    const [mode, setMode] = useState<'light' | 'dark'>(baseMode);
    const [notifications, setNotification] = useState<TNotification[]>([]);
+   const [isEventListening, setIsEventListening] = useState(false);
+   const notificationsUrl = ApiEndpoints.GET.notifications;
 
    const colorContext = useMemo(
       () => ({
@@ -22,8 +24,6 @@ export default function App() {
       }),
       [mode],
    );
-
-   const notificationsUrl = ApiEndpoints.GET.notifications;
 
    const notificationsContext = useMemo(
       () => ({
@@ -57,9 +57,17 @@ export default function App() {
          const notifs: TNotification[] = JSON.parse(data);
          notificationsContext.appendNotifications(notifs);
       };
-      events.onerror = () => events.close();
-      return () => events.close();
-   }, []);
+      events.onopen = () => setNotification([]);
+      events.onerror = () => {
+         setIsEventListening(false);
+         events.close();
+      };
+      setIsEventListening(true);
+      return () => {
+         setIsEventListening(false);
+         events.close();
+      };
+   }, [isEventListening]);
 
    return (
       <NotificationsContext.Provider value={notificationsContext}>
