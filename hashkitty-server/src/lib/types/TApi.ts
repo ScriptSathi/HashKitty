@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { Hashlist } from '../ORM/entity/Hashlist';
 import { Wordlist } from '../ORM/entity/Wordlist';
 
@@ -21,6 +22,8 @@ export interface IHttpServer {
    close(): Promise<void>;
    checkHealth(): void;
 }
+
+export type StreamEvent = { initTimestamp: number; res: Response };
 
 // Is the same as ORM Task but with all relations inside instead of foreign keys
 export type TTask = {

@@ -1,6 +1,5 @@
 import { Hashcat } from '../hashcat/Hashcat';
 import { Constants } from '../Constants';
-import { logger } from '../utils/Logger';
 import { DataSource } from 'typeorm';
 import { Dao } from './DAOs/Dao';
 import { ListBase, UploadFileType } from '../types/TApi';
@@ -20,11 +19,12 @@ import TemplateController from './Controllers/TemplateController';
 import ListController from './Controllers/ListController';
 import NotificationController from './Controllers/NotificationController';
 import OptionController from './Controllers/OptionController';
+import type { Notification } from '../ORM/entity/Notification';
 
 export class RouteHandler {
    public hashcat: Hashcat;
    private dao: Dao;
-   private sendNotification: Events['sendNotification'];
+   private events: Events;
    private hashcatController: HashcatController;
    private taskController: TaskController;
    private templateController: TemplateController;
@@ -34,16 +34,17 @@ export class RouteHandler {
 
    constructor(db: DataSource) {
       this.dao = new Dao(db);
-      this.sendNotification = new Events(
-         this.dao.notification
-      ).sendNotification;
-      this.hashcat = new Hashcat(this.dao, this.sendNotification);
-      this.hashcatController = new HashcatController(this.dao);
-      this.taskController = new TaskController(this.dao);
-      this.listController = new ListController(this.dao);
-      this.templateController = new TemplateController(this.dao);
-      this.notificationController = new NotificationController(this.dao);
-      this.optionController = new OptionController(this.dao);
+      this.events = new Events(this.dao.notification);
+      this.hashcat = new Hashcat(this.dao, this.events);
+      this.hashcatController = new HashcatController(this.dao, this.events);
+      this.taskController = new TaskController(this.dao, this.events);
+      this.listController = new ListController(this.dao, this.events);
+      this.templateController = new TemplateController(this.dao, this.events);
+      this.notificationController = new NotificationController(
+         this.dao,
+         this.events
+      );
+      this.optionController = new OptionController(this.dao, this.events);
    }
 
    public execHashcat = async (
@@ -263,12 +264,28 @@ export class RouteHandler {
    };
 
    public getNotifications = async (
-      _: ReceivedRequest,
+      req: ReceivedRequest,
       res: ResponseSend
    ): Promise<void> => {
-      const { message, httpCode, success, items } =
-         await this.notificationController.getAll();
-      res.status(httpCode).json({ message, httpCode, success, items });
+      const headers = {
+         Connection: 'keep-alive',
+         'Content-Type': 'text/event-stream',
+         'Cache-Control': 'no-cache',
+      };
+      const { httpCode, items } = await this.notificationController.getAll();
+      const currentDate = Date.now();
+      res.writeHead(httpCode, headers);
+      this.events.streamEvents = [{ initTimestamp: currentDate, res }];
+      res.write(Events.eventSourceFormatResponse(items as Notification[]));
+      req.on('close', () => {
+         this.events.sendNotification(
+            'debug',
+            `Client registered at ${new Date(currentDate)} : Connection closed`
+         );
+         this.events.streamEvents = this.events.streamEvents.filter(
+            stream => stream.initTimestamp !== currentDate
+         );
+      });
    };
 
    public getAllWordlists = async (
@@ -315,7 +332,8 @@ export class RouteHandler {
       const items = await this.dao.getListContext(list, () => false);
       if (dirPath && e) {
          const httpCode = 500;
-         logger.error(
+         this.events.sendNotification(
+            'error',
             `An error occured while reading dir ${dirPath} - Error: ${e}`
          );
          const msgError = `An error occured while reading dir ${dirPath}`;

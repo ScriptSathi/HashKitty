@@ -2,8 +2,8 @@ import { Alert, CircularProgress } from '@mui/material';
 
 import { useContext } from 'react';
 import NavBar from '../NavBar/NavBar';
-import useFetchNotifications from '../../hooks/useFetchNotifications';
 import ColorModeContext from '../../App/ColorModeContext';
+import NotificationsContext from '../../App/NotificationsContext';
 
 type FrameProps = {
    children?: React.ReactNode;
@@ -14,7 +14,8 @@ export default function Frame({ children, isLoading }: FrameProps) {
    const {
       theme: { colors },
    } = useContext(ColorModeContext);
-   const { notifications, deleteNotification } = useFetchNotifications();
+   const { notifications, deleteNotification } =
+      useContext(NotificationsContext);
    document.body.style.backgroundColor = colors.main;
    return (
       <>

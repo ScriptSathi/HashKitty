@@ -3,13 +3,19 @@ import { logger } from './Logger';
 import { DaoNotification } from '../API/DAOs/DaoNotification';
 import { Notification } from '../ORM/entity/Notification';
 import { NotificationType } from '../types/TDAOs';
+import { StreamEvent } from '../types/TApi';
 
 export class Events extends EventEmitter {
+   public static eventSourceFormatResponse(data: Notification[]) {
+      return `data: ${JSON.stringify(data)}\n\n`;
+   }
+   public streamEvents: StreamEvent[];
    private notif: DaoNotification;
 
    constructor(notif: DaoNotification) {
       super();
       this.notif = notif;
+      this.streamEvents = [];
       this.addListeners();
    }
 
@@ -28,28 +34,32 @@ export class Events extends EventEmitter {
       this.on('debug', this.onDebug);
    }
 
-   private onError = (message: string, ...debugMessages: string[]) => {
+   private onError = async (message: string, ...debugMessages: string[]) => {
       this.logDebug(...debugMessages);
       logger.error(message);
-      this.notif.create(this.createNotification('error', message));
+      const notif = await this.createNotification('error', message);
+      this.sendNotificationStream(notif);
    };
 
-   private onWarning = (message: string, ...debugMessages: string[]) => {
+   private onWarning = async (message: string, ...debugMessages: string[]) => {
       this.logDebug(...debugMessages);
       logger.warn(message);
-      this.notif.create(this.createNotification('warning', message));
+      const notif = await this.createNotification('warning', message);
+      this.sendNotificationStream(notif);
    };
 
-   private onInfo = (message: string, ...debugMessages: string[]) => {
+   private onInfo = async (message: string, ...debugMessages: string[]) => {
       this.logDebug(...debugMessages);
       logger.info(message);
-      this.notif.create(this.createNotification('info', message));
+      const notif = await this.createNotification('info', message);
+      this.sendNotificationStream(notif);
    };
 
-   private onSuccess = (message: string, ...debugMessages: string[]) => {
+   private onSuccess = async (message: string, ...debugMessages: string[]) => {
       this.logDebug(...debugMessages);
       logger.info(message);
-      this.notif.create(this.createNotification('success', message));
+      const notif = await this.createNotification('success', message);
+      this.sendNotificationStream(notif);
    };
 
    private onDebug(...debugMessages: string[]) {
@@ -65,10 +75,16 @@ export class Events extends EventEmitter {
    private createNotification(
       status: NotificationType,
       message: string
-   ): Notification {
+   ): Promise<Notification> {
       const notif = new Notification();
       notif.status = status;
       notif.message = message;
-      return notif;
+      return this.notif.create(notif);
+   }
+
+   private sendNotificationStream(notification: Notification) {
+      this.streamEvents.map(stream =>
+         stream.res.write(Events.eventSourceFormatResponse([notification]))
+      );
    }
 }

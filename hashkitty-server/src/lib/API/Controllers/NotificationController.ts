@@ -7,11 +7,9 @@ export default class NotificationController {
    private dao: Dao;
    private sendNotification: Events['sendNotification'];
 
-   constructor(dao: Dao) {
+   constructor(dao: Dao, events: Events) {
       this.dao = dao;
-      this.sendNotification = new Events(
-         this.dao.notification
-      ).sendNotification;
+      this.sendNotification = events.sendNotification;
    }
 
    public async delete(notificationId: number): Promise<ResponseAttr> {
@@ -44,7 +42,7 @@ export default class NotificationController {
          const items = await this.dao.notification.getAll();
          return {
             message: '',
-            items,
+            items: items ?? [],
             httpCode: 200,
             success: true,
          };

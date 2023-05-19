@@ -13,12 +13,10 @@ export default class ListController {
    private sendNotification: Events['sendNotification'];
    private fsUtils: FsUtils;
 
-   constructor(dao: Dao) {
+   constructor(dao: Dao, events: Events) {
       this.dao = dao;
       this.fsUtils = new FsUtils();
-      this.sendNotification = new Events(
-         this.dao.notification
-      ).sendNotification;
+      this.sendNotification = events.sendNotification;
    }
 
    public async upload({

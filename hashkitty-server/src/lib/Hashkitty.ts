@@ -43,7 +43,7 @@ export class Hashkitty {
             logger.info(
                `Error while trying to connect to MySQL, retry in ${sleepTime} seconds`
             );
-            await new Promise<void>(resolve =>
+            new Promise<void>(resolve =>
                setTimeout(() => {
                   resolve(this.connectToDb());
                }, sleepTime * 1000)

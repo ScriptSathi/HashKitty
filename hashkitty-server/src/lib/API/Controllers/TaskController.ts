@@ -12,13 +12,11 @@ import { Task } from '../../ORM/entity/Task';
 
 export default class TaskController {
    private dao: Dao;
-   private sendNotification: Events['sendNotification'];
+   private events: Events;
 
-   constructor(dao: Dao) {
+   constructor(dao: Dao, events: Events) {
       this.dao = dao;
-      this.sendNotification = new Events(
-         this.dao.notification
-      ).sendNotification;
+      this.events = events;
    }
 
    public async delete(taskId: number): Promise<ResponseAttr> {
@@ -29,7 +27,7 @@ export default class TaskController {
          const task = (await this.dao.task.getById(taskId)) as unknown as TTask;
          this.dao.task.deleteById(taskId);
          const respMessage = `Task "${task.name}" deleted successfully`;
-         this.sendNotification('success', respMessage);
+         this.events.sendNotification('success', respMessage);
          return {
             message: respMessage,
             httpCode: 200,
@@ -37,7 +35,7 @@ export default class TaskController {
          };
       } catch (err) {
          const errorMsg = `An error occured while trying to delete task: ${err}`;
-         this.sendNotification('error', errorMsg);
+         this.events.sendNotification('error', errorMsg);
          return {
             httpCode: 500,
             message: errorMsg,
@@ -58,7 +56,7 @@ export default class TaskController {
             const message = `Task "${task.name}" ${
                sanitizer.isAnUpdate ? 'updated' : 'created'
             } successfully`;
-            this.sendNotification('success', message);
+            this.events.sendNotification('success', message);
             this.dao.task.create(sanitizer.getTask());
             return {
                message,
@@ -66,7 +64,7 @@ export default class TaskController {
                httpCode: 200,
             };
          } else {
-            this.sendNotification('error', sanitizer.errorMessage);
+            this.events.sendNotification('error', sanitizer.errorMessage);
             return {
                httpCode: 400,
                message: sanitizer.errorMessage,
@@ -74,7 +72,7 @@ export default class TaskController {
             };
          }
       } catch {
-         this.sendNotification(
+         this.events.sendNotification(
             'error',
             'An error occured while trying to create task'
          );
@@ -105,7 +103,7 @@ export default class TaskController {
          };
       } catch {
          const message = `File ${filename} does not exist`;
-         this.sendNotification('error', message);
+         this.events.sendNotification('error', message);
          return {
             passwds: [],
             message,
@@ -128,7 +126,7 @@ export default class TaskController {
          const message = `An unexpected error occured ${
             (err as Error).message
          }`;
-         this.sendNotification('error', message);
+         this.events.sendNotification('error', message);
          return {
             message,
             success: false,
@@ -154,7 +152,7 @@ export default class TaskController {
          const message = `An unexpected error occured ${
             (err as Error).message
          }`;
-         this.sendNotification('error', message);
+         this.events.sendNotification('error', message);
          return {
             message,
             success: false,

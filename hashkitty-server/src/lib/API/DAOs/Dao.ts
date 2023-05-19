@@ -18,7 +18,6 @@ import { DaoAttackMode } from './DaoAttackMode';
 import { DaoHashType } from './DaoHashType';
 import { FsUtils } from '../../utils/FsUtils';
 import { Constants } from '../../Constants';
-import { logger } from '../../utils/Logger';
 import { Migration } from '../../ORM/Migration';
 import { HashType } from '../../ORM/entity/HashType';
 import { DaoNotification } from './DaoNotification';
@@ -182,7 +181,7 @@ export class Dao {
    public async taskExistById(id: number): Promise<boolean> {
       return await this.db.getRepository(Task).exist({
          where: {
-            id: id,
+            id,
          },
       });
    }
@@ -190,7 +189,7 @@ export class Dao {
    public async templateExistById(id: number): Promise<boolean> {
       return await this.db.getRepository(TemplateTask).exist({
          where: {
-            id: id,
+            id,
          },
       });
    }
@@ -200,7 +199,7 @@ export class Dao {
       id?: number;
    }): Promise<Wordlist | null> {
       return this.db.getRepository(Wordlist).findOne({
-         where: where,
+         where,
       });
    }
 
@@ -214,18 +213,18 @@ export class Dao {
       });
    }
 
-   public async findHashlistExistWhere(
+   public findHashlistExistWhere(
       where: FindOptionsWhere<Hashlist>
    ): Promise<boolean> {
-      return await this.db.getRepository(Hashlist).exist({ where });
+      return this.db.getRepository(Hashlist).exist({ where });
    }
 
-   public async findHashTypeExistById(id: number): Promise<boolean> {
-      return await this.db.getRepository(HashType).exist({ where: { id } });
+   public findHashTypeExistById(id: number): Promise<boolean> {
+      return this.db.getRepository(HashType).exist({ where: { id } });
    }
 
-   public async notificationExistById(id: number): Promise<boolean> {
-      return await this.db.getRepository(Notification).exist({ where: { id } });
+   public notificationExistById(id: number): Promise<boolean> {
+      return this.db.getRepository(Notification).exist({ where: { id } });
    }
 
    public async getReferenceOfList(
