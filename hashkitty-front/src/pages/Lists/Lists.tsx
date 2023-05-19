@@ -30,7 +30,7 @@ function Lists() {
    };
 
    const closeImportWindow = (doRefresh = false) => {
-      setImport({ isClicked: !importIsClicked, name: 'hashlist' });
+      setImport({ isClicked: false, name: 'hashlist' });
       if (doRefresh) setTimeout(() => refresh(), 1000);
    };
 
@@ -129,9 +129,7 @@ function Lists() {
          </Frame>
          {importIsClicked && (
             <BackgroundBlur
-               toggleFn={() =>
-                  setImport({ isClicked: importIsClicked, name: importName })
-               }
+               toggleFn={closeImportWindow}
             >
                <ImportList
                   closeImportWindow={closeImportWindow}
