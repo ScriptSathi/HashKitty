@@ -80,7 +80,7 @@ export class NotificationsContextImplementation
             this.removeFromListShortliveNotifications(notif.id);
             return notif;
          });
-      }, 5000);
+      }, 3000);
       this.setShortLiveNotifications(prevNotifs => [
          ...new Set([...prevNotifs, ...notifs]),
       ]);

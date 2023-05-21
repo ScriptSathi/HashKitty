@@ -100,10 +100,15 @@ const NavBar = memo(() => {
             </div>
             <div className="flex lg:hidden gap-6">
                <IconButton
-                  onClick={handleOpenPopper}
+                  onClick={e => handleOpenPopper(e)}
                   style={{ backgroundColor: 'transparent' }}
+                  disabled={notifications.length === 0}
                >
-                  <Badge badgeContent={4} color="secondary">
+                  <Badge
+                     badgeContent={notifications.length}
+                     color="secondary"
+                     sx={{ '& > span': { color: 'white' } }}
+                  >
                      <NotificationsIcon />
                   </Badge>
                </IconButton>

@@ -1,6 +1,8 @@
-import { Alert, CircularProgress } from '@mui/material';
-
 import { useContext } from 'react';
+import Alert from '@mui/material/Alert';
+import Grow from '@mui/material/Grow';
+import CircularProgress from '@mui/material/CircularProgress';
+
 import NavBar from '../NavBar/NavBar';
 import ColorModeContext from '../../App/ColorModeContext';
 import NotificationsContext from '../../App/NotificationsContext';
@@ -20,21 +22,23 @@ export default function Frame({ children, isLoading }: FrameProps) {
 
    return (
       <>
-         <header>
+         <header className="relative">
             <NavBar />
-            <div className="flex flex-wrap justify-center px-[15vw]">
-               {shortLiveNotifications.map(notif => (
-                  <Alert
-                     key={notif.id}
-                     onClose={() => deleteNotification(notif.id)}
-                     severity={notif.status}
-                     sx={{
-                        backgroundColor: colors.alerts[notif.status],
-                     }}
-                     className="w-full"
-                  >
-                     {notif.message}
-                  </Alert>
+            <div className="absolute flex flex-wrap justify-center px-[15vw] w-[90vw] z-10">
+               {shortLiveNotifications.map(({ id, status, message }) => (
+                  <Grow key={id} in>
+                     <Alert
+                        key={id}
+                        onClose={() => deleteNotification(id)}
+                        severity={status}
+                        sx={{
+                           backgroundColor: colors.alerts[status],
+                        }}
+                        className="w-full"
+                     >
+                        {message}
+                     </Alert>
+                  </Grow>
                ))}
             </div>
          </header>
