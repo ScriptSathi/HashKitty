@@ -276,7 +276,7 @@ export class RouteHandler {
       const currentDate = Date.now();
       res.writeHead(httpCode, headers);
       this.events.streamEvents = [{ initTimestamp: currentDate, res }];
-      res.write(Events.eventSourceFormatResponse(items as Notification[]));
+      res.write(this.events.eventSourceFormatResponse(items as Notification[]));
       req.on('close', () => {
          this.events.sendNotification(
             'debug',

@@ -71,6 +71,9 @@ export default class ThemeProvider {
                         `0px 2px 2px 0px ${this.colors.boxShadow},` +
                         `0px 1px 5px 0px ${this.colors.boxShadow}`,
                   },
+                  elevation0: {
+                     boxShadow: 'none',
+                  },
                },
             },
             MuiTextField: {

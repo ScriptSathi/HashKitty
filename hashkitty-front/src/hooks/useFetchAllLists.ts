@@ -55,8 +55,16 @@ export default function useFetchAllList() {
          refreshWordlists(),
          refreshAttacModes(),
       ])
-         .then(() => setIsLoading(false))
-         .catch(e => setErorr(e));
+         .then(res => {
+            const resolvedPromises = res.filter(data => data);
+            const dataHasFailLoading = resolvedPromises.length === 0;
+            if (dataHasFailLoading) refresh();
+            else setIsLoading(false);
+         })
+         .catch(e => {
+            setErorr(e);
+            refresh();
+         });
    }
 
    useEffect(() => refresh(), []);

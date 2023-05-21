@@ -14,18 +14,19 @@ export default function Frame({ children, isLoading }: FrameProps) {
    const {
       theme: { colors },
    } = useContext(ColorModeContext);
-   const { notifications, deleteNotification } =
+   const { shortLiveNotifications, deleteNotification } =
       useContext(NotificationsContext);
    document.body.style.backgroundColor = colors.main;
+
    return (
       <>
          <header>
             <NavBar />
             <div className="flex flex-wrap justify-center px-[15vw]">
-               {notifications.map((notif, i) => (
+               {shortLiveNotifications.map(notif => (
                   <Alert
                      key={notif.id}
-                     onClose={() => deleteNotification(notif.id, i)}
+                     onClose={() => deleteNotification(notif.id)}
                      severity={notif.status}
                      sx={{
                         backgroundColor: colors.alerts[notif.status],

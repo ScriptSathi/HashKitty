@@ -25,16 +25,18 @@ export default function useFetchList<ListType extends ListItemAvailable>({
       };
    }
 
-   async function refresh() {
-      const req = await fetch(url, reqOptions);
+   async function refresh(): Promise<boolean> {
       try {
+         const req = await fetch(url, reqOptions);
          const res = await req.json();
          setItems(res.items || []);
          setIsLoading(false);
+         return true;
       } catch (e) {
-         setIsLoading(false);
          setError(e);
+         refresh();
       }
+      return false;
    }
 
    useEffect(() => {

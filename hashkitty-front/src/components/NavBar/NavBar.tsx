@@ -1,5 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { memo, useContext, useRef, useState } from 'react';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import logo from '../../assets/images/logo.svg';
 import useScreenSize from '../../hooks/useScreenSize';
@@ -8,8 +11,21 @@ import './NavBar.scss';
 import BurgerMenu from './BurgerMenu';
 import MaterialUISwitch from '../ui/MUISwitch/MUISwitch';
 import ColorModeContext from '../../App/ColorModeContext';
+import PopperNotification from './PopperNotification';
+import NotificationsContext from '../../App/NotificationsContext';
 
 const NavBar = memo(() => {
+   const [anchorToElem, setAnchorToElem] = useState<HTMLButtonElement | null>(
+      null,
+   );
+   const [isOpenPopper, setIsOpenPopper] = useState(false);
+   const { notifications } = useContext(NotificationsContext);
+
+   const handleOpenPopper = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorToElem(event.currentTarget);
+      setIsOpenPopper(!isOpenPopper);
+   };
+
    const switchRef = useRef(null);
    const {
       toggleColorMode,
@@ -26,6 +42,13 @@ const NavBar = memo(() => {
          className="block w-full mx-auto max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4"
          style={{ backgroundColor: colors.main }}
       >
+         {isOpenPopper && (
+            <PopperNotification
+               isOpen={isOpenPopper}
+               anchorToElem={anchorToElem}
+               onClickAway={() => setIsOpenPopper(!isOpenPopper)}
+            />
+         )}
          <div
             className="container mx-auto flex items-center justify-between"
             style={{ color: colors.font }}
@@ -56,6 +79,19 @@ const NavBar = memo(() => {
                      </li>
                   ))}
                </ul>
+               <IconButton
+                  onClick={e => handleOpenPopper(e)}
+                  style={{ backgroundColor: 'transparent' }}
+                  disabled={notifications.length === 0}
+               >
+                  <Badge
+                     badgeContent={notifications.length}
+                     color="secondary"
+                     sx={{ '& > span': { color: 'white' } }}
+                  >
+                     <NotificationsIcon />
+                  </Badge>
+               </IconButton>
                <MaterialUISwitch
                   checked={isDarkTheme}
                   ref={switchRef}
@@ -63,6 +99,14 @@ const NavBar = memo(() => {
                />
             </div>
             <div className="flex lg:hidden gap-6">
+               <IconButton
+                  onClick={handleOpenPopper}
+                  style={{ backgroundColor: 'transparent' }}
+               >
+                  <Badge badgeContent={4} color="secondary">
+                     <NotificationsIcon />
+                  </Badge>
+               </IconButton>
                <MaterialUISwitch
                   checked={isDarkTheme}
                   ref={switchRef}

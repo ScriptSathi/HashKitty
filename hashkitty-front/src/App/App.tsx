@@ -3,7 +3,9 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import AppRoutes from './AppRoutes';
 import ColorModeContext from './ColorModeContext';
 import ThemeProvider from './ThemeProvider';
-import NotificationsContext from './NotificationsContext';
+import NotificationsContext, {
+   NotificationsContextImplementation,
+} from './NotificationsContext';
 import { TNotification } from '../types/TypesORM';
 import ApiEndpoints from '../ApiEndpoints';
 
@@ -13,6 +15,9 @@ export default function App() {
    } = useContext(ColorModeContext);
    const [mode, setMode] = useState<'light' | 'dark'>(baseMode);
    const [notifications, setNotification] = useState<TNotification[]>([]);
+   const [shortLiveNotifications, setShortLiveNotifications] = useState<
+      TNotification[]
+   >([]);
    const [isEventListening, setIsEventListening] = useState(false);
    const notificationsUrl = ApiEndpoints.GET.notifications;
 
@@ -26,29 +31,13 @@ export default function App() {
    );
 
    const notificationsContext = useMemo(
-      () => ({
-         deleteNotification: (id: number) => {
-            const defaultHeaders = {
-               'Content-Type': 'application/json',
-               Accept: 'text/event-stream',
-            };
-            const reqOptions: RequestInit = {
-               method: 'DELETE',
-               headers: defaultHeaders,
-               body: JSON.stringify({ id }),
-            };
-            setNotification(prevNotifs =>
-               prevNotifs.filter(notif => notif.id !== id),
-            );
-            fetch(notificationsUrl, reqOptions);
-         },
-         appendNotifications: (notifs: TNotification[]) =>
-            setNotification(prevNotifs => [
-               ...new Set([...prevNotifs, ...notifs]),
-            ]),
-         notifications,
-      }),
-      [notifications],
+      () =>
+         new NotificationsContextImplementation(
+            notificationsUrl,
+            [notifications, setNotification],
+            [shortLiveNotifications, setShortLiveNotifications],
+         ),
+      [notifications, shortLiveNotifications],
    );
 
    useEffect(() => {

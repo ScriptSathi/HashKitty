@@ -128,9 +128,7 @@ function Lists() {
             </div>
          </Frame>
          {importIsClicked && (
-            <BackgroundBlur
-               toggleFn={closeImportWindow}
-            >
+            <BackgroundBlur toggleFn={closeImportWindow}>
                <ImportList
                   closeImportWindow={closeImportWindow}
                   type={importName}

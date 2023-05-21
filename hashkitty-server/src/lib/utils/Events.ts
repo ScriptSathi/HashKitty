@@ -6,9 +6,6 @@ import { NotificationType } from '../types/TDAOs';
 import { StreamEvent } from '../types/TApi';
 
 export class Events extends EventEmitter {
-   public static eventSourceFormatResponse(data: Notification[]) {
-      return `data: ${JSON.stringify(data)}\n\n`;
-   }
    public streamEvents: StreamEvent[];
    private notif: DaoNotification;
 
@@ -25,6 +22,10 @@ export class Events extends EventEmitter {
    ) => boolean = (event, ...args) => {
       return this.emit(event, ...args);
    };
+
+   public eventSourceFormatResponse(data: Notification[]) {
+      return `data: ${JSON.stringify(data)}\n\n`;
+   }
 
    private addListeners() {
       this.on('success', this.onSuccess);
@@ -84,7 +85,7 @@ export class Events extends EventEmitter {
 
    private sendNotificationStream(notification: Notification) {
       this.streamEvents.map(stream =>
-         stream.res.write(Events.eventSourceFormatResponse([notification]))
+         stream.res.write(this.eventSourceFormatResponse([notification]))
       );
    }
 }
