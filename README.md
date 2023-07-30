@@ -2,7 +2,7 @@
 
 ![GitHub License](https://img.shields.io/github/license/ScriptSathi/HashKitty?style=flat-square)
 ![GitHub top language](https://img.shields.io/github/languages/top/ScriptSathi/HashKitty?style=flat-square)
-![Github commits](https://img.shields.io/github/commit-activity/m/ScriptSathi/HashKitty?style=flat-square)
+![Github commits](https://img.shields.io/github/commit-activity/y/ScriptSathi/HashKitty?style=flat-square)
 
 Hashkitty is another web user interface for Hashcat, fully written in Typescript.
 
