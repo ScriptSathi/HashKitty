@@ -316,7 +316,7 @@ export class RouteHandler {
    ): void => {
       try {
          const listString = FsUtils.listFileInDir(Constants.rulesPath);
-         const list = this.buildListBase(listString);
+         const list = this.buildListBase(['* (All Rules)', ...listString]);
          this.getFileInDirResp(res, list);
       } catch (e) {
          this.getFileInDirResp(res, [], Constants.rulesPath, e);

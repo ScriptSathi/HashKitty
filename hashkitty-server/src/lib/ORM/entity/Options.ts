@@ -43,7 +43,7 @@ export class Options {
    @JoinColumn({ name: 'wordlist_id', referencedColumnName: 'id' })
    wordlistId?: number;
 
-   @Column('varchar', { name: 'rule_name', default: '' })
+   @Column('text', { name: 'rule_name', default: '' })
    rules?: string;
 
    @Column('varchar', { name: 'potfile_name', default: '' })

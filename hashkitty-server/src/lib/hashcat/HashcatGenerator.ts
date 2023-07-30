@@ -118,7 +118,7 @@ export class HashcatGenerator {
       if (this.task.options.rules) {
          flags.push({
             key: 'rulesFile',
-            value: this.task.options.rules.split(','),
+            value: this.createRulesPaths(this.task.options.rules.split(',')),
          });
       }
       if (this.task.options.workloadProfileId) {
@@ -138,6 +138,14 @@ export class HashcatGenerator {
          }
       }
       return this.buildFlags(flags);
+   }
+
+   private createRulesPaths(rules: string[]): string[] {
+      const hasWildCardRule = rules.some(rule => rule.includes('*'));
+      if (hasWildCardRule) {
+         rules = FsUtils.listFileInDir(Constants.rulesPath);
+      }
+      return rules.map(rule => path.join(Constants.rulesPath, rule));
    }
 
    private prepareRestoreFlags(): CmdData[] {

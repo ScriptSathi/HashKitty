@@ -376,13 +376,18 @@ export class Sanitizer {
       for (const ruleFileName of rules) {
          try {
             if (ruleFileName.length > 0) {
-               const files = FsUtils.listFileInDir(Constants.rulesPath);
-               const fileHasBeenFound = files.find(file => {
-                  return file === ruleFileName;
-               });
-               if (!fileHasBeenFound) {
-                  fileExists = false;
-                  this.setError('wrongData', 'rules');
+               const isWildCardRule = ruleFileName.includes('*');
+               if (isWildCardRule) {
+                  rules = ['* (All Rules)'];
+               } else {
+                  const files = FsUtils.listFileInDir(Constants.rulesPath);
+                  const fileHasBeenFound = files.find(file => {
+                     return file === ruleFileName;
+                  });
+                  if (!fileHasBeenFound) {
+                     fileExists = false;
+                     this.setError('wrongData', 'rules');
+                  }
                }
             }
          } catch (error) {
