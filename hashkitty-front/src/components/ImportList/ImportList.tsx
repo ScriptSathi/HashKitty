@@ -99,8 +99,8 @@ function ImportList({ closeImportWindow, type }: ImportListProps) {
                <TextField
                   {...register('fileName', {
                      maxLength: {
-                        value: 20,
-                        message: 'Must be shorter than 20 characters',
+                        value: 50,
+                        message: 'Must be shorter than 50 characters',
                      },
                   })}
                   error={!!errors.fileName && !!errors.fileName.message}

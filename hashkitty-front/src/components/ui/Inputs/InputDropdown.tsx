@@ -56,11 +56,12 @@ export default function InputDropdown<
          getOptionLabel={getOptionLabel}
          isOptionEqualToValue={isOptionEqualToValue}
          {...autoCompleteProps}
-         sx={{ width }}
+         sx={{ width, overflow: 'auto', paddingTop: 0.6 }}
          popupIcon={<ArrowDropDownIcon sx={{ color: colors.font }} />}
          renderInput={params => (
             <TextField
                {...params}
+               style={{ maxHeight: 200 }}
                label={label}
                error={
                   !!(errors[formName] as FieldError) &&

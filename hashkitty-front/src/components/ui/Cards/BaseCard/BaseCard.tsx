@@ -4,6 +4,7 @@ import { CardActions, CardHeader, Tooltip } from '@mui/material';
 import { useContext, useState } from 'react';
 import useScreenSize from '../../../../hooks/useScreenSize';
 import ColorModeContext from '../../../../App/ColorModeContext';
+import { truncateString } from '../../../../utils/FormatUtils';
 
 type TBaseCard = {
    children: React.ReactNode;
@@ -86,7 +87,7 @@ export default function BaseCard({
                      className="break-normal"
                      component={titleSize}
                      disableTypography
-                     title={title}
+                     title={truncateString(title, isDesktop ? 20 : 15)}
                   />
                   {isMouseOver && additionnalBtn && (
                      <div className="mr-[12px] flex items-end">

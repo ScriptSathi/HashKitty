@@ -32,7 +32,7 @@ function BreakPointTempField<Form extends CreateTemplateForm>({
                message: 'Must be less than 100°C',
             },
             min: {
-               value: 20,
+               value: 50,
                message: 'Cold but gold !',
             },
          })}

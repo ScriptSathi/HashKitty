@@ -23,8 +23,8 @@ function InitialStep({
             className="w-[400px]"
             {...register('name', {
                maxLength: {
-                  value: 20,
-                  message: 'Must be shorter than 20 characters',
+                  value: 50,
+                  message: 'Must be shorter than 50 characters',
                },
             })}
             error={!!errors.name && !!errors.name.message}
