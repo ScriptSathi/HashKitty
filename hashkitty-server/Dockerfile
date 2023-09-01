@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.4
 
-FROM nvidia/cuda:11.2.0-devel-ubuntu20.04
+FROM nvidia/cuda:11.2.2-devel-ubuntu20.04
 
 RUN apt update -y
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y hashcat git curl make gcc g++
