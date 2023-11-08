@@ -74,7 +74,7 @@ export class HashcatListener {
 
    private onExitProcess(processStdout: TProcessStdout): void {
       switch (processStdout.exit.message) {
-         case 'exit':
+         case 'ended':
             this.handleTaskHasFinnished(this.task);
             break;
          case 'exhausted':

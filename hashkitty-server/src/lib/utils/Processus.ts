@@ -7,7 +7,7 @@ import { THashcatRunningStatus } from '../types/THashcat';
 
 export type TProcessStdout = {
    exit: {
-      message: string;
+      message: 'error' | 'stopped' | 'ended' | 'exhausted' | '';
       code: number | null;
    };
    status: THashcatRunningStatus | {};
@@ -73,11 +73,11 @@ export class Processus {
    };
 
    private onExit = (code: number | null): void => {
-      let exitMessage = '';
+      let exitMessage: TProcessStdout['exit']['message'] = '';
       const { isCracked, isExausted, isAborted, isError } =
          this.hashcatExitCode(code);
       if (isError) {
-         exitMessage = 'close';
+         exitMessage = 'error';
          logger.error(
             new Error(`Command '${this.cmd}' failed with code ${code}`)
          );
